@@ -1,0 +1,39 @@
+```mermaid
+graph TB
+    subgraph "Entry & Configuration"
+        Main[main.go<br/>Entry Point]
+        Main --> Version{Version Check}
+        Version -->|--version| ShowVersion[Display Version<br/>Exit]
+        Version -->|normal| ArgParser[args.ArgumentParser<br/>Parse CLI & ENV]
+        
+        ArgParser --> ConfigLoader[config.LoadConfig()<br/>YAML Parser]
+        ConfigLoader --> ConfigFile[kafka-config.yml]
+        ConfigLoader --> EnvOverride[Environment<br/>Variable Override]
+        
+        ConfigLoader --> Validator[config.Validator<br/>Schema Validation]
+        Validator -->|Invalid| Exit[Exit with Error]
+    end
+    
+    subgraph "Core Integration"
+        Validator -->|Valid| Integration[integration.New()<br/>SDK v3 Integration]
+        Integration --> EntityManager[Entity Manager<br/>Cluster/Broker/Topic]
+        
+        EntityManager --> DiscoveryFactory[discovery.Factory<br/>Create Discoverer]
+        DiscoveryFactory --> DiscoveryImpl{Discovery Implementation}
+        
+        DiscoveryImpl -->|Bootstrap| BootstrapDiscovery[broker.BootstrapDiscoverer<br/>Kafka Protocol Discovery]
+        DiscoveryImpl -->|Zookeeper| ZKDiscovery[zookeeper.Discoverer<br/>ZK Path Discovery]
+    end
+    
+    subgraph "Connection Management"
+        BootstrapDiscovery --> SaramaConfig[sarama.Config Builder<br/>TLS, SASL, Timeouts]
+        ZKDiscovery --> ZKConfig[zk.Config Builder<br/>Auth, Timeouts]
+        
+        SaramaConfig --> ConnectionPool[connection.Pool<br/>Broker Connections]
+        ConnectionPool --> SaramaClient[sarama.Client<br/>Kafka Protocol]
+        ConnectionPool --> JMXConnectionPool[jmx.ConnectionPool<br/>JMX/RMI Connections]
+        
+        JMXConnectionPool --> NRJMXWrapper[nrjmx.Wrapper<br/>JMX Helper Process]
+        NRJMXWrapper --> JMXProcess[/usr/bin/nrjmx<br/>Java Process]
+    end
+```

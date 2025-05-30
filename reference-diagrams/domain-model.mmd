@@ -1,0 +1,175 @@
+```mermaid
+classDiagram
+    class KafkaCluster {
+        +String clusterName
+        +String kafkaVersion
+        +List~Broker~ brokers
+        +List~Topic~ topics
+        +List~ConsumerGroup~ consumerGroups
+        +List~Producer~ producers
+        +List~Consumer~ consumers
+        +getEntity() Entity
+        +collectMetrics() []MetricSet
+    }
+    
+    class Broker {
+        +int brokerId
+        +String host
+        +int port
+        +int jmxPort
+        +boolean isController
+        +Map~String, String~ config
+        +JMXConnection jmxConnection
+        +collectBrokerMetrics() BrokerMetrics
+        +collectTopicMetrics() []TopicMetrics
+    }
+    
+    class JMXConnection {
+        +String host
+        +int port
+        +String username
+        +String password
+        +boolean useSSL
+        +String keystore
+        +String truststore
+        +connect() error
+        +query(objectName string) []MBeanData
+        +close() error
+    }
+    
+    class BrokerMetrics {
+        <<MBean: kafka.server:type=BrokerTopicMetrics>>
+        +float messagesInPerSec
+        +float bytesInPerSec
+        +float bytesOutPerSec
+        +int failedFetchRequestsPerSec
+        +int failedProduceRequestsPerSec
+        <<MBean: kafka.server:type=ReplicaManager>>
+        +int leaderCount
+        +int partitionCount
+        +int offlinePartitionCount
+        +int underReplicatedPartitions
+        <<MBean: kafka.network:type=RequestMetrics>>
+        +float totalTimeMs
+        +float requestQueueTimeMs
+        +float responseQueueTimeMs
+    }
+```    
+    class Topic {
+        +String topicName
+        +int partitionCount
+        +int replicationFactor
+        +Map~String, String~ config
+        +List~Partition~ partitions
+        +collectTopicMetrics() TopicMetrics
+    }
+    
+    class TopicMetrics {
+        <<MBean: kafka.log:type=Log,name=Size>>
+        +long logSize
+        +long logEndOffset
+        <<MBean: kafka.server:type=BrokerTopicMetrics>>
+        +float messagesInPerSec
+        +float bytesInPerSec
+        +float bytesOutPerSec
+        +float bytesRejectedPerSec
+    }
+    
+    class Partition {
+        +int partitionId
+        +Broker leader
+        +List~Broker~ replicas
+        +List~Broker~ isr
+        +long logStartOffset
+        +long logEndOffset
+        +collectPartitionMetrics() PartitionMetrics
+    }
+    
+    class ConsumerGroup {
+        +String groupId
+        +String state
+        +String protocol
+        +String protocolType
+        +Broker coordinator
+        +List~Consumer~ members
+        +Map~TopicPartition, OffsetInfo~ offsets
+        +collectConsumerGroupMetrics() ConsumerGroupMetrics
+    }
+    
+    class OffsetInfo {
+        +String topic
+        +int partition
+        +long committedOffset
+        +long logEndOffset
+        +long lag
+        +long lastCommitTime
+        +calculateLag() long
+    }
+    
+    class Consumer {
+        +String clientId
+        +String host
+        +List~TopicPartition~ assignments
+        +JMXConnection clientJmxConnection
+        +collectConsumerMetrics() ConsumerMetrics
+    }
+    
+    class Producer {
+        +String clientId
+        +String host
+        +JMXConnection clientJmxConnection
+        +collectProducerMetrics() ProducerMetrics
+    }
+    
+    class NewRelicSample {
+        <<abstract>>
+        +String eventType
+        +String clusterName
+        +Map~String, interface{}~ attributes
+        +toJSON() string
+    }
+    
+    class KafkaBrokerSample {
+        +String eventType = "KafkaBrokerSample"
+        +int brokerId
+        +String brokerHost
+        +BrokerMetrics metrics
+    }
+    
+    class KafkaTopicSample {
+        +String eventType = "KafkaTopicSample"
+        +String topicName
+        +TopicMetrics metrics
+    }
+    
+    class KafkaConsumerSample {
+        +String eventType = "KafkaConsumerSample"
+        +String consumerGroupId
+        +String clientId
+        +ConsumerMetrics metrics
+    }
+    
+    class KafkaOffsetSample {
+        +String eventType = "KafkaOffsetSample"
+        +String consumerGroup
+        +String topic
+        +int partition
+        +OffsetInfo offsetInfo
+    }
+    
+    KafkaCluster "1" *-- "*" Broker
+    KafkaCluster "1" *-- "*" Topic
+    KafkaCluster "1" *-- "*" ConsumerGroup
+    KafkaCluster "1" *-- "*" Producer
+    KafkaCluster "1" *-- "*" Consumer
+    
+    Broker "1" --> "1" JMXConnection
+    Topic "1" *-- "*" Partition
+    ConsumerGroup "1" *-- "*" Consumer
+    ConsumerGroup "1" *-- "*" OffsetInfo
+    
+    NewRelicSample <|-- KafkaBrokerSample
+    NewRelicSample <|-- KafkaTopicSample
+    NewRelicSample <|-- KafkaConsumerSample
+    NewRelicSample <|-- KafkaOffsetSample
+```
