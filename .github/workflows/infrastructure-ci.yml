@@ -1,0 +1,210 @@
+name: Infrastructure CI
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'learning-app/labs/**'
+      - 'learning-app/scripts/**'
+      - '.github/workflows/infrastructure-ci.yml'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'learning-app/labs/**'
+      - 'learning-app/scripts/**'
+      - '.github/workflows/infrastructure-ci.yml'
+
+jobs:
+  validate-docker:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        week: [week1-xray, week2-builder, week3-optimizer, week4-detective, week5-architect]
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Validate Docker Compose - ${{ matrix.week }}
+      run: |
+        echo "🔍 Validating ${{ matrix.week }} Docker Compose files..."
+        
+        # Check standard compose file
+        if [ -f "learning-app/labs/${{ matrix.week }}/docker-compose.yml" ]; then
+          docker-compose -f "learning-app/labs/${{ matrix.week }}/docker-compose.yml" config > /dev/null
+          echo "✅ Standard compose file valid"
+        fi
+        
+        # Check enhanced compose file
+        if [ -f "learning-app/labs/${{ matrix.week }}/docker-compose.enhanced.yml" ]; then
+          docker-compose -f "learning-app/labs/${{ matrix.week }}/docker-compose.enhanced.yml" config > /dev/null
+          echo "✅ Enhanced compose file valid"
+        fi
+
+  test-scripts:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Validate shell scripts
+      run: |
+        echo "🔍 Checking shell script syntax..."
+        find learning-app/scripts -name "*.sh" -type f | while read script; do
+          echo "Checking: $script"
+          bash -n "$script"
+        done
+        echo "✅ All scripts have valid syntax"
+    
+    - name: Check script permissions
+      run: |
+        echo "🔍 Checking executable permissions..."
+        find learning-app/scripts -name "*.sh" -type f | while read script; do
+          if [[ ! -x "$script" ]]; then
+            echo "❌ Not executable: $script"
+            exit 1
+          fi
+        done
+        echo "✅ All scripts are executable"
+
+  security-scan:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Run Trivy vulnerability scanner
+      uses: aquasecurity/trivy-action@master
+      with:
+        scan-type: 'fs'
+        scan-ref: './learning-app'
+        format: 'sarif'
+        output: 'trivy-results.sarif'
+        severity: 'CRITICAL,HIGH'
+    
+    - name: Upload Trivy scan results
+      uses: github/codeql-action/upload-sarif@v2
+      if: always()
+      with:
+        sarif_file: 'trivy-results.sarif'
+    
+    - name: Check for secrets
+      run: |
+        echo "🔍 Scanning for hardcoded secrets..."
+        
+        # Check for potential secrets (exclude NEW_RELIC_LICENSE_KEY which is expected)
+        if grep -r -i -E "(password|secret|api_key|token)" \
+             --include="*.yml" \
+             --include="*.yaml" \
+             --include="*.sh" \
+             --exclude-dir=node_modules \
+             learning-app/ | \
+           grep -v -E "(NEW_RELIC_LICENSE_KEY|\${|password:)" | \
+           grep -v -E "(#|//).*password"; then
+          echo "⚠️  Warning: Possible hardcoded secrets found"
+          exit 1
+        fi
+        echo "✅ No hardcoded secrets detected"
+
+  docker-build-test:
+    runs-on: ubuntu-latest
+    needs: [validate-docker, test-scripts]
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Test Week 1 startup
+      run: |
+        echo "🚀 Testing Week 1 Docker Compose startup..."
+        cd learning-app/labs/week1-xray
+        
+        # Use the enhanced compose file if it exists
+        if [ -f "docker-compose.enhanced.yml" ]; then
+          COMPOSE_FILE="docker-compose.enhanced.yml"
+        else
+          COMPOSE_FILE="docker-compose.yml"
+        fi
+        
+        # Start services
+        docker-compose -f $COMPOSE_FILE up -d
+        
+        # Wait for services to be ready
+        echo "⏳ Waiting for services to start..."
+        sleep 30
+        
+        # Check if Kafka is responsive
+        docker exec kafka-xray-broker kafka-broker-api-versions --bootstrap-server localhost:9092
+        
+        # Clean up
+        docker-compose -f $COMPOSE_FILE down -v
+
+  lint-yaml:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Install yamllint
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y yamllint
+    
+    - name: Lint YAML files
+      run: |
+        echo "🔍 Linting YAML files..."
+        # Create yamllint config
+        cat > .yamllint.yml << EOF
+        extends: default
+        rules:
+          line-length:
+            max: 120
+            level: warning
+          comments:
+            min-spaces-from-content: 1
+          truthy:
+            allowed-values: ['true', 'false', 'yes', 'no', 'on', 'off']
+        EOF
+        
+        # Run yamllint
+        find learning-app -name "*.yml" -o -name "*.yaml" | \
+          grep -v node_modules | \
+          xargs yamllint -c .yamllint.yml || true
+
+  documentation-check:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Check documentation
+      run: |
+        echo "📚 Checking documentation..."
+        
+        # Check if key documentation files exist
+        required_docs=(
+          "learning-app/README.md"
+          "learning-app/TRACK4_SIMPLIFIED_PLAN.md"
+        )
+        
+        for doc in "${required_docs[@]}"; do
+          if [[ ! -f "$doc" ]]; then
+            echo "❌ Missing required documentation: $doc"
+            exit 1
+          fi
+        done
+        
+        echo "✅ All required documentation present"
+
+  infrastructure-summary:
+    runs-on: ubuntu-latest
+    needs: [docker-build-test, security-scan, lint-yaml]
+    if: always()
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Generate infrastructure report
+      run: |
+        echo "📊 Infrastructure CI Summary"
+        echo "=========================="
+        echo
+        echo "Docker Compose Files:"
+        find learning-app/labs -name "docker-compose*.yml" | sort
+        echo
+        echo "Shell Scripts:"
+        find learning-app/scripts -name "*.sh" | sort
+        echo
+        echo "✅ Infrastructure CI Complete!"

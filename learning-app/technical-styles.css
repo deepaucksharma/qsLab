@@ -1,0 +1,464 @@
+/* Technical App Specific Styles */
+
+/* Technical Sidebar */
+.technical-sidebar {
+    background: #0f1419;
+    border-right: 1px solid #1e2329;
+}
+
+.technical-sidebar .logo {
+    background: linear-gradient(135deg, #1a1f2e 0%, #0f1419 100%);
+    border-bottom: 1px solid #1e2329;
+}
+
+.technical-sidebar .logo i {
+    color: #00d084;
+    animation: pulse 3s ease-in-out infinite;
+}
+
+/* Status Indicators */
+.status-indicator {
+    margin-left: auto;
+    font-size: 0.875rem;
+}
+
+.status-indicator.completed {
+    color: #00d084;
+}
+
+.status-indicator.in-progress {
+    color: #ffa500;
+    animation: blink 1s infinite;
+}
+
+@keyframes blink {
+    0%, 50%, 100% { opacity: 1; }
+    25%, 75% { opacity: 0.5; }
+}
+
+/* Implementation Progress */
+.implementation-progress {
+    padding: 1.5rem;
+    background: #1a1f2e;
+    margin: 1rem;
+    border-radius: 8px;
+}
+
+.milestone-list {
+    margin-top: 1rem;
+}
+
+.milestone {
+    padding: 0.5rem 0;
+    font-size: 0.875rem;
+    color: #8b92a1;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.milestone.completed {
+    color: #00d084;
+}
+
+.milestone.completed i::before {
+    content: "\f00c";
+}
+
+/* Mission Brief Cards */
+.mission-brief {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+}
+
+.brief-card {
+    padding: 1.5rem;
+    border-radius: 8px;
+    border: 2px solid;
+    position: relative;
+    overflow: hidden;
+}
+
+.brief-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: currentColor;
+}
+
+.brief-card.critical {
+    background: rgba(255, 82, 82, 0.1);
+    border-color: #ff5252;
+    color: #ff5252;
+}
+
+.brief-card.target {
+    background: rgba(0, 208, 132, 0.1);
+    border-color: #00d084;
+    color: #00d084;
+}
+
+.brief-card.timeline {
+    background: rgba(255, 165, 0, 0.1);
+    border-color: #ffa500;
+    color: #ffa500;
+}
+
+.brief-card h3 {
+    color: inherit;
+    margin-bottom: 0.5rem;
+}
+
+.brief-card p {
+    color: #e0e0e0;
+}
+
+/* Technical Requirements */
+.requirement-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1rem;
+}
+
+.requirement {
+    background: #1a1f2e;
+    padding: 1.5rem;
+    border-radius: 8px;
+    border: 1px solid #2a2f3e;
+}
+
+.requirement h4 {
+    color: #00d084;
+    margin-bottom: 1rem;
+}
+
+.requirement ul {
+    list-style: none;
+}
+
+.requirement li {
+    padding: 0.25rem 0;
+    color: #8b92a1;
+    position: relative;
+    padding-left: 1.5rem;
+}
+
+.requirement li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: #00d084;
+}
+
+/* Action Buttons */
+.quick-actions {
+    margin-top: 2rem;
+}
+
+.action-button {
+    padding: 1rem 2rem;
+    margin: 0.5rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.action-button.primary {
+    background: linear-gradient(135deg, #00d084 0%, #00a86b 100%);
+    color: white;
+}
+
+.action-button.secondary {
+    background: #2a2f3e;
+    color: #e0e0e0;
+    border: 1px solid #3a3f4e;
+}
+
+.action-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Interactive Architecture */
+.interactive-architecture {
+    margin: 2rem 0;
+}
+
+.architecture-diagram {
+    background: #0f1419;
+    border: 1px solid #1e2329;
+    border-radius: 8px;
+    height: 500px;
+    position: relative;
+    overflow: hidden;
+}
+
+.flow-controls {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.flow-controls button {
+    flex: 1;
+    padding: 0.75rem;
+    background: #1a1f2e;
+    border: 1px solid #2a2f3e;
+    color: #e0e0e0;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.flow-controls button:hover {
+    background: #2a2f3e;
+    border-color: #00d084;
+}
+
+/* Hands-on Lab */
+.hands-on-lab {
+    background: #1a1f2e;
+    padding: 2rem;
+    border-radius: 8px;
+    margin-top: 2rem;
+}
+
+.lab-steps {
+    margin-top: 1.5rem;
+}
+
+.lab-step {
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background: #0f1419;
+    border-radius: 8px;
+    border: 1px solid #1e2329;
+}
+
+.lab-step h3 {
+    color: #00d084;
+    margin-bottom: 1rem;
+}
+
+/* Terminal Split View */
+.terminal-split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.terminal-half {
+    background: #000;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.terminal-half h4 {
+    background: #1a1f2e;
+    padding: 0.75rem;
+    margin: 0;
+    font-size: 0.875rem;
+    color: #8b92a1;
+}
+
+/* Entity Analyzer */
+.entity-analyzer {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.entity-tree {
+    background: #0f1419;
+    border: 1px solid #1e2329;
+    border-radius: 8px;
+    padding: 1rem;
+    min-height: 300px;
+}
+
+.entity-details {
+    background: #0f1419;
+    border: 1px solid #1e2329;
+    border-radius: 8px;
+    padding: 1rem;
+}
+
+/* Key Findings */
+.key-findings {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background: #252a34;
+    border-radius: 8px;
+    border: 1px solid #00d084;
+}
+
+.key-findings h3 {
+    color: #00d084;
+    margin-bottom: 1rem;
+}
+
+.key-findings textarea {
+    width: 100%;
+    min-height: 150px;
+    background: #0f1419;
+    border: 1px solid #1e2329;
+    color: #e0e0e0;
+    padding: 1rem;
+    border-radius: 6px;
+    font-family: inherit;
+    resize: vertical;
+}
+
+.key-findings button {
+    margin-top: 1rem;
+    padding: 0.75rem 1.5rem;
+    background: #00d084;
+    color: #0f1419;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+/* Data Analyzer Tool */
+.analyzer-container {
+    background: #1a1f2e;
+    padding: 2rem;
+    border-radius: 8px;
+}
+
+.analyzer-controls {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.analyzer-controls button {
+    flex: 1;
+    padding: 0.75rem;
+    background: #2a2f3e;
+    border: 1px solid #3a3f4e;
+    color: #e0e0e0;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.analyzer-workspace {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.data-panel {
+    background: #0f1419;
+    border: 1px solid #1e2329;
+    border-radius: 8px;
+    padding: 1rem;
+}
+
+.data-panel h3 {
+    color: #00d084;
+    margin-bottom: 1rem;
+    font-size: 1rem;
+}
+
+.data-viewer {
+    min-height: 400px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.875rem;
+    overflow: auto;
+}
+
+.analysis-results {
+    background: #252a34;
+    border: 1px solid #00d084;
+    border-radius: 8px;
+    padding: 1.5rem;
+    min-height: 200px;
+}
+
+/* Module Objectives */
+.module-objectives {
+    background: #1a1f2e;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+}
+
+.objective-list {
+    list-style: none;
+    margin-top: 1rem;
+}
+
+.objective-item {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 0;
+}
+
+.objective-item input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    margin-right: 1rem;
+    cursor: pointer;
+}
+
+.objective-item label {
+    cursor: pointer;
+    color: #e0e0e0;
+}
+
+.objective-item input[type="checkbox"]:checked + label {
+    color: #00d084;
+    text-decoration: line-through;
+}
+
+/* Dark theme adjustments */
+.technical-content {
+    background: #0a0e17;
+    color: #e0e0e0;
+}
+
+.technical-content h1, .technical-content h2 {
+    color: #ffffff;
+}
+
+.technical-content p {
+    color: #8b92a1;
+}
+
+.code-block {
+    background: #000;
+    border: 1px solid #1e2329;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+    .terminal-split {
+        grid-template-columns: 1fr;
+    }
+    
+    .entity-analyzer {
+        grid-template-columns: 1fr;
+    }
+    
+    .analyzer-workspace {
+        grid-template-columns: 1fr;
+    }
+}

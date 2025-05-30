@@ -1,0 +1,299 @@
+/* Module Card Component */
+.module-card {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-base);
+  transition: all var(--transition-base);
+  overflow: hidden;
+  border: 1px solid var(--color-gray-200);
+}
+
+.module-card:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
+  border-color: var(--color-primary-200);
+}
+
+.module-card--active {
+  border-color: var(--color-primary-500);
+  box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
+}
+
+.module-card--locked {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.module-card--locked:hover {
+  transform: none;
+  box-shadow: var(--shadow-base);
+}
+
+/* Module Card Header */
+.module-card__header {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: var(--space-md);
+  padding: var(--space-lg);
+  align-items: center;
+}
+
+/* Module Icon */
+.module-card__icon {
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-primary-50);
+  border-radius: var(--radius-md);
+  transition: all var(--transition-base);
+}
+
+.module-card:hover .module-card__icon {
+  background: var(--color-primary-100);
+  transform: scale(1.05);
+}
+
+.module-icon {
+  font-size: 2rem;
+}
+
+/* Module Info */
+.module-card__info {
+  min-width: 0; /* Prevent text overflow */
+}
+
+.module-card__title {
+  margin: 0 0 var(--space-xs) 0;
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  line-height: var(--line-height-tight);
+}
+
+.module-card__subtitle {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  line-height: var(--line-height-normal);
+}
+
+/* Progress Ring */
+.module-card__progress {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.progress-ring {
+  transform: rotate(-90deg);
+}
+
+.progress-ring__circle {
+  transition: stroke-dashoffset var(--transition-slow);
+}
+
+.progress-text {
+  position: absolute;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+}
+
+/* Module Content */
+.module-card__content {
+  padding: 0 var(--space-lg) var(--space-lg);
+  animation: slideIn var(--transition-base);
+}
+
+.module-objectives,
+.module-exercises {
+  margin-top: var(--space-md);
+}
+
+.module-objectives h4,
+.module-exercises h4 {
+  margin: 0 0 var(--space-sm) 0;
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+}
+
+.module-objectives ul,
+.module-exercises ul {
+  margin: 0;
+  padding-left: var(--space-lg);
+  list-style: none;
+}
+
+.module-objectives li,
+.module-exercises li {
+  position: relative;
+  padding-left: var(--space-md);
+  margin-bottom: var(--space-xs);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-relaxed);
+}
+
+.module-objectives li::before {
+  content: '•';
+  position: absolute;
+  left: 0;
+  color: var(--color-primary-500);
+  font-weight: bold;
+}
+
+.exercise-list li {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding-left: 0;
+}
+
+.exercise-list li i {
+  color: var(--color-gray-400);
+  font-size: var(--font-size-sm);
+}
+
+.exercise-list li.completed i {
+  color: var(--color-success);
+}
+
+.exercise-list li.completed span {
+  text-decoration: line-through;
+  opacity: 0.7;
+}
+
+/* Module Actions */
+.module-card__actions {
+  display: flex;
+  gap: var(--space-sm);
+  padding: 0 var(--space-lg) var(--space-lg);
+  justify-content: space-between;
+}
+
+.module-card__actions .btn {
+  flex: 1;
+}
+
+.module-card__actions .btn--icon {
+  flex: 0 0 auto;
+  width: 40px;
+  padding: 0;
+  justify-content: center;
+}
+
+/* Button Styles */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: var(--space-sm) var(--space-md);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-normal);
+  border-radius: var(--radius-md);
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.btn--primary {
+  background: var(--color-primary-500);
+  color: var(--color-text-inverse);
+}
+
+.btn--primary:hover {
+  background: var(--color-primary-600);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.btn--primary:active {
+  transform: translateY(0);
+  box-shadow: var(--shadow-sm);
+}
+
+.btn--secondary {
+  background: var(--color-gray-100);
+  color: var(--color-text-primary);
+}
+
+.btn--secondary:hover {
+  background: var(--color-gray-200);
+}
+
+.btn--disabled {
+  background: var(--color-gray-100);
+  color: var(--color-text-disabled);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.btn--disabled:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .module-card__header {
+    grid-template-columns: auto 1fr;
+    grid-template-rows: auto auto;
+  }
+  
+  .module-card__progress {
+    grid-column: 1 / -1;
+    justify-self: center;
+    margin-top: var(--space-md);
+  }
+  
+  .module-card__icon {
+    width: 50px;
+    height: 50px;
+  }
+  
+  .module-icon {
+    font-size: 1.5rem;
+  }
+  
+  .module-card__title {
+    font-size: var(--font-size-lg);
+  }
+  
+  .module-card__actions {
+    flex-direction: column;
+  }
+  
+  .module-card__actions .btn--icon {
+    width: 100%;
+  }
+}
+
+/* Dark Mode */
+[data-theme="dark"] .module-card {
+  background: var(--color-surface-variant);
+  border-color: var(--color-gray-700);
+}
+
+[data-theme="dark"] .module-card__icon {
+  background: rgba(33, 150, 243, 0.1);
+}
+
+[data-theme="dark"] .module-card:hover .module-card__icon {
+  background: rgba(33, 150, 243, 0.2);
+}
+
+[data-theme="dark"] .btn--secondary {
+  background: var(--color-gray-800);
+  color: var(--color-text-primary);
+}
+
+[data-theme="dark"] .btn--secondary:hover {
+  background: var(--color-gray-700);
+}

@@ -1,0 +1,49 @@
+# Dockerfile for user workspace containers
+FROM ubuntu:22.04
+
+# Install required packages
+RUN apt-get update && apt-get install -y \
+    curl \
+    wget \
+    git \
+    vim \
+    nano \
+    jq \
+    net-tools \
+    iputils-ping \
+    dnsutils \
+    telnet \
+    openjdk-11-jre-headless \
+    python3 \
+    python3-pip \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Kafka
+ENV KAFKA_VERSION=3.5.1
+ENV SCALA_VERSION=2.13
+RUN wget -q https://downloads.apache.org/kafka/${KAFKA_VERSION}/kafka_${SCALA_VERSION}-${KAFKA_VERSION}.tgz \
+    && tar -xzf kafka_${SCALA_VERSION}-${KAFKA_VERSION}.tgz \
+    && mv kafka_${SCALA_VERSION}-${KAFKA_VERSION} /opt/kafka \
+    && rm kafka_${SCALA_VERSION}-${KAFKA_VERSION}.tgz
+
+# Set up Kafka environment
+ENV PATH="/opt/kafka/bin:${PATH}"
+ENV KAFKA_HOME=/opt/kafka
+
+# Create non-root user
+RUN useradd -m -s /bin/bash -u 1000 learner \
+    && mkdir -p /home/learner/workspace \
+    && chown -R learner:learner /home/learner
+
+# Install additional tools
+RUN pip3 install kafka-python confluent-kafka
+
+# Switch to non-root user
+USER learner
+WORKDIR /home/learner/workspace
+
+# Set up nice prompt
+RUN echo 'export PS1="\[\033[01;32m\]\u@kafka-learning\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ "' >> ~/.bashrc
+
+# Default command
+CMD ["/bin/bash"]

@@ -75,6 +75,14 @@
             </div>
 
             <div class="nav-section">
+                <h3>New Features</h3>
+                <ul class="nav-list">
+                    <li><a href="#queues-streams" class="nav-item"><i class="fas fa-stream"></i> Queues & Streams <span class="badge-new">NEW</span></a></li>
+                    <li><a href="#apm-360" class="nav-item"><i class="fas fa-globe"></i> APM 360 <span class="badge-new">NEW</span></a></li>
+                </ul>
+            </div>
+
+            <div class="nav-section">
                 <h3>Resources</h3>
                 <ul class="nav-list">
                     <li><a href="#playground" class="nav-item"><i class="fas fa-code"></i> Code Playground</a></li>
@@ -103,6 +111,16 @@
                     <p class="subtitle">Transform from Map-Reader to Map-Maker in 5 Weeks</p>
                     <div class="update-badge">
                         <i class="fas fa-star"></i> Updated for 2025: New Relic Queues & Streams, APM 360
+                    </div>
+                    <div class="new-feature-banner">
+                        <div class="feature-icon">
+                            <i class="fas fa-rocket"></i>
+                        </div>
+                        <div class="feature-content">
+                            <h3>🆕 New in 2025: Queues & Streams</h3>
+                            <p>Experience bi-directional Kafka visibility with honeycomb visualization!</p>
+                            <a href="#queues-streams" class="feature-link">Explore Now →</a>
+                        </div>
                     </div>
                 </div>
 
@@ -817,6 +835,155 @@ monitoring:
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Queues & Streams Section -->
+            <section id="queues-streams" class="content-section">
+                <div class="section-header">
+                    <h1>🆕 New Relic Queues & Streams</h1>
+                    <p class="subtitle">Bi-directional visibility for Kafka with honeycomb visualization</p>
+                    <span class="badge-new">2025 Feature</span>
+                </div>
+
+                <div class="feature-overview">
+                    <div class="feature-description">
+                        <h2>What is Queues & Streams?</h2>
+                        <p>New Relic's Queues & Streams provides unprecedented visibility into your message queue infrastructure, specifically designed for Apache Kafka, Amazon Kinesis, and other streaming platforms.</p>
+                        
+                        <div class="feature-benefits">
+                            <div class="benefit-card">
+                                <i class="fas fa-project-diagram"></i>
+                                <h3>Honeycomb Visualization</h3>
+                                <p>See your entire Kafka cluster health at a glance with interactive honeycomb diagrams</p>
+                            </div>
+                            <div class="benefit-card">
+                                <i class="fas fa-exchange-alt"></i>
+                                <h3>Bi-Directional Mapping</h3>
+                                <p>Connect topics to both producers AND consumers with full trace context</p>
+                            </div>
+                            <div class="benefit-card">
+                                <i class="fas fa-link"></i>
+                                <h3>APM Integration</h3>
+                                <p>Seamlessly navigate from application traces to infrastructure metrics</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="interactive-demo">
+                        <h2>Try It Now</h2>
+                        <div class="demo-container">
+                            <div class="honeycomb-simulator" id="honeycomb-demo">
+                                <!-- Interactive honeycomb visualization will be rendered here -->
+                            </div>
+                            <div class="demo-controls">
+                                <button onclick="simulateHealthy()"><i class="fas fa-check-circle"></i> Healthy Cluster</button>
+                                <button onclick="simulateLag()"><i class="fas fa-exclamation-triangle"></i> Consumer Lag</button>
+                                <button onclick="simulateError()"><i class="fas fa-times-circle"></i> Producer Errors</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="setup-guide">
+                        <h2>Quick Setup Guide</h2>
+                        <div class="setup-steps">
+                            <div class="setup-step">
+                                <div class="step-number">1</div>
+                                <h3>Enable Java Agent</h3>
+                                <pre><code class="language-bash"># Add to your producer/consumer startup
+-javaagent:/path/to/newrelic.jar
+-Dnewrelic.config.distributed_tracing.enabled=true</code></pre>
+                            </div>
+                            <div class="setup-step">
+                                <div class="step-number">2</div>
+                                <h3>Configure Kafka Integration</h3>
+                                <pre><code class="language-yaml"># In your newrelic.yml
+class_transformer:
+  com.newrelic.instrumentation.kafka-clients-spans-2.0.0:
+    enabled: true</code></pre>
+                            </div>
+                            <div class="setup-step">
+                                <div class="step-number">3</div>
+                                <h3>Access Queues & Streams</h3>
+                                <p>Navigate to: <strong>one.newrelic.com</strong> > <strong>All capabilities</strong> > <strong>Queues & Streams</strong></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="nrql-examples">
+                        <h2>Powerful NRQL Queries</h2>
+                        <div class="query-cards">
+                            <div class="query-card">
+                                <h3>Message Flow Analysis</h3>
+                                <pre><code class="language-sql">FROM MessageTrace 
+SELECT count(*) 
+FACET topic, producer.service.name, consumer.service.name 
+SINCE 30 minutes ago</code></pre>
+                                <button class="copy-button" onclick="copyCode(this)"><i class="fas fa-copy"></i> Copy</button>
+                            </div>
+                            <div class="query-card">
+                                <h3>Consumer Lag Monitoring</h3>
+                                <pre><code class="language-sql">FROM MessageTrace 
+SELECT max(consumer.lag) 
+FACET consumer.service.name, topic 
+WHERE consumer.lag > 100</code></pre>
+                                <button class="copy-button" onclick="copyCode(this)"><i class="fas fa-copy"></i> Copy</button>
+                            </div>
+                            <div class="query-card">
+                                <h3>Error Rate by Topic</h3>
+                                <pre><code class="language-sql">FROM MessageTrace 
+SELECT percentage(count(*), WHERE error = true) as 'Error Rate' 
+FACET topic 
+TIMESERIES</code></pre>
+                                <button class="copy-button" onclick="copyCode(this)"><i class="fas fa-copy"></i> Copy</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- APM 360 Section -->
+            <section id="apm-360" class="content-section">
+                <div class="section-header">
+                    <h1>🌐 APM 360 - Unified Kafka View</h1>
+                    <p class="subtitle">Complete application and infrastructure observability in one place</p>
+                    <span class="badge-new">2025 Feature</span>
+                </div>
+
+                <div class="apm360-overview">
+                    <h2>Unified Observability Platform</h2>
+                    <p>APM 360 brings together application performance monitoring and infrastructure metrics, providing a complete view of your Kafka ecosystem.</p>
+                    
+                    <div class="integration-flow">
+                        <div class="flow-step">
+                            <i class="fas fa-code"></i>
+                            <h3>Application Layer</h3>
+                            <p>Service performance & traces</p>
+                        </div>
+                        <div class="flow-arrow">→</div>
+                        <div class="flow-step">
+                            <i class="fas fa-stream"></i>
+                            <h3>Kafka Layer</h3>
+                            <p>Topics, partitions & lag</p>
+                        </div>
+                        <div class="flow-arrow">→</div>
+                        <div class="flow-step">
+                            <i class="fas fa-server"></i>
+                            <h3>Infrastructure Layer</h3>
+                            <p>Brokers, nodes & resources</p>
+                        </div>
+                    </div>
+
+                    <div class="key-features">
+                        <h2>Key Features</h2>
+                        <ul class="feature-list">
+                            <li><i class="fas fa-check"></i> Single pane of glass for all Kafka metrics</li>
+                            <li><i class="fas fa-check"></i> Automatic service dependency mapping</li>
+                            <li><i class="fas fa-check"></i> Intelligent anomaly detection</li>
+                            <li><i class="fas fa-check"></i> Cost analysis and optimization recommendations</li>
+                            <li><i class="fas fa-check"></i> Pre-built dashboards and alerts</li>
+                        </ul>
                     </div>
                 </div>
             </section>

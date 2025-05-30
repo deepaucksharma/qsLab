@@ -2,6 +2,21 @@
 
 An interactive web application for learning Kafka observability with New Relic through hands-on exercises and real-world scenarios.
 
+## 📚 Implementation Documentation
+
+For detailed implementation documentation, see the [Track Documentation](../docs/tracks/README.md):
+
+- **[Master Implementation Plan](../docs/tracks/MASTER_IMPLEMENTATION_PLAN.md)** - Complete 4-track development strategy
+- **[Track Alignment Plan](../docs/tracks/TRACKS_ALIGNMENT_PLAN.md)** - Integration and coordination strategy
+- **[Consolidated Status Report](../docs/tracks/CONSOLIDATED_STATUS_REPORT.md)** - Current progress across all tracks
+- **[Visual Architecture Overview](../docs/tracks/VISUAL_ARCHITECTURE_OVERVIEW.md)** - System diagrams and data flows
+
+### Track-Specific Documentation:
+- **Track 1**: [Frontend Development](../docs/tracks/track1-frontend/)
+- **Track 2**: [Backend & Terminal](../docs/tracks/track2-backend/) - ✅ Implemented
+- **Track 3**: [Content & Documentation](../docs/tracks/track3-content/)
+- **Track 4**: [Infrastructure & DevOps](../docs/tracks/track4-infrastructure/)
+
 ## Features
 
 ### 📚 Comprehensive Learning Path

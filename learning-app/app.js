@@ -53,6 +53,20 @@ document.addEventListener('DOMContentLoaded', () => {
         playgroundObserver.observe(playgroundSection);
     }
     
+    // Initialize honeycomb visualization when Queues & Streams section is visited
+    const queuesStreamsObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting && entry.target.id === 'queues-streams' && !honeycomb) {
+                honeycomb = new HoneycombVisualizer('honeycomb-demo');
+            }
+        });
+    });
+    
+    const queuesStreamsSection = document.getElementById('queues-streams');
+    if (queuesStreamsSection) {
+        queuesStreamsObserver.observe(queuesStreamsSection);
+    }
+    
     // Add loading animation
     setTimeout(() => {
         document.body.classList.add('loaded');
@@ -639,4 +653,167 @@ function executeExerciseCommands(exerciseId) {
     };
     
     executeNext();
+}
+
+// Honeycomb Visualization for Queues & Streams
+class HoneycombVisualizer {
+    constructor(containerId) {
+        this.container = document.getElementById(containerId);
+        this.topics = [
+            { name: 'orders', health: 'healthy', throughput: 1250, lag: 0 },
+            { name: 'payments', health: 'healthy', throughput: 890, lag: 10 },
+            { name: 'inventory', health: 'healthy', throughput: 456, lag: 0 },
+            { name: 'user-events', health: 'healthy', throughput: 2100, lag: 50 },
+            { name: 'system-logs', health: 'healthy', throughput: 3400, lag: 0 },
+            { name: 'notifications', health: 'healthy', throughput: 670, lag: 5 }
+        ];
+        this.init();
+    }
+
+    init() {
+        this.render();
+    }
+
+    render() {
+        const svg = `
+            <svg viewBox="0 0 800 600" style="width: 100%; height: 100%;">
+                <defs>
+                    <pattern id="grid" width="100" height="100" patternUnits="userSpaceOnUse">
+                        <path d="M 100 0 L 0 0 0 100" fill="none" stroke="#333" stroke-width="1" opacity="0.1"/>
+                    </pattern>
+                    <filter id="glow">
+                        <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                        <feMerge>
+                            <feMergeNode in="coloredBlur"/>
+                            <feMergeNode in="SourceGraphic"/>
+                        </feMerge>
+                    </filter>
+                </defs>
+                <rect width="800" height="600" fill="#1a1a1a"/>
+                <rect width="800" height="600" fill="url(#grid)"/>
+                
+                <!-- Cluster name -->
+                <text x="400" y="40" text-anchor="middle" fill="#fff" font-size="24" font-weight="bold">
+                    Kafka Observability Lab Cluster
+                </text>
+                
+                <!-- Honeycomb hexagons -->
+                ${this.topics.map((topic, i) => this.createHexagon(topic, i)).join('')}
+                
+                <!-- Legend -->
+                <g transform="translate(50, 500)">
+                    <text fill="#888" font-size="14">Health Status:</text>
+                    <circle cx="20" cy="30" r="8" fill="#00d084"/>
+                    <text x="35" y="35" fill="#888" font-size="12">Healthy</text>
+                    <circle cx="120" cy="30" r="8" fill="#ff9800"/>
+                    <text x="135" y="35" fill="#888" font-size="12">Warning</text>
+                    <circle cx="220" cy="30" r="8" fill="#ff5252"/>
+                    <text x="235" y="35" fill="#888" font-size="12">Critical</text>
+                </g>
+            </svg>
+        `;
+        this.container.innerHTML = svg;
+    }
+
+    createHexagon(topic, index) {
+        const positions = [
+            { x: 200, y: 200 },
+            { x: 350, y: 200 },
+            { x: 500, y: 200 },
+            { x: 275, y: 320 },
+            { x: 425, y: 320 },
+            { x: 350, y: 440 }
+        ];
+        
+        const pos = positions[index];
+        const color = this.getHealthColor(topic.health);
+        const hexPath = this.getHexagonPath(pos.x, pos.y, 60);
+        
+        return `
+            <g class="topic-hexagon" data-topic="${topic.name}">
+                <path d="${hexPath}" 
+                      fill="${color}" 
+                      fill-opacity="0.2" 
+                      stroke="${color}" 
+                      stroke-width="2"
+                      filter="url(#glow)"
+                      style="cursor: pointer; transition: all 0.3s;"/>
+                <text x="${pos.x}" y="${pos.y - 15}" text-anchor="middle" fill="#fff" font-size="14" font-weight="bold">
+                    ${topic.name}
+                </text>
+                <text x="${pos.x}" y="${pos.y + 5}" text-anchor="middle" fill="#aaa" font-size="12">
+                    ${topic.throughput} msg/s
+                </text>
+                <text x="${pos.x}" y="${pos.y + 20}" text-anchor="middle" fill="${topic.lag > 100 ? '#ff9800' : '#888'}" font-size="11">
+                    Lag: ${topic.lag}
+                </text>
+            </g>
+        `;
+    }
+
+    getHexagonPath(x, y, size) {
+        const angles = [0, 60, 120, 180, 240, 300];
+        const points = angles.map(angle => {
+            const radian = (Math.PI / 180) * angle;
+            return `${x + size * Math.cos(radian)},${y + size * Math.sin(radian)}`;
+        });
+        return `M ${points.join(' L ')} Z`;
+    }
+
+    getHealthColor(health) {
+        switch(health) {
+            case 'healthy': return '#00d084';
+            case 'warning': return '#ff9800';
+            case 'critical': return '#ff5252';
+            default: return '#666';
+        }
+    }
+
+    simulateHealthy() {
+        this.topics.forEach(topic => {
+            topic.health = 'healthy';
+            topic.lag = Math.floor(Math.random() * 50);
+        });
+        this.render();
+    }
+
+    simulateLag() {
+        this.topics[1].health = 'warning';
+        this.topics[1].lag = 5000;
+        this.topics[3].health = 'critical';
+        this.topics[3].lag = 15000;
+        this.render();
+    }
+
+    simulateError() {
+        this.topics[0].health = 'critical';
+        this.topics[0].throughput = 0;
+        this.topics[2].health = 'warning';
+        this.render();
+    }
+}
+
+// Initialize honeycomb on page load
+let honeycomb;
+document.addEventListener('DOMContentLoaded', () => {
+    // Existing initialization code...
+    
+    // Initialize honeycomb if on that section
+    const honeycombContainer = document.getElementById('honeycomb-demo');
+    if (honeycombContainer) {
+        honeycomb = new HoneycombVisualizer('honeycomb-demo');
+    }
+});
+
+// Honeycomb simulation functions
+function simulateHealthy() {
+    if (honeycomb) honeycomb.simulateHealthy();
+}
+
+function simulateLag() {
+    if (honeycomb) honeycomb.simulateLag();
+}
+
+function simulateError() {
+    if (honeycomb) honeycomb.simulateError();
 }

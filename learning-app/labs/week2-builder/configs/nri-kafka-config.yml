@@ -1,0 +1,45 @@
+# New Relic Infrastructure Kafka Integration Configuration
+# This is the standard nri-kafka integration config for Week 2 lab
+
+integrations:
+  - name: nri-kafka
+    env:
+      CLUSTER_NAME: "week2-kafka-cluster"
+      KAFKA_VERSION: "2.6.0"
+      AUTODISCOVER_STRATEGY: "zookeeper"
+      ZOOKEEPER_HOSTS: '[{"host": "zookeeper", "port": 2181}]'
+      ZOOKEEPER_PATH: "/kafka"
+      
+      # Collect broker metrics
+      COLLECT_BROKER_TOPIC_DATA: "true"
+      COLLECT_BROKER_TOPIC_PARTITION_DATA: "true"
+      
+      # Topic filtering - exclude internal topics
+      TOPIC_REGEX: '^(?!__).*'
+      
+      # Consumer group collection
+      COLLECT_CONSUMER_GROUP_DATA: "true"
+      CONSUMER_GROUP_REGEX: '.*'
+      
+      # JMX configuration
+      JMX_HOST: "broker"
+      JMX_PORT: "9101"
+      JMX_USER: ""
+      JMX_PASSWORD: ""
+      
+      # Collection intervals
+      TOPIC_REFRESH_INTERVAL: 60
+      CONSUMER_GROUP_REFRESH_INTERVAL: 30
+      
+    interval: 60s
+    inventory_source: config/kafka
+    
+  # Additional integration for Zookeeper monitoring
+  - name: nri-zookeeper
+    env:
+      CLUSTER_NAME: "week2-zookeeper"
+      HOST: "zookeeper"
+      PORT: "2181"
+      
+    interval: 60s
+    inventory_source: config/zookeeper

@@ -1,0 +1,57 @@
+# JMX Exporter configuration for Kafka metrics
+
+lowercaseOutputName: true
+lowercaseOutputLabelNames: true
+
+rules:
+  # Kafka Server Metrics
+  - pattern: kafka.server<type=(.+), name=(.+), clientId=(.+), topic=(.+), partition=(.*)><>Value
+    name: kafka_server_$1_$2
+    type: GAUGE
+    labels:
+      clientId: "$3"
+      topic: "$4"
+      partition: "$5"
+      
+  - pattern: kafka.server<type=(.+), name=(.+), clientId=(.+), brokerHost=(.+), brokerPort=(.+)><>Value
+    name: kafka_server_$1_$2
+    type: GAUGE
+    labels:
+      clientId: "$3"
+      broker: "$4:$5"
+      
+  - pattern: kafka.server<type=(.+), name=(.+)><>OneMinuteRate
+    name: kafka_server_$1_$2_one_minute_rate
+    type: GAUGE
+    
+  # Kafka Network Metrics
+  - pattern: kafka.network<type=(.+), name=(.+)><>Value
+    name: kafka_network_$1_$2
+    type: GAUGE
+    
+  - pattern: kafka.network<type=(.+), name=(.+)><>OneMinuteRate
+    name: kafka_network_$1_$2_one_minute_rate
+    type: GAUGE
+    
+  # Kafka Controller Metrics
+  - pattern: kafka.controller<type=(.+), name=(.+)><>Value
+    name: kafka_controller_$1_$2
+    type: GAUGE
+    
+  # Kafka Log Metrics
+  - pattern: kafka.log<type=(.+), name=(.+), topic=(.+), partition=(.+)><>Value
+    name: kafka_log_$1_$2
+    type: GAUGE
+    labels:
+      topic: "$3"
+      partition: "$4"
+      
+  # JVM Metrics
+  - pattern: java.lang<type=(.+), name=(.+)><>(\w+)
+    name: java_lang_$1_$2_$3
+    type: GAUGE
+    
+  - pattern: java.lang<type=(.+), name=(.+)><(.+)>(\w+)
+    name: java_lang_$1_$2_$3_$4
+    value: $5
+    type: GAUGE

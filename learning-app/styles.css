@@ -1670,6 +1670,246 @@ select:focus {
     color: var(--primary-500);
 }
 
+/* 2025 Feature Styles */
+.badge-new {
+    display: inline-block;
+    background: linear-gradient(135deg, #ff6b6b, #ff4757);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.05); opacity: 0.9; }
+}
+
+.new-feature-banner {
+    background: linear-gradient(135deg, var(--primary-50) 0%, rgba(255, 255, 255, 0.9) 100%);
+    border: 2px solid var(--primary-200);
+    border-radius: var(--radius-lg);
+    padding: var(--space-xl);
+    margin: var(--space-xl) 0;
+    display: flex;
+    align-items: center;
+    gap: var(--space-xl);
+    box-shadow: var(--shadow-3);
+}
+
+.new-feature-banner .feature-icon {
+    width: 64px;
+    height: 64px;
+    background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 2rem;
+}
+
+.new-feature-banner .feature-content h3 {
+    margin: 0 0 var(--space-sm) 0;
+    color: var(--primary-700);
+}
+
+.new-feature-banner .feature-link {
+    display: inline-block;
+    margin-top: var(--space-sm);
+    color: var(--primary-600);
+    font-weight: 600;
+    text-decoration: none;
+    transition: all var(--transition-fast);
+}
+
+.new-feature-banner .feature-link:hover {
+    color: var(--primary-700);
+    transform: translateX(4px);
+}
+
+/* Queues & Streams Styles */
+.feature-benefits {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--space-lg);
+    margin: var(--space-xl) 0;
+}
+
+.benefit-card {
+    background: var(--surface-background);
+    padding: var(--space-xl);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--gray-200);
+    text-align: center;
+    transition: all var(--transition-medium);
+}
+
+.benefit-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-3);
+    border-color: var(--primary-200);
+}
+
+.benefit-card i {
+    font-size: 2.5rem;
+    color: var(--primary-500);
+    margin-bottom: var(--space-md);
+}
+
+.benefit-card h3 {
+    font-size: 1.125rem;
+    margin-bottom: var(--space-sm);
+}
+
+/* Honeycomb Simulator */
+.honeycomb-simulator {
+    width: 100%;
+    height: 400px;
+    background: var(--gray-900);
+    border-radius: var(--radius-md);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.demo-controls {
+    display: flex;
+    gap: var(--space-md);
+    margin-top: var(--space-lg);
+}
+
+.demo-controls button {
+    flex: 1;
+    padding: var(--space-md);
+    border: none;
+    border-radius: var(--radius-sm);
+    background: var(--gray-100);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.demo-controls button:hover {
+    background: var(--gray-200);
+    transform: translateY(-2px);
+}
+
+/* Setup Guide */
+.setup-steps {
+    display: grid;
+    gap: var(--space-xl);
+    margin-top: var(--space-xl);
+}
+
+.setup-step {
+    display: flex;
+    gap: var(--space-lg);
+    align-items: flex-start;
+}
+
+.setup-step .step-number {
+    width: 40px;
+    height: 40px;
+    background: var(--primary-500);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    flex-shrink: 0;
+}
+
+/* Query Cards */
+.query-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: var(--space-lg);
+    margin-top: var(--space-xl);
+}
+
+.query-card {
+    background: var(--surface-background);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-md);
+    padding: var(--space-lg);
+    position: relative;
+}
+
+.query-card h3 {
+    font-size: 1rem;
+    margin-bottom: var(--space-md);
+    color: var(--primary-600);
+}
+
+.query-card pre {
+    margin: 0;
+}
+
+.query-card .copy-button {
+    position: absolute;
+    top: var(--space-md);
+    right: var(--space-md);
+    padding: var(--space-sm);
+    font-size: 0.875rem;
+}
+
+/* APM 360 Styles */
+.integration-flow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-lg);
+    margin: var(--space-3xl) 0;
+    padding: var(--space-xl);
+    background: var(--gray-50);
+    border-radius: var(--radius-lg);
+}
+
+.flow-step {
+    text-align: center;
+    flex: 1;
+}
+
+.flow-step i {
+    font-size: 3rem;
+    color: var(--primary-500);
+    margin-bottom: var(--space-md);
+}
+
+.flow-step h3 {
+    font-size: 1.125rem;
+    margin-bottom: var(--space-sm);
+}
+
+.flow-arrow {
+    font-size: 2rem;
+    color: var(--primary-300);
+}
+
+.feature-list {
+    list-style: none;
+    margin-top: var(--space-lg);
+}
+
+.feature-list li {
+    padding: var(--space-md) 0;
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+}
+
+.feature-list i {
+    color: var(--success-500);
+    font-size: 1.25rem;
+}
+
 /* Print Styles */
 @media print {
     .sidebar,

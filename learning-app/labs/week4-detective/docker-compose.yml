@@ -1,0 +1,231 @@
+version: '3.8'
+
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.0
+    container_name: week4-zookeeper
+    hostname: zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - "42181:2181"
+    networks:
+      - week4-network
+    healthcheck:
+      test: ["CMD", "echo", "ruok", "|", "nc", "localhost", "2181"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  broker-1:
+    image: confluentinc/cp-kafka:7.5.0
+    container_name: week4-broker-1
+    hostname: broker-1
+    depends_on:
+      - zookeeper
+    ports:
+      - "49092:49092"
+      - "9092:9092"
+      - "9101:9101"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker-1:9092,PLAINTEXT_HOST://localhost:49092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 2
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 2
+      KAFKA_JMX_PORT: 9101
+      KAFKA_JMX_HOSTNAME: localhost
+      # Logging configuration for debugging
+      KAFKA_LOG4J_LOGGERS: "kafka.controller=DEBUG,kafka.producer=DEBUG,kafka.consumer=DEBUG"
+      KAFKA_LOG4J_ROOT_LOGLEVEL: INFO
+      # Failure injection settings
+      KAFKA_REQUEST_TIMEOUT_MS: 30000
+      KAFKA_REPLICA_LAG_TIME_MAX_MS: 10000
+    volumes:
+      - week4-broker-1-data:/var/lib/kafka/data
+      - ./scripts/failure-injection:/scripts
+    networks:
+      - week4-network
+
+  broker-2:
+    image: confluentinc/cp-kafka:7.5.0
+    container_name: week4-broker-2
+    hostname: broker-2
+    depends_on:
+      - zookeeper
+    ports:
+      - "49093:49093"
+      - "9093:9093"
+      - "9102:9102"
+    environment:
+      KAFKA_BROKER_ID: 2
+      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker-2:9093,PLAINTEXT_HOST://localhost:49093
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 2
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 2
+      KAFKA_JMX_PORT: 9102
+      KAFKA_JMX_HOSTNAME: localhost
+      KAFKA_LOG4J_LOGGERS: "kafka.controller=DEBUG,kafka.producer=DEBUG,kafka.consumer=DEBUG"
+      KAFKA_LOG4J_ROOT_LOGLEVEL: INFO
+    volumes:
+      - week4-broker-2-data:/var/lib/kafka/data
+      - ./scripts/failure-injection:/scripts
+    networks:
+      - week4-network
+
+  schema-registry:
+    image: confluentinc/cp-schema-registry:7.5.0
+    container_name: week4-schema-registry
+    hostname: schema-registry
+    depends_on:
+      - broker-1
+      - broker-2
+    ports:
+      - "8081:8081"
+    environment:
+      SCHEMA_REGISTRY_HOST_NAME: schema-registry
+      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: 'broker-1:9092,broker-2:9093'
+      SCHEMA_REGISTRY_LISTENERS: http://0.0.0.0:8081
+      SCHEMA_REGISTRY_LOG4J_ROOT_LOGLEVEL: INFO
+    networks:
+      - week4-network
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: week4-kafka-ui
+    depends_on:
+      - broker-1
+      - broker-2
+      - schema-registry
+    ports:
+      - "8080:8080"
+    environment:
+      KAFKA_CLUSTERS_0_NAME: week4-cluster
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: broker-1:9092,broker-2:9093
+      KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper:2181
+      KAFKA_CLUSTERS_0_SCHEMAREGISTRY: http://schema-registry:8081
+      KAFKA_CLUSTERS_0_JMXPORT: 9101
+    networks:
+      - week4-network
+
+  # Chaos engineering container for failure injection
+  chaos-mesh:
+    image: pingcap/chaos-mesh:latest
+    container_name: week4-chaos-mesh
+    privileged: true
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./scripts/chaos:/scripts
+    command: tail -f /dev/null
+    networks:
+      - week4-network
+
+  # Log aggregation with ELK stack
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.11.0
+    container_name: week4-elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ports:
+      - "9200:9200"
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data
+    networks:
+      - week4-network
+
+  logstash:
+    image: docker.elastic.co/logstash/logstash:8.11.0
+    container_name: week4-logstash
+    volumes:
+      - ./configs/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
+    ports:
+      - "5000:5000"
+    environment:
+      - "LS_JAVA_OPTS=-Xms256m -Xmx256m"
+    depends_on:
+      - elasticsearch
+    networks:
+      - week4-network
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.11.0
+    container_name: week4-kibana
+    ports:
+      - "5601:5601"
+    environment:
+      ELASTICSEARCH_HOSTS: '["http://elasticsearch:9200"]'
+    depends_on:
+      - elasticsearch
+    networks:
+      - week4-network
+
+  # Distributed tracing with Jaeger
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    container_name: week4-jaeger
+    ports:
+      - "5775:5775/udp"
+      - "6831:6831/udp"
+      - "6832:6832/udp"
+      - "5778:5778"
+      - "16686:16686"
+      - "14268:14268"
+      - "14250:14250"
+      - "9411:9411"
+    environment:
+      COLLECTOR_ZIPKIN_HOST_PORT: ":9411"
+    networks:
+      - week4-network
+
+  # Debugging tools container
+  debug-tools:
+    image: nicolaka/netshoot:latest
+    container_name: week4-debug-tools
+    command: tail -f /dev/null
+    volumes:
+      - ./scripts/debug:/scripts
+    networks:
+      - week4-network
+    cap_add:
+      - NET_ADMIN
+      - SYS_ADMIN
+
+  # New Relic Infrastructure Agent
+  newrelic-infra:
+    image: newrelic/infrastructure:latest
+    container_name: week4-newrelic-infra
+    cap_add:
+      - SYS_PTRACE
+    network_mode: host
+    pid: host
+    privileged: true
+    environment:
+      NRIA_LICENSE_KEY: ${NEW_RELIC_LICENSE_KEY}
+      NRIA_DISPLAY_NAME: "Week4-Detective-Lab"
+      NRIA_CUSTOM_ATTRIBUTES: '{"cluster":"week4-detective","purpose":"troubleshooting","week":"4"}'
+      NRIA_LOG_LEVEL: debug
+    volumes:
+      - /:/host:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./configs:/etc/newrelic-infra/integrations.d
+    restart: unless-stopped
+
+volumes:
+  week4-broker-1-data:
+    driver: local
+  week4-broker-2-data:
+    driver: local
+  elasticsearch-data:
+    driver: local
+
+networks:
+  week4-network:
+    name: week4-detective-network
+    driver: bridge

@@ -1,0 +1,391 @@
+version: '3.8'
+
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.0
+    container_name: week4-zookeeper
+    hostname: zookeeper
+    restart: unless-stopped
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+      ZOOKEEPER_INIT_LIMIT: 5
+      ZOOKEEPER_SYNC_LIMIT: 2
+      ZOOKEEPER_MAX_CLIENT_CNXNS: 60
+      ZOOKEEPER_LOG4J_ROOT_LOGLEVEL: INFO
+    ports:
+      - "42181:2181"
+    volumes:
+      - week4-zookeeper-data:/var/lib/zookeeper/data
+      - week4-zookeeper-logs:/var/lib/zookeeper/log
+    networks:
+      - week4-network
+    healthcheck:
+      test: ["CMD", "echo", "ruok", "|", "nc", "localhost", "2181", "|", "grep", "imok"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "3"
+
+  broker:
+    image: confluentinc/cp-kafka:7.5.0
+    container_name: week4-broker
+    hostname: broker
+    restart: unless-stopped
+    depends_on:
+      zookeeper:
+        condition: service_healthy
+    ports:
+      - "49092:49092"
+      - "9092:9092"
+      - "9101:9101"
+    environment:
+      # Basic Configuration
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker:9092,PLAINTEXT_HOST://localhost:49092
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      
+      # Replication Configuration
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      
+      # Performance Configuration
+      KAFKA_NUM_NETWORK_THREADS: 8
+      KAFKA_NUM_IO_THREADS: 8
+      KAFKA_SOCKET_SEND_BUFFER_BYTES: 102400
+      KAFKA_SOCKET_RECEIVE_BUFFER_BYTES: 102400
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      
+      # JMX Configuration for Debugging
+      KAFKA_JMX_PORT: 9101
+      KAFKA_JMX_HOSTNAME: localhost
+      KAFKA_JMX_OPTS: "-Dcom.sun.management.jmxremote=true -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false"
+      
+      # Enhanced Logging for Troubleshooting
+      KAFKA_LOG4J_LOGGERS: >-
+        kafka.controller=DEBUG,
+        kafka.log.LogCleaner=DEBUG,
+        kafka.request.logger=DEBUG,
+        kafka.network.RequestChannel=DEBUG,
+        state.change.logger=DEBUG
+      KAFKA_LOG4J_ROOT_LOGLEVEL: INFO
+      
+      # Log Configuration
+      KAFKA_LOG_DIRS: /var/lib/kafka/data
+      KAFKA_LOG_RETENTION_HOURS: 24
+      KAFKA_LOG_SEGMENT_BYTES: 1073741824
+      KAFKA_LOG_RETENTION_CHECK_INTERVAL_MS: 300000
+      
+      # Troubleshooting Features
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
+      KAFKA_DELETE_TOPIC_ENABLE: 'true'
+      KAFKA_REQUEST_TIMEOUT_MS: 30000
+      KAFKA_REPLICA_LAG_TIME_MAX_MS: 30000
+      KAFKA_UNCLEAN_LEADER_ELECTION_ENABLE: 'false'
+      
+      # Metrics Configuration
+      KAFKA_METRIC_REPORTERS: "kafka.metrics.JmxReporter"
+      KAFKA_METRICS_RECORDING_LEVEL: DEBUG
+      KAFKA_METRICS_NUM_SAMPLES: 3
+    volumes:
+      - week4-broker-data:/var/lib/kafka/data
+      - week4-broker-logs:/var/lib/kafka/logs
+      - week4-broker-debug-logs:/var/log/kafka
+    networks:
+      - week4-network
+    healthcheck:
+      test: ["CMD-SHELL", "kafka-broker-api-versions --bootstrap-server localhost:9092"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200m"
+        max-file: "10"
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: week4-kafka-ui
+    restart: unless-stopped
+    depends_on:
+      broker:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    environment:
+      KAFKA_CLUSTERS_0_NAME: week4-detective-cluster
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: broker:9092
+      KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper:2181
+      KAFKA_CLUSTERS_0_JMXPORT: 9101
+      KAFKA_CLUSTERS_0_READONLY: "false"
+      DYNAMIC_CONFIG_ENABLED: "true"
+      LOGGING_LEVEL_ROOT: DEBUG
+      LOGGING_LEVEL_COM_PROVECTUS: DEBUG
+    networks:
+      - week4-network
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:8080/actuator/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "3"
+
+  # Chaos Engineering Tool
+  chaos-monkey:
+    image: confluentinc/cp-kafka:7.5.0
+    container_name: week4-chaos-monkey
+    restart: unless-stopped
+    depends_on:
+      broker:
+        condition: service_healthy
+    environment:
+      KAFKA_HEAP_OPTS: "-Xmx256M -Xms256M"
+    volumes:
+      - ./chaos-scripts:/scripts:ro
+    command: |
+      bash -c "
+        echo 'Chaos Monkey initialized. Use scripts in /scripts to simulate failures.'
+        tail -f /dev/null
+      "
+    networks:
+      - week4-network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file: "2"
+
+  # Problem Producer - Generates Various Issues
+  problem-producer:
+    image: confluentinc/cp-kafka:7.5.0
+    container_name: week4-problem-producer
+    restart: unless-stopped
+    depends_on:
+      broker:
+        condition: service_healthy
+    environment:
+      KAFKA_HEAP_OPTS: "-Xmx512M -Xms512M"
+      PROBLEM_SCENARIOS: "lag,poison-pill,slow-consumer,partition-skew"
+    volumes:
+      - ./problem-scenarios:/scenarios:ro
+    command: |
+      bash -c "
+        echo 'Problem Producer ready. Use scripts in /scenarios to create issues.'
+        tail -f /dev/null
+      "
+    networks:
+      - week4-network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "30m"
+        max-file: "3"
+
+  # Burrow for Consumer Lag Monitoring
+  burrow:
+    image: linkedin/burrow:latest
+    container_name: week4-burrow
+    restart: unless-stopped
+    depends_on:
+      broker:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./burrow-config.toml:/etc/burrow/burrow.toml:ro
+      - burrow-data:/var/tmp/burrow
+    networks:
+      - week4-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/burrow/admin"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "30m"
+        max-file: "3"
+
+  # Elasticsearch for Log Analysis
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.11.0
+    container_name: week4-elasticsearch
+    restart: unless-stopped
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
+      - cluster.name=week4-detective
+      - bootstrap.memory_lock=true
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    ports:
+      - "9200:9200"
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data
+    networks:
+      - week4-network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:9200/_cluster/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+        max-file: "5"
+
+  # Kibana for Log Visualization
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.11.0
+    container_name: week4-kibana
+    restart: unless-stopped
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    ports:
+      - "5601:5601"
+    environment:
+      ELASTICSEARCH_HOSTS: '["http://elasticsearch:9200"]'
+      TELEMETRY_ENABLED: "false"
+    networks:
+      - week4-network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:5601/api/status || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "3"
+
+  # Filebeat for Log Collection
+  filebeat:
+    image: docker.elastic.co/beats/filebeat:8.11.0
+    container_name: week4-filebeat
+    restart: unless-stopped
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    volumes:
+      - ./filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
+      - week4-broker-logs:/var/log/kafka:ro
+      - week4-broker-debug-logs:/var/log/kafka-debug:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    command: filebeat -e -strict.perms=false
+    networks:
+      - week4-network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "30m"
+        max-file: "3"
+
+  # New Relic Infrastructure Agent
+  newrelic-infra:
+    image: newrelic/infrastructure:latest
+    container_name: week4-newrelic-infra
+    restart: unless-stopped
+    depends_on:
+      broker:
+        condition: service_healthy
+    cap_add:
+      - SYS_PTRACE
+    network_mode: host
+    pid: host
+    privileged: true
+    environment:
+      NRIA_LICENSE_KEY: ${NEW_RELIC_LICENSE_KEY}
+      NRIA_DISPLAY_NAME: "Week4-Detective-Lab"
+      NRIA_CUSTOM_ATTRIBUTES: '{"cluster":"week4-detective","purpose":"troubleshooting","week":"4","lab_type":"diagnostics"}'
+      NRIA_LOG_LEVEL: "debug"  # Enhanced logging for troubleshooting
+      NRIA_VERBOSE: 1
+      NRIA_ENABLE_PROCESS_METRICS: true
+      NRIA_METRICS_PROCESS_SAMPLE_RATE: 10  # More frequent sampling
+    volumes:
+      - /:/host:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./configs:/etc/newrelic-infra/integrations.d:ro
+      - newrelic-data:/var/db/newrelic-infra
+    healthcheck:
+      test: ["CMD", "newrelic-infra-ctl", "status"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+        max-file: "5"
+
+  # Debug Tools Container
+  debug-tools:
+    image: nicolaka/netshoot:latest
+    container_name: week4-debug-tools
+    restart: unless-stopped
+    depends_on:
+      - broker
+    command: tail -f /dev/null
+    networks:
+      - week4-network
+    cap_add:
+      - NET_ADMIN
+      - SYS_ADMIN
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "2"
+
+volumes:
+  week4-broker-data:
+    driver: local
+  week4-broker-logs:
+    driver: local
+  week4-broker-debug-logs:
+    driver: local
+  week4-zookeeper-data:
+    driver: local
+  week4-zookeeper-logs:
+    driver: local
+  elasticsearch-data:
+    driver: local
+  burrow-data:
+    driver: local
+  newrelic-data:
+    driver: local
+
+networks:
+  week4-network:
+    name: week4-detective-network
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.23.0.0/16
