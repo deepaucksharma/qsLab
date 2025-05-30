@@ -47,7 +47,7 @@ docker exec -it kafka-xray-broker \
 docker exec -it kafka-xray-jmxterm java -jar /jmxterm.jar
 
 # In the JMXTerm prompt:
-open localhost:9999
+open kafka:9999
 domain kafka.server
 bean kafka.server:name=MessagesInPerSec,type=BrokerTopicMetrics
 info
@@ -66,7 +66,7 @@ Create `scripts/query-jmx.sh`:
 ```bash
 #!/bin/bash
 docker exec kafka-xray-jmxterm java -jar /jmxterm.jar -n -v silent <<EOF
-open localhost:9999
+open kafka:9999
 get -b kafka.server:name=MessagesInPerSec,type=BrokerTopicMetrics Count
 EOF
 ```
@@ -84,16 +84,22 @@ echo "Rate: $((($COUNT2 - $COUNT1) / 10)) msgs/sec"
 ```
 
 ### Step 3: Run nri-kafka Manually
+
+First, ensure the output directory exists:
+```bash
+mkdir -p output
+```
+
 Create `configs/kafka-config.yml`:
 ```yaml
 integrations:
   - name: nri-kafka
     env:
       CLUSTER_NAME: "kafka-xray-lab"
-      KAFKA_VERSION: "2.6+"
+      KAFKA_VERSION: "3.x"  # Updated for modern Kafka
       AUTODISCOVER_STRATEGY: "bootstrap"
-      BOOTSTRAP_BROKER_HOST: "localhost"
-      BOOTSTRAP_BROKER_KAFKA_PORT: 9092
+      BOOTSTRAP_BROKER_HOST: "kafka"
+      BOOTSTRAP_BROKER_KAFKA_PORT: 9093
       BOOTSTRAP_BROKER_JMX_PORT: 9999
       COLLECT_BROKER_TOPIC_DATA: "true"
       LOG_LEVEL: "debug"
@@ -102,16 +108,23 @@ integrations:
 
 Run nri-kafka:
 ```bash
-docker run --rm --network host \
+# For Linux:
+docker run --rm --network week1-xray_default \
   -v ${PWD}/configs/kafka-config.yml:/etc/newrelic-infra/integrations.d/kafka-config.yml \
   newrelic/nri-kafka:latest \
   --verbose --pretty | tee output/nri-kafka-debug.log
+
+# For Windows/Mac (adjust the volume path as needed):
+docker run --rm --network week1-xray_default \
+  -v ${PWD}/configs/kafka-config.yml:/etc/newrelic-infra/integrations.d/kafka-config.yml \
+  newrelic/nri-kafka:latest \
+  --verbose --pretty > output/nri-kafka-debug.log
 ```
 
 ### Step 4: Analyze the Output
 ```bash
 # Extract just the metrics
-docker run --rm --network host \
+docker run --rm --network week1-xray_default \
   -v ${PWD}/configs/kafka-config.yml:/etc/newrelic-infra/integrations.d/kafka-config.yml \
   newrelic/nri-kafka:latest \
   --metrics --pretty > output/metrics.json

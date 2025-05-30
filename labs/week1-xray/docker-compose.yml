@@ -16,29 +16,35 @@ services:
       - zookeeper
     ports:
       - "9092:9092"
+      - "9093:9093"  # Internal listener for Docker network
       - "9999:9999"  # JMX port - crucial for metrics!
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      # Fixed listeners for cross-platform compatibility
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,INTERNAL://0.0.0.0:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092,INTERNAL://kafka:9093
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,INTERNAL:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
-      # JMX Configuration
+      # JMX Configuration - Fixed for cross-platform
       KAFKA_JMX_PORT: 9999
-      KAFKA_JMX_HOSTNAME: localhost
+      KAFKA_JMX_HOSTNAME: 0.0.0.0
       KAFKA_JMX_OPTS: >
         -Dcom.sun.management.jmxremote
         -Dcom.sun.management.jmxremote.authenticate=false
         -Dcom.sun.management.jmxremote.ssl=false
-        -Djava.rmi.server.hostname=localhost
+        -Djava.rmi.server.hostname=kafka
         -Dcom.sun.management.jmxremote.rmi.port=9999
 
   # JMX CLI tool for exploration
   jmxterm:
     image: andrebrait/jmxterm:1.0.4
     container_name: kafka-xray-jmxterm
-    network_mode: host
+    depends_on:
+      - kafka
     command: sleep infinity
     volumes:
       - ./scripts:/scripts
@@ -53,5 +59,6 @@ services:
       - "8080:8080"
     environment:
       KAFKA_CLUSTERS_0_NAME: kafka-xray
-      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
-      KAFKA_CLUSTERS_0_JMXPORT: 9999
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9093  # Use internal listener
+      KAFKA_CLUSTERS_0_METRICS_PORT: 9999
+      KAFKA_CLUSTERS_0_METRICS_TYPE: JMX

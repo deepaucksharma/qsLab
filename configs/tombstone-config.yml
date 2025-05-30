@@ -1,0 +1,27 @@
+# New Relic Infrastructure Custom Integration Configuration
+# For Kafka Tombstone Monitor
+
+integrations:
+  - name: com.custom.kafka.tombstone
+    command: ["/var/db/newrelic-infra/custom-integrations/tombstone-monitor"]
+    env:
+      # Kafka connection settings
+      BOOTSTRAP_SERVERS: "kafka:9093"
+      
+      # Topics to monitor (comma-separated)
+      TOPICS: "orders,payments,inventory"
+      
+      # Optional: Sampling configuration
+      SAMPLE_SIZE: "1000"
+      SAMPLE_TIMEOUT: "5s"
+    
+    # Run every 5 minutes
+    interval: 300s
+    
+    # Timeout for the integration
+    timeout: 30s
+    
+    labels:
+      env: production
+      kafka_cluster: main
+      integration: tombstone-monitor

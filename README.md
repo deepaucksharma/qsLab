@@ -89,6 +89,10 @@ For those wanting deeper understanding:
    ```bash
    cd labs/week1-xray
    docker-compose up -d
+   
+   # Or try the modern KRaft mode (Kafka 4.0 ready):
+   cd kraft
+   docker-compose up -d
    ```
 
 2. **First Exercise** (45 minutes)

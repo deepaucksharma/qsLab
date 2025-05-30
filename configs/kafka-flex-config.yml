@@ -1,0 +1,49 @@
+# New Relic Flex Configuration for Custom Kafka Metrics
+# This is an alternative to writing a custom Go integration
+
+integrations:
+  - name: nri-flex
+    config:
+      name: KafkaCustomMetrics
+      
+      # Example 1: Query JMX for custom metrics
+      apis:
+        - event_type: KafkaCustomJmxSample
+          commands:
+            - run: |
+                docker exec kafka-xray-broker bash -c "
+                  echo 'open localhost:9999
+                  get -b kafka.server:name=RequestQueueSize,type=Request Value
+                  get -b kafka.server:name=ResponseQueueSize,type=Request Value
+                  get -b kafka.network:name=NetworkProcessorAvgIdlePercent,type=SocketServer Value
+                  close
+                  bye' | java -jar /jmxterm.jar -n -v silent"
+              split_by: ":"
+              set_header: [metric, value]
+              regex_match: true
+              split: horizontal
+        
+        # Example 2: Monitor log file for specific patterns
+        - event_type: KafkaLogPatternSample
+          commands:
+            - run: |
+                docker exec kafka-xray-broker bash -c "
+                  grep -c 'ERROR' /var/log/kafka/server.log || echo 0"
+              set_header: [error_count]
+            - run: |
+                docker exec kafka-xray-broker bash -c "
+                  grep -c 'WARN' /var/log/kafka/server.log || echo 0"
+              set_header: [warning_count]
+        
+        # Example 3: Custom script execution
+        - event_type: KafkaPartitionHealthSample
+          commands:
+            - run: |
+                docker exec kafka-xray-broker kafka-topics \
+                  --bootstrap-server localhost:9092 \
+                  --describe \
+                  --under-replicated-partitions | wc -l
+              set_header: [under_replicated_partitions]
+              
+      # Run every minute
+      interval: 60s

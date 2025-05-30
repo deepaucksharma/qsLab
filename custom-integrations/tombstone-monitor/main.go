@@ -3,6 +3,8 @@ package main
 import (
     "fmt"
     "log"
+    "os"
+    "strings"
     "time"
     
     "github.com/Shopify/sarama"
@@ -22,11 +24,29 @@ func main() {
         log.Fatal(err)
     }
 
+    // Get configuration from environment variables
+    bootstrapServers := os.Getenv("BOOTSTRAP_SERVERS")
+    if bootstrapServers == "" {
+        bootstrapServers = "localhost:9092"
+    }
+    
+    topicsEnv := os.Getenv("TOPICS")
+    var topics []string
+    if topicsEnv != "" {
+        topics = strings.Split(topicsEnv, ",")
+        // Trim spaces
+        for i := range topics {
+            topics[i] = strings.TrimSpace(topics[i])
+        }
+    } else {
+        topics = []string{"orders", "payments", "inventory"}
+    }
+
     // Configure Kafka client
     config := sarama.NewConfig()
-    config.Version = sarama.V2_6_0_0
+    config.Version = sarama.V3_0_0_0  // Updated for modern Kafka
     
-    client, err := sarama.NewConsumer([]string{"localhost:9092"}, config)
+    client, err := sarama.NewConsumer(strings.Split(bootstrapServers, ","), config)
     if err != nil {
         log.Fatal(err)
     }
@@ -69,6 +89,7 @@ func (tm *TombstoneMonitor) CollectTombstoneRatios() (map[string]float64, error)
     for _, topic := range tm.topics {
         partitions, err := tm.client.Partitions(topic)
         if err != nil {
+            log.Printf("Warning: Failed to get partitions for topic %s: %v", topic, err)
             continue
         }
         
@@ -77,6 +98,7 @@ func (tm *TombstoneMonitor) CollectTombstoneRatios() (map[string]float64, error)
         for _, partition := range partitions {
             pc, err := tm.client.ConsumePartition(topic, partition, sarama.OffsetOldest)
             if err != nil {
+                log.Printf("Warning: Failed to consume partition %d of topic %s: %v", partition, topic, err)
                 continue
             }
             
