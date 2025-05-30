@@ -1,0 +1,59 @@
+# Operating System Files
+.DS_Store
+Thumbs.db
+
+# IDE Files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Build Artifacts
+*.exe
+*.dll
+*.so
+*.dylib
+/bin/
+/build/
+/dist/
+
+# Go specific
+*.test
+*.out
+vendor/
+go.sum
+
+# Docker volumes
+labs/*/output/*
+labs/*/captures/*
+labs/*/data/*
+
+# Logs
+*.log
+logs/
+
+# Environment files
+.env
+.env.local
+*.env
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+
+# New Relic specific
+newrelic_agent.log
+newrelic.yml
+
+# Custom integration builds
+custom-integrations/*/build/
+custom-integrations/*/dist/
+
+# Performance test results
+performance-reports/*.csv
+performance-reports/*.json
+
+# Keep .gitkeep files
+!.gitkeep
