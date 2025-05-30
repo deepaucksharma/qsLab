@@ -1,5 +1,7 @@
 # Mental Models: From API Servers to Kafka
 
+[← Back to README](../../README.md) | [Next: Core Concepts →](core-concepts.md)
+
 ## Your Foundation: API Server Model
 
 You already understand:
@@ -20,6 +22,7 @@ Stateless                  | Stateful (owns partition data)
 Load balanced              | Leader election per partition
 Request/Response           | Async publish/subscribe
 In-memory processing       | Disk-based log storage
+/metrics endpoint          | JMX port (9999)
 ```
 
 ### Load Balancer → Partition Leadership
@@ -30,6 +33,7 @@ Routes to healthy servers  | Routes to partition leaders
 Round-robin/least-conn     | Partition → Leader mapping
 Health checks              | In-Sync Replica (ISR) checks
 Failover to backup         | Leader election on failure
+Single point of entry      | Multiple brokers, each leading different partitions
 ```
 
 ### Database → Kafka Log
@@ -41,8 +45,8 @@ UPDATE/DELETE              | Append-only log
 Query by index             | Sequential read by offset
 ACID transactions          | Eventual consistency*
 Schema enforced            | Schema optional
+Storage optimized for queries | Storage optimized for throughput
 ```
-
 ## The Metrics Parallel
 
 ### API Server Metrics
@@ -77,6 +81,10 @@ JMX Port 9999 (Java style)
    - API: Request waits for response
    - Kafka: Producer fire-and-forget, Consumer polls
 
+4. **Metrics Collection**:
+   - API: HTTP GET to /metrics
+   - Kafka: JMX RMI protocol to port 9999
+
 ## Your "Aha!" Bridge
 
 Think of Kafka monitoring like monitoring a distributed database that also acts as a message queue:
@@ -86,4 +94,22 @@ Think of Kafka monitoring like monitoring a distributed database that also acts 
 - **Producer metrics** = Write client performance
 - **Consumer metrics** = Read client performance
 
-The key insight: Unlike API servers where metrics are about request flow, Kafka metrics are about data flow AND storage state.
+The key insight: Unlike API servers where metrics are about request flow, Kafka metrics are about **data flow AND storage state**.
+
+## Practical Application
+
+When you see:
+- `broker.messagesInPerSec` → Think "requests per second"
+- `consumer.lag` → Think "how far behind is my processing"
+- `broker.underReplicatedPartitions` → Think "unhealthy database replicas"
+
+## Next Steps
+
+Now that you've mapped your existing knowledge:
+1. Review [Core Concepts](core-concepts.md) for Kafka-specific details
+2. Start [Week 1 Labs](../../labs/week1-xray/README.md) to see these concepts in action
+3. Use this mental model when debugging issues
+
+---
+
+[← Back to README](../../README.md) | [Next: Core Concepts →](core-concepts.md)

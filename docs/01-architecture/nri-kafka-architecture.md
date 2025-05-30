@@ -1,5 +1,7 @@
 # NRI-Kafka Architecture Deep Dive
 
+[← Back to Core Concepts](../00-foundation/core-concepts.md) | [See Visual Diagrams →](../../reference-diagrams/README.md)
+
 ## Overview
 The New Relic Kafka Integration (nri-kafka) is a sophisticated monitoring solution that collects metrics from Kafka clusters and sends them to New Relic. This document provides a comprehensive understanding of its architecture.
 
@@ -19,6 +21,8 @@ Configuration Sources:
 - **Config Validator**: Ensures required fields and valid values
 - **Environment Override**: Allows env vars to override file config
 
+**Example Configuration**: See [kafka-config.yml](../../labs/week1-xray/configs/kafka-config.yml)
+
 ### 2. Discovery Layer
 The integration supports two discovery strategies:
 
@@ -27,19 +31,22 @@ The integration supports two discovery strategies:
 // Connects to one broker to discover entire cluster
 bootstrapBroker → Metadata Request → Full Broker List
 ```
+- **Advantage**: Simple configuration (one broker needed)
+- **Use case**: Most deployments
 
 #### Zookeeper Discovery
 ```go
 // Reads broker info from Zookeeper
 Zookeeper /brokers/ids → Parse JSON → Broker List
 ```
+- **Advantage**: Direct cluster state access
+- **Use case**: Legacy deployments, complex topologies
 
 ### 3. Collection Modes
 
 #### Core Collection Mode (Inventory)
 - **Purpose**: Collect broker, topic, and client metrics via JMX
-- **Worker Pools**:
-  - Broker Workers: 3 concurrent
+- **Worker Pools**:  - Broker Workers: 3 concurrent
   - Topic Workers: 5 concurrent  
   - Producer Workers: 3 concurrent
   - Consumer Workers: 3 concurrent
@@ -78,6 +85,7 @@ New Relic Platform
 - Handles Java RMI protocol
 - Supports SSL/TLS and authentication
 - Connection pooling for efficiency
+- See implementation: [metric-tracer.go](../../debugging-toolkit/metric-tracer.go)
 
 #### Metric Definitions
 - Located in `src/metrics/*_definitions.go`
@@ -102,3 +110,28 @@ New Relic Platform
 - Configurable worker counts
 - Metric filtering
 - Batch processing
+
+## Visual Architecture
+
+For detailed visual representations:
+- [Functional Architecture](../../reference-diagrams/functional-architecture.mmd)
+- [Domain Model](../../reference-diagrams/domain-model.mmd)
+- [Data Flow Sequence](../../reference-diagrams/data-flow-sequence.mmd)
+- [Technical Architecture](../../reference-diagrams/technical-architecture.mmd)
+
+## Practical Understanding
+
+To see this architecture in action:
+1. Complete [Week 1 Labs](../../labs/week1-xray/README.md)
+2. Build the [metric tracer](../../debugging-toolkit/metric-tracer.go)
+3. Study the [tombstone monitor](../../custom-integrations/tombstone-monitor/)
+
+## Next Steps
+
+- For hands-on experience: [Week 1 X-Ray Labs](../../labs/week1-xray/README.md)
+- For advanced topics: [Enhanced Learning Journey](../02-advanced/enhanced-learning-journey.md)
+- For visual learning: [Reference Diagrams](../../reference-diagrams/README.md)
+
+---
+
+[← Back to Core Concepts](../00-foundation/core-concepts.md) | [Next: Week 1 Labs →](../../labs/week1-xray/README.md)

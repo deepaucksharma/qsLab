@@ -12,81 +12,91 @@
 ```
 qsLab/
 ├── README.md                    # You are here
-├── docs/                        # Documentation and learning materials
-│   ├── 00-foundation/          # Mental models and core concepts
-│   ├── 01-architecture/        # NRI-Kafka architecture deep dive
-│   └── 02-advanced/            # Production patterns and optimizations
-├── labs/                        # Hands-on exercises
-│   ├── week1-xray/             # Metric tracing and JMX exploration
-│   ├── week2-builder/          # Custom metrics and OHI extensions
-│   ├── week3-optimizer/        # Performance and scale challenges
-│   ├── week4-detective/        # Debugging and troubleshooting
-│   └── week5-architect/        # Complete platform design
-├── custom-integrations/         # Your OHI extensions
-├── debugging-toolkit/           # Scripts and tools for troubleshooting
-├── performance-reports/         # Benchmarks and optimization results
-├── architecture-designs/        # Your architectural diagrams
-├── reference-diagrams/          # Mermaid diagrams for reference
-├── scripts/                     # Utility scripts
-└── configs/                     # Configuration examples
+├── QUICK_START.md              # 5-minute quick start guide
+├── PROGRESS.md                 # Track your learning progress
+├── LEARNING_LOG.md             # Daily learning journal template
+├── ENHANCEMENT_SUMMARY.md      # Summary of enhanced content
+├── docs/                       # Documentation and learning materials
+│   ├── 00-foundation/         # Mental models and core concepts
+│   ├── 01-architecture/       # NRI-Kafka architecture deep dive
+│   └── 02-advanced/           # Enhanced learning journey
+├── labs/                       # Hands-on exercises
+│   ├── week1-xray/            # Metric tracing and JMX exploration
+│   ├── week2-builder/         # Custom metrics and OHI extensions
+│   ├── week3-optimizer/       # Performance and scale challenges
+│   ├── week4-detective/       # Debugging and troubleshooting
+│   └── week5-architect/       # Complete platform design
+├── custom-integrations/        # Your OHI extensions
+│   └── tombstone-monitor/     # Example custom integration
+├── debugging-toolkit/          # Scripts and tools
+│   └── metric-tracer.go       # Trace any metric end-to-end
+├── performance-reports/        # Benchmarks and optimization results
+├── architecture-designs/       # Your architectural diagrams
+├── reference-diagrams/         # Mermaid diagrams for reference
+├── scripts/                   # Utility scripts
+└── configs/                   # Configuration examples
 ```
 
-## 🗺️ Your Learning Path
+## 🗺️ Learning Paths
 
-### Phase 0: Foundation Calibration ✅
-- [Mental Models](docs/00-foundation/mental-models.md) - Building on your API server analogy
-- [Core Concepts](docs/00-foundation/core-concepts.md) - Kafka entities and observability categories
+### 🚀 Quick Start Path (15 minutes)
+1. [QUICK_START.md](QUICK_START.md) - Get running in 5 minutes
+2. [Exercise 1: Metric X-Ray](labs/week1-xray/exercise-01-metric-xray.md) - First hands-on experience
 
-### Phase 1: X-Ray Vision 🔬
-- [Week 1 Lab](labs/week1-xray/README.md) - Trace metrics from JMX to New Relic
-- [Architecture Deep Dive](docs/01-architecture/nri-kafka-architecture.md) - Understanding every component
+### 📖 Standard Learning Path (5 weeks)
+1. **Foundation** → [Mental Models](docs/00-foundation/mental-models.md) & [Core Concepts](docs/00-foundation/core-concepts.md)
+2. **Week 1** → [X-Ray Labs](labs/week1-xray/README.md)
+3. **Week 2** → Builder Labs (coming soon)
+4. **Week 3** → Optimizer Labs (coming soon)5. **Week 4** → Detective Labs (coming soon)
+6. **Week 5** → Architect Labs (coming soon)
 
-### Phase 2: The Builder 🛠️
-- [Week 2 Lab](labs/week2-builder/README.md) - Create custom metrics and OHI extensions
-- [OHI Development Guide](docs/02-advanced/ohi-development.md) - Building production-ready integrations
-
-### Phase 3: The Optimizer ⚡
-- [Week 3 Lab](labs/week3-optimizer/README.md) - Handle 1000+ topic clusters
-- [Performance Patterns](docs/02-advanced/performance-patterns.md) - Optimization strategies
-
-### Phase 4: The Detective 🔍
-- [Week 4 Lab](labs/week4-detective/README.md) - Debug missing metrics and discrepancies
-- [Troubleshooting Guide](debugging-toolkit/README.md) - Your debugging toolkit
-
-### Phase 5: The Architect 🏗️
-- [Week 5 Lab](labs/week5-architect/README.md) - Design complete observability platforms
-- [Architecture Patterns](architecture-designs/README.md) - Enterprise patterns
-
-## 🚀 Quick Start
-
-### Today's Mission: Your First X-Ray Exercise
-
-```bash
-# 1. Navigate to Week 1 lab
-cd labs/week1-xray
-
-# 2. Start the Docker environment
-docker-compose up -d
-
-# 3. Follow the exercise
-# Complete instructions in labs/week1-xray/exercise-01-metric-xray.md
-```
+### 🎓 Enhanced Deep-Dive Path
+For those wanting deeper understanding:
+1. [Enhanced Learning Journey - Part 1](docs/02-advanced/enhanced-learning-journey.md) - Foundation to Investigation
+2. [Enhanced Learning Journey - Part 2](docs/02-advanced/enhanced-learning-journey-part2.md) - OHI Development
+3. [Enhanced Learning Journey - Part 3](docs/02-advanced/enhanced-learning-journey-part3.md) - Production Scenarios
 
 ## 📊 Progress Tracking
 
-- [ ] Week 1: Foundation - Understand the plumbing
-- [ ] Week 2: Builder - Create custom metrics  
-- [ ] Week 3: Optimizer - Handle scale challenges
-- [ ] Week 4: Detective - Master debugging
-- [ ] Week 5: Architect - Design complete solutions
+- 📝 [PROGRESS.md](PROGRESS.md) - Track your completion status
+- 📓 [LEARNING_LOG.md](LEARNING_LOG.md) - Document your daily insights
 
-## 🛠️ Prerequisites
+## 🛠️ Key Resources
 
-- Docker Desktop installed
-- Basic Go knowledge (for OHI extensions)
-- Access to New Relic account
-- Curiosity and willingness to experiment
+### Architecture & Concepts
+- [NRI-Kafka Architecture](docs/01-architecture/nri-kafka-architecture.md) - How the integration works
+- [Reference Diagrams](reference-diagrams/README.md) - Visual architecture guides
 
+### Tools & Extensions
+- [Metric Tracer](debugging-toolkit/metric-tracer.go) - Trace metrics from JMX to output
+- [Tombstone Monitor](custom-integrations/tombstone-monitor/) - Example OHI extension
+
+### Quick References
+- [What's New](ENHANCEMENT_SUMMARY.md) - Latest enhancements to the learning journey
+- [Setup Confirmation](SETUP_COMPLETE.md) - Verify your environment is ready
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Docker Desktop installed and running
+- Git configured
+- Basic Go knowledge (for advanced exercises)
+- New Relic account (free tier works)
+
+### Your First Steps
+
+1. **Quick Validation** (5 minutes)
+   ```bash
+   cd labs/week1-xray
+   docker-compose up -d
+   ```
+
+2. **First Exercise** (45 minutes)
+   - Complete [Exercise 1: Metric X-Ray](labs/week1-xray/exercise-01-metric-xray.md)
+
+3. **Track Progress**
+   - Update [PROGRESS.md](PROGRESS.md) after each exercise
+   - Log insights in [LEARNING_LOG.md](LEARNING_LOG.md)
 ## 📖 Learning Philosophy
 
 This repository follows a **first-principles, hands-on approach**:
@@ -98,28 +108,18 @@ This repository follows a **first-principles, hands-on approach**:
 5. **Fix it** - Develop debugging skills
 6. **Scale it** - Handle production challenges
 
-## 🤝 Contributing
+## 🤝 Community & Support
 
-This is your personal learning repository. Feel free to:
-- Add your own experiments
-- Document your discoveries
-- Create new debugging scenarios
-- Share your architectural designs
+- **Questions?** Create an issue in this repository
+- **Insights to share?** Submit a pull request
+- **Need help?** Check existing issues first
 
-## 📚 Additional Resources
+## 📚 External Resources
 
 - [New Relic Kafka Integration Docs](https://docs.newrelic.com/docs/infrastructure/host-integrations/host-integrations-list/kafka/kafka-integration/)
-- [NRI-Kafka GitHub Repository](https://github.com/newrelic/nri-kafka)
+- [NRI-Kafka Source Code](https://github.com/newrelic/nri-kafka)
 - [OHI SDK Documentation](https://github.com/newrelic/infra-integrations-sdk)
-
-## 🎯 Your Next Steps
-
-1. **Complete Week 1 Exercise 1** - Trace your first metric (45 minutes)
-2. **Set up your learning log** - Track insights and questions
-3. **Join the journey** - Commit to 1 hour daily for maximum impact
 
 ---
 
-**Remember**: The goal isn't just to use these tools, but to understand them so deeply that you can extend, optimize, and troubleshoot them in any scenario.
-
-Ready to transform from map-reader to map-maker? Let's begin! 🚀
+**Ready to transform from map-reader to map-maker? Your journey begins here!** 🚀
