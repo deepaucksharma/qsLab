@@ -1,0 +1,109 @@
+# New Relic Flex Configuration for Custom Kafka Metrics
+# This configuration collects metrics not available through standard integration
+
+integrations:
+  - name: nri-flex
+    interval: 60s
+    config:
+      name: KafkaCustomMetrics
+      apis:
+        # Tombstone monitoring
+        - event_type: KafkaTombstoneSample
+          commands:
+            - run: |
+                docker exec kafka-xray-broker kafka-log-dirs \
+                  --bootstrap-server localhost:9092 \
+                  --describe --topic-list test-events,orders,payments | \
+                grep -E "topic:|partition:|size:|offsetLag:|tombstones:" | \
+                awk '
+                  /^{/ { topic="" }
+                  /topic:/ { gsub(/.*topic: |,.*/, "", $0); topic=$0 }
+                  /partition:/ { gsub(/.*partition: |,.*/, "", $0); partition=$0 }
+                  /tombstones:/ { 
+                    gsub(/.*tombstones: |,.*/, "", $0); 
+                    if (topic != "" && partition != "") {
+                      print "{\"topic\": \"" topic "\", \"partition\": " partition ", \"tombstone_count\": " $0 "}"
+                    }
+                  }
+                '
+              split_by: ":"
+          remove_keys:
+            - row_number
+        
+        # Partition distribution analysis
+        - event_type: KafkaPartitionBalanceSample
+          commands:
+            - run: |
+                docker exec kafka-xray-broker kafka-topics \
+                  --bootstrap-server localhost:9092 \
+                  --describe | \
+                grep -E "Topic:|Partition:" | \
+                awk '
+                  /Topic:/ { topic=$2 }
+                  /Partition:/ {
+                    partition=$2
+                    leader=$4
+                    replicas=$6
+                    isr=$8
+                    print "{\"topic\": \"" topic "\", \"partition\": " partition ", \"leader\": " leader ", \"replicas\": \"" replicas "\", \"isr\": \"" isr "\"}"
+                  }
+                '
+              split_by: ":"
+        
+        # Disk usage metrics
+        - event_type: KafkaDiskUsageSample
+          commands:
+            - run: |
+                docker exec kafka-xray-broker df -h /var/lib/kafka/data | \
+                awk 'NR==2 {
+                  gsub(/%/, "", $5)
+                  print "{\"filesystem\": \"" $1 "\", \"size\": \"" $2 "\", \"used\": \"" $3 "\", \"available\": \"" $4 "\", \"use_percent\": " $5 ", \"mount\": \"" $6 "\"}"
+                }'
+              split_by: ":"
+        
+        # Connection count monitoring
+        - event_type: KafkaConnectionSample
+          commands:
+            - run: |
+                docker exec kafka-xray-broker bash -c 'netstat -an | grep -E ":9092|:2181" | grep ESTABLISHED | wc -l' | \
+                awk '{print "{\"established_connections\": " $1 "}"}'
+              split_by: ":"
+        
+        # JVM memory usage
+        - event_type: KafkaJvmMemorySample
+          commands:
+            - run: |
+                docker exec kafka-xray-broker jcmd 1 VM.native_memory summary | \
+                grep -E "Total:|Java Heap:|Class:|Thread:" | \
+                awk '
+                  /Total:/ { gsub(/.*reserved=|KB.*/, "", $0); total=$0 }
+                  /Java Heap/ { gsub(/.*reserved=|KB.*/, "", $0); heap=$0 }
+                  /Class/ { gsub(/.*reserved=|KB.*/, "", $0); class=$0 }
+                  /Thread/ { gsub(/.*reserved=|KB.*/, "", $0); thread=$0 }
+                  END {
+                    print "{\"total_memory_kb\": " total ", \"heap_memory_kb\": " heap ", \"class_memory_kb\": " class ", \"thread_memory_kb\": " thread "}"
+                  }
+                '
+              split_by: ":"
+        
+        # Consumer group health check
+        - event_type: KafkaConsumerHealthSample
+          commands:
+            - run: |
+                docker exec kafka-xray-broker kafka-consumer-groups \
+                  --bootstrap-server localhost:9092 \
+                  --describe --all-groups | \
+                grep -v "TOPIC" | grep -v "^$" | \
+                awk '{
+                  if (NF >= 7) {
+                    gsub(/^[[:space:]]+|[[:space:]]+$/, "", $0)
+                    print "{\"group\": \"" $1 "\", \"topic\": \"" $2 "\", \"partition\": " $3 ", \"current_offset\": " $4 ", \"log_end_offset\": " $5 ", \"lag\": " $6 ", \"consumer_id\": \"" $7 "\"}"
+                  }
+                }'
+              split_by: ":"
+
+# Flex specific configuration
+name: KafkaFlexIntegration
+custom_attributes:
+  integration_version: "1.0.0"
+  monitoring_type: "custom_metrics"
