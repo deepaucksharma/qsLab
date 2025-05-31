@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neural Learn - AI-Powered Learning Experience</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav id="navbar">
+        <div class="nav-container">
+            <div class="logo">Neural Learn</div>
+            <div class="nav-stats">
+                <span id="streak">🔥 0 day streak</span>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="grid">
+            <!-- Left Sidebar - Learning Paths -->
+            <aside class="glass-card">
+                <h2>Learning Paths</h2>
+                <div class="learning-paths" id="learningPaths"></div>
+            </aside>
+
+            <!-- Main Content Area -->
+            <main class="content-area">
+                <div class="lesson-header">
+                    <h1 class="lesson-title">Welcome to Neural Learn</h1>
+                    <p class="subtitle">Select a learning path to begin your journey</p>
+                </div>
+
+                <!-- Learning Card -->
+                <div class="glass-card">
+                    <div class="learning-card" id="learningCard" onclick="flipCard()">
+                        <div class="card-face card-front">
+                            <div class="card-content">
+                                <h3>Ready to learn?</h3>
+                                <p class="card-text">Choose a topic and let's begin!</p>
+                            </div>
+                        </div>
+                        <div class="card-face card-back">
+                            <div class="card-content">
+                                <p>Click to flip back</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Audio Player -->
+                <div class="audio-player">
+                    <div class="audio-controls">
+                        <button class="play-button" id="playButton" onclick="togglePlay()">
+                            <span id="playIcon">▶️</span>
+                        </button>
+                        <div class="audio-visualizer" id="visualizer"></div>
+                    </div>
+                    <audio id="audioPlayer"></audio>
+                </div>
+
+                <!-- Input Section -->
+                <div class="input-section">
+                    <div class="input-group">
+                        <label class="input-label">Enter text to generate audio</label>
+                        <textarea class="text-input" id="textInput" placeholder="Type or paste your learning content here..."></textarea>
+                    </div>
+                    
+                    <label class="input-label">Select Language</label>
+                    <div class="language-selector" id="languageSelector"></div>
+                    
+                    <div class="button-group">
+                        <button class="button" onclick="generateAudio()">Generate Audio</button>
+                        <button class="button secondary" onclick="generateLesson()">Generate Lesson</button>
+                    </div>
+                </div>
+            </main>
+
+            <!-- Right Sidebar - Progress -->
+            <aside class="glass-card progress-section">
+                <h2>Your Progress</h2>
+                
+                <div class="progress-ring">
+                    <svg width="200" height="200">
+                        <defs>
+                            <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                        <circle cx="100" cy="100" r="90" class="progress-ring-bg"></circle>
+                        <circle cx="100" cy="100" r="90" class="progress-ring-fill" id="progressRing"></circle>
+                    </svg>
+                    <div class="progress-text">
+                        <div class="stat-value">0%</div>
+                        <div class="stat-label">Complete</div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-value" id="lessonsCompleted">0</div>
+                    <div class="stat-label">Lessons Completed</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-value" id="wordsLearned">0</div>
+                    <div class="stat-label">Words Learned</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-value" id="minutesListened">0</div>
+                    <div class="stat-label">Minutes Listened</div>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <!-- Floating Action Button -->
+    <button class="fab" onclick="showNewTopicModal()">+</button>
+
+    <script src="script.js"></script>
+</body>
+</html>
