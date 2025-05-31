@@ -1,0 +1,15 @@
+{
+  "audioId": "AUDIO_SEG01_02_01_TOPICS_V2",
+  "text": "Let's start with topics. If Kafka is a library, topics are the individual books. Each topic represents a distinct stream of data\u2014maybe 'user-clicks,' 'payment-transactions,' or 'sensor-readings.'",
+  "generatedAt": "2025-05-31T23:34:35.765591",
+  "metadata": {
+    "segmentId": "SEGMENT_01_02_01_TOPICS_INTRO_V2",
+    "lessonId": "LESSON_01_KAFKA_FUNDAMENTALS_V2",
+    "episodeId": "EPISODE_01_02_CORE_ARCH_PART1_V2",
+    "title": "Topics: The Books in Kafka's Library"
+  },
+  "model": "Tacotron2-DDC",
+  "quality": "high",
+  "device": "cpu",
+  "speaker": null
+}

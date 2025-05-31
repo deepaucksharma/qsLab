@@ -20,19 +20,35 @@ python run.py
 # Access the application at http://localhost:5000
 ```
 
-### Dependencies Installation
+### Testing Commands
 
 ```bash
-pip install -r requirements.txt
+# Run integration tests (when implemented)
+python -m pytest tests/
+
+# Test specific track changes
+python test_integration.py --track=1
+
+# Run app on different ports for parallel testing
+python app.py --port=5001  # In track 1 worktree
+python app.py --port=5002  # In track 2 worktree
 ```
 
-Note: The application will automatically create the SQLite database and required directories on first run.
+### Database Commands
+
+```bash
+# Initialize database with sample data
+python migrate_to_v2.py
+
+# Reset database
+rm neural_learn_v2.db && python app.py
+```
 
 ## Architecture
 
 ### Database Structure (SQLAlchemy Models)
 
-The application uses SQLite with SQLAlchemy ORM. Key models include:
+The application uses SQLite with SQLAlchemy ORM. Key models:
 
 - **Course** → **Lesson** → **Episode** → **Segment** → **Visual** (hierarchical structure)
 - **User** & **UserProgress** - User management and progress tracking
@@ -41,160 +57,242 @@ The application uses SQLite with SQLAlchemy ORM. Key models include:
 - **InteractiveCueTemplate** - Interactive element templates
 - **SegmentInteraction**, **AnalyticsEvent** - Analytics tracking
 
-### Backend Structure
+### Backend Architecture
 
-- **app.py**: Main Flask application
-  - 30+ RESTful API endpoints
-  - Audio generation with background worker thread
-  - Uses XTTS v2 multilingual model (hardcoded to English)
-  - SQLAlchemy database: `neural_learn_v2.db`
-  - Auto-creates database tables on startup
-  - CORS enabled for all origins
+**app.py** - Main Flask application
+- 30+ RESTful API endpoints
+- Background audio generation worker thread
+- XTTS v2 TTS integration (PyTorch 2.7 compatible)
+- Health check endpoint at `/api/health`
+- CORS enabled for development
 
-- **models.py**: Database models
-  - Comprehensive course structure with UUID primary keys
-  - Rich metadata support for all entities
-  - Support for 30+ segment types and 12 interaction types
+**models.py** - Database models
+- UUID primary keys for all entities
+- JSON fields for flexible metadata
+- Relationships properly defined with backref
 
-- **adaptive_learning.py**: Adaptive learning engine
-  - Learning profile analysis and personalization
-  - Spaced repetition scheduling (SM-2 algorithm)
-  - Difficulty adjustment based on performance
-  - Learning path generation
+**adaptive_learning.py** - Adaptive learning engine
+- `AdaptiveLearningEngine` class for personalization
+- `SpacedRepetitionScheduler` using SM-2 algorithm
+- Learning profile analysis
+- Difficulty adjustment based on performance
 
-### Frontend Structure
+### Frontend Architecture
 
-- **index.html**: Main UI with course navigation
-- **styles.css**: Glassmorphism design system
-- **segment_styles.css**: Styles for 30+ segment types
-- **script.js**: Core application logic
-  - State management with AppState
-  - Event bus for component communication
-  - API service layer
+**Core Files:**
+- `index.html` - Main UI with course navigation
+- `script.js` - Application state management and API client
+- `styles.css` - Glassmorphism design system
+- `segment_styles.css` - Styles for 30+ segment types
 
-- **segment_renderers.js**: Renders all 30+ segment types
-- **interactive_cues.js**: Implements 12 interactive elements
-- **visual_assets.js**: Lazy loading and zoom/pan for visuals
-- **adaptive_learning.js**: Frontend adaptive learning features
+**Feature Modules:**
+- `segment_renderers.js` - Renders all segment types dynamically
+- `interactive_cues.js` - 12 interactive element implementations
+- `visual_assets.js` - Lazy loading, zoom/pan for images
+- `adaptive_learning.js` - Frontend adaptive features
 
-### Key API Endpoints
+### Key API Patterns
 
-#### Course Management
-- `/api/courses` - List all courses
-- `/api/courses/<id>` - Get course details
-- `/api/lessons/<id>` - Get lesson with episodes
-- `/api/episodes/<id>` - Get episode with segments
-- `/api/segments/<id>/complete` - Mark segment complete
-
-#### Media & Assets
-- `/api/generate-segment-audio` - Queue TTS generation
-- `/api/audio-status/<task_id>` - Check audio status
-- `/api/visual-assets/<id>` - Get visual asset metadata
-- `/audio/<filename>` - Serve audio files
-
-#### Progress & Gamification
-- `/api/users/<id>/progress` - Get user progress
-- `/api/badges/award` - Award badge to user
-- `/api/checkpoints/<id>/submit` - Submit checkpoint answers
-
-#### Adaptive Learning
-- `/api/v1/adaptive/profile/<user_id>` - Get learning profile
-- `/api/v1/adaptive/personalize` - Personalize content
-- `/api/v1/spaced-repetition/generate-session` - Create review session
-
-### Directory Structure
-
+All APIs follow RESTful conventions:
 ```
-qslab/
-├── app.py                 # Main Flask application
-├── models.py              # SQLAlchemy models
-├── adaptive_learning.py   # Adaptive learning engine
-├── requirements.txt       # Python dependencies
-├── run.py                 # Launcher script
-├── index.html             # Main UI
-├── styles.css             # Core styles
-├── segment_styles.css     # Segment-specific styles
-├── script.js              # Core JavaScript
-├── segment_renderers.js   # Segment rendering logic
-├── interactive_cues.js    # Interactive elements
-├── visual_assets.js       # Visual asset management
-├── adaptive_learning.js   # Adaptive frontend
-├── audio_outputs/         # Generated TTS audio
-├── static/
-│   └── placeholders/      # Auto-generated SVG placeholders
-├── learning_content/      # Course JSON data
-│   ├── course_structure.json
-│   ├── lessons_structure.json
-│   └── analyticsSummary.json
-└── neural_learn_v2.db     # SQLite database
+GET    /api/courses              # List resources
+GET    /api/courses/<id>         # Get specific resource
+POST   /api/segments/<id>/complete  # Action on resource
 ```
 
-## Segment Types (30+)
+Response format:
+```json
+{
+  "success": true,
+  "data": {},
+  "error": null,
+  "metadata": {}
+}
+```
 
-The platform supports a rich variety of segment types, each with custom rendering:
+## 4-Track Parallel Development System
 
-- **Opening/Introduction**: course_opening, instructor_introduction, episode_opening
-- **Explanation/Context**: concept_explanation, historical_context, origin_story, problem_recap, paradigm_shift
-- **Technical/Code**: technical_introduction, code_walkthrough, architecture_design, practical_example, practical_configuration
-- **Metrics/Data**: metric_deep_dive, new_metric_deep_dive, metrics_overview, metric_taxonomy
-- **Features/Concepts**: feature_introduction, new_feature_highlight, new_feature_discovery, concept_introduction, scalability_concept, immutability_concept
-- **UI/Schema**: ui_walkthrough, schema_introduction, advanced_customization
-- **Assessment**: knowledge_check, checkpoint, scenario_selection, field_mapping_exercise, simulation
+### Track 1: Content Production & Course Development
+**Objective:** Create high-quality learning content
 
-## Interactive Elements (12 types)
+**Deliverables:**
+- 5+ complete courses
+- Content templates for each segment type
+- Visual asset library
+- Course authoring guidelines
 
-All interactions are fully implemented with visual feedback and logging:
+**Key Files:**
+- `/learning_content/*.json`
+- Content templates
+- Visual assets in `/static/`
 
-- **hover_to_explore**: Reveal information on hover
-- **drag_to_distribute**: Drag items to categories
-- **click_to_compare**: Toggle between states
-- **simulation**: Interactive parameter adjustment
-- **predict_value_change**: Guess outcomes
-- **code_completion**: Fill in code blanks
-- **scenario_selection**: Multiple choice
-- **pause_and_reflect**: Timed reflection
-- **important_note**: Highlight critical info
-- **interactive_explorer**: Click-based exploration
-- **field_mapping_exercise**: Connect related items
-- **ui_simulation**: Mock UI interactions
+### Track 2: Interactive Learning Enhancement
+**Objective:** Enhance interactivity and engagement
 
-## Important Implementation Details
+**Deliverables:**
+- 8 new interactive types (total 20)
+- Interaction analytics
+- Interaction SDK
+- Performance optimization
 
-### Audio Generation
-- Queue-based system with background worker thread
-- Audio files saved as WAV format: `audio_outputs/{task_id}.wav`
-- XTTS v2 model supports multiple languages but currently hardcoded to English
-- No timeout implemented for generation
+**Key Files:**
+- `interactive_cues.js`
+- Interaction styles in `segment_styles.css`
+- New endpoints in `app.py` under `/api/interactions/*`
 
-### Visual Assets
-- Lazy loading with Intersection Observer
-- Automatic SVG placeholder generation
-- Zoom/pan functionality for diagrams
-- Preloading support for performance
+### Track 3: Learning Analytics & Insights
+**Objective:** Understand and improve learning effectiveness
 
-### Adaptive Learning
-- Analyzes user interactions to build learning profiles
-- Adjusts content difficulty in real-time
-- Generates personalized learning paths
-- Implements spaced repetition for optimal retention
+**Deliverables:**
+- Analytics dashboard
+- Learning effectiveness metrics
+- Recommendation engine
+- Predictive models
 
-### Security Considerations
-- CORS is enabled for all origins (restrict in production)
-- No authentication implemented (by design for development)
-- User IDs passed as URL parameters
-- SQLAlchemy ORM provides SQL injection protection
+**Key Files:**
+- `analytics.js` (new)
+- `/api/analytics/*` endpoints
+- Dashboard components
+- Analytics database tables
 
-### Performance Notes
-- TTS model loads on startup (~1.8GB memory)
-- CUDA automatically used if available
-- Basic lazy loading for images
-- No Redis caching implemented yet
+### Track 4: Platform Polish & User Experience
+**Objective:** Make the platform delightful to use
 
-## Dependencies
+**Deliverables:**
+- Bug fixes and performance improvements
+- Dark mode support
+- Enhanced navigation
+- Accessibility features
 
-- Flask 3.0.0 with Flask-CORS
-- flask-sqlalchemy 3.1.1
-- numpy >= 1.21.0 (for adaptive learning)
-- TTS 0.22.0 (Coqui TTS) - Requires Python 3.9-3.11
-- PyTorch 2.0+ with torchaudio
-- XTTS v2 model (~1.8GB, downloads on first run)
+**Key Files:**
+- Core UI files (`styles.css`, `script.js`)
+- Performance optimizations
+- Bug fixes across codebase
+
+## Git Worktree Workflow
+
+### Initial Setup
+```bash
+# Clone and set up all worktrees
+git clone <repo-url> qslab
+cd qslab
+./setup_git_worktrees.sh
+```
+
+### Daily Workflow
+```bash
+# Navigate to your track
+cd ../qslab-track1-content     # Track 1
+cd ../qslab-track2-interactive # Track 2
+cd ../qslab-track3-analytics   # Track 3
+cd ../qslab-track4-polish      # Track 4
+
+# Work in your worktree
+git pull origin track-X-name
+git checkout -b track-X-name/feature
+# Make changes
+git commit -m "type(scope): description"
+git push origin track-X-name/feature
+```
+
+### Using Claude Code
+```bash
+# Launch Claude in your worktree
+cd ../qslab-track1-content
+claude code
+# "Create a Python fundamentals course with 5 lessons"
+```
+
+## Feature Flags
+
+All new features must be behind flags in `feature_flags.js`:
+```javascript
+const FEATURES = {
+  // Track 1
+  NEW_COURSES: true,
+  
+  // Track 2
+  NEW_INTERACTIONS: false,
+  ENHANCED_DRAG_DROP: false,
+  
+  // Track 3
+  ANALYTICS_DASHBOARD: false,
+  RECOMMENDATION_ENGINE: false,
+  
+  // Track 4
+  DARK_MODE: false,
+  KEYBOARD_NAV: false
+};
+```
+
+## Track Coordination
+
+### Shared Files (Require Review)
+- `app.py` - New endpoints
+- `models.py` - Schema changes
+- `index.html` - Major UI changes
+- `script.js` - Core functionality
+
+### Integration Schedule
+- **Daily**: Update in team channel
+- **Weekly**: Monday sync meeting
+- **Bi-weekly**: Integration to develop
+- **Monthly**: Release to main
+
+### API Contracts
+```javascript
+// All tracks use this event format
+const LearningEvent = {
+  userId: string,
+  timestamp: Date,
+  eventType: string,
+  segmentId: string,
+  data: object,
+  track: string
+};
+```
+
+## Performance Targets
+- Page load: < 1 second
+- API response: < 500ms
+- Interaction response: < 100ms
+- Audio generation: < 10 seconds
+
+## Known Issues & Workarounds
+
+### TTS/PyTorch Compatibility
+- PyTorch 2.7 requires `weights_only=False` workaround
+- Fallback to Tacotron2 if XTTS fails
+- TTS can be disabled for development
+
+### Database
+- Auto-creates on first run
+- Use `migrate_to_v2.py` for sample data
+- SQLite file: `neural_learn_v2.db`
+
+### CORS
+- Currently allows all origins
+- Restrict in production deployment
+
+## Quick Reference
+
+### Commit Message Format
+```
+Track 1: content(topic): description
+Track 2: interact(feature): description  
+Track 3: analytics(metric): description
+Track 4: fix(component): description
+```
+
+### Testing Ports
+- Main app: 5000
+- Track 1: 5001
+- Track 2: 5002
+- Track 3: 5003
+- Track 4: 5004
+
+### Key Documentation
+- [UNIFIED_IMPLEMENTATION_PLAN.md](UNIFIED_IMPLEMENTATION_PLAN.md) - 4-track development plan
+- [GIT_WORKFLOW.md](GIT_WORKFLOW.md) - Git worktree workflow
+- [CLAUDE_WORKTREE_WORKFLOW.md](CLAUDE_WORKTREE_WORKFLOW.md) - Claude + worktree patterns
+- [README.md](README.md) - Project overview

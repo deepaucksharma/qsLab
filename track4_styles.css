@@ -1,0 +1,402 @@
+/**
+ * Track 4 Specific Styles for Neural Learn
+ * Platform Polish & User Experience Enhancements
+ */
+
+/* CSS Variables for Track 4 */
+:root {
+    /* Skeleton loading colors */
+    --skeleton-base: rgba(200, 200, 200, 0.3);
+    --skeleton-shine: rgba(200, 200, 200, 0.5);
+    
+    /* Enhanced shadows */
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.12);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.16);
+    --shadow-lg: 0 10px 20px rgba(0, 0, 0, 0.19);
+    
+    /* Animation timings */
+    --animation-fast: 150ms;
+    --animation-normal: 300ms;
+    --animation-slow: 500ms;
+    
+    /* Z-index layers */
+    --z-base: 1;
+    --z-dropdown: 100;
+    --z-sticky: 200;
+    --z-fixed: 300;
+    --z-modal-backdrop: 400;
+    --z-modal: 500;
+    --z-notification: 600;
+    --z-tooltip: 700;
+}
+
+/* Dark mode skeleton colors */
+[data-theme="dark"] {
+    --skeleton-base: rgba(255, 255, 255, 0.05);
+    --skeleton-shine: rgba(255, 255, 255, 0.1);
+}
+
+/* Enhanced Navigation */
+.enhanced-nav {
+    position: sticky;
+    top: 0;
+    z-index: var(--z-sticky);
+    backdrop-filter: blur(16px) saturate(180%);
+    background: var(--glass-bg);
+    border-bottom: 1px solid var(--glass-border);
+    transition: all var(--animation-normal) ease;
+}
+
+.enhanced-nav.scrolled {
+    box-shadow: var(--shadow-md);
+}
+
+/* Search Enhancement */
+.search-container {
+    position: relative;
+    max-width: 400px;
+}
+
+.search-input {
+    width: 100%;
+    padding: 10px 40px 10px 16px;
+    background: var(--input-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 24px;
+    font-size: 14px;
+    transition: all var(--animation-fast) ease;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.search-results {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    margin-top: 8px;
+    background: var(--glass-bg);
+    backdrop-filter: blur(16px);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    box-shadow: var(--shadow-lg);
+    max-height: 400px;
+    overflow-y: auto;
+    z-index: var(--z-dropdown);
+}
+
+.search-result-item {
+    padding: 12px 16px;
+    cursor: pointer;
+    transition: background var(--animation-fast) ease;
+}
+
+.search-result-item:hover {
+    background: var(--hover-bg);
+}
+
+.search-result-item mark {
+    background: var(--primary-color);
+    color: white;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+
+/* Minimap */
+.course-minimap {
+    position: fixed;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 120px;
+    background: var(--glass-bg);
+    backdrop-filter: blur(16px);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    padding: 16px;
+    z-index: var(--z-fixed);
+    transition: all var(--animation-normal) ease;
+}
+
+.course-minimap.hidden {
+    transform: translateX(150px) translateY(-50%);
+    opacity: 0;
+}
+
+.minimap-item {
+    height: 4px;
+    background: var(--text-tertiary);
+    margin: 4px 0;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: all var(--animation-fast) ease;
+}
+
+.minimap-item.active {
+    background: var(--primary-color);
+    height: 6px;
+}
+
+.minimap-item.completed {
+    background: var(--success-color);
+}
+
+/* Progress Indicators */
+.course-progress-ring {
+    position: relative;
+    display: inline-block;
+}
+
+.course-progress-ring svg {
+    transform: rotate(-90deg);
+}
+
+.course-progress-ring circle {
+    transition: stroke-dashoffset var(--animation-slow) ease;
+}
+
+.progress-percentage {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-weight: 600;
+    font-size: 14px;
+}
+
+/* Enhanced Toasts */
+.toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: var(--z-notification);
+    pointer-events: none;
+}
+
+.toast {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 300px;
+    padding: 16px;
+    margin-bottom: 12px;
+    background: var(--glass-bg);
+    backdrop-filter: blur(16px);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    box-shadow: var(--shadow-lg);
+    pointer-events: all;
+    animation: slideInRight var(--animation-normal) ease;
+}
+
+.toast.success {
+    border-left: 4px solid var(--success-color);
+}
+
+.toast.error {
+    border-left: 4px solid var(--error-color);
+}
+
+.toast.info {
+    border-left: 4px solid var(--primary-color);
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Enhanced Loading States */
+.loading-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: var(--z-modal-backdrop);
+}
+
+.loading-spinner {
+    width: 48px;
+    height: 48px;
+    border: 3px solid var(--glass-border);
+    border-top-color: var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Skeleton Loaders */
+.skeleton-container {
+    padding: 16px;
+}
+
+.skeleton {
+    background: linear-gradient(
+        90deg,
+        var(--skeleton-base) 25%,
+        var(--skeleton-shine) 50%,
+        var(--skeleton-base) 75%
+    );
+    background-size: 200% 100%;
+    animation: skeleton-loading 1.5s ease-in-out infinite;
+    border-radius: 4px;
+}
+
+@keyframes skeleton-loading {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* Error States */
+.error-state {
+    text-align: center;
+    padding: 48px;
+}
+
+.error-icon {
+    font-size: 48px;
+    color: var(--error-color);
+    margin-bottom: 16px;
+}
+
+.error-message {
+    color: var(--text-secondary);
+    margin-bottom: 24px;
+}
+
+.retry-button {
+    padding: 10px 24px;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all var(--animation-fast) ease;
+}
+
+.retry-button:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+/* Accessibility Enhancements */
+.skip-link {
+    position: absolute;
+    top: -40px;
+    left: 0;
+    background: var(--primary-color);
+    color: white;
+    padding: 8px 16px;
+    text-decoration: none;
+    border-radius: 0 0 8px 0;
+    z-index: var(--z-tooltip);
+    transition: top var(--animation-fast) ease;
+}
+
+.skip-link:focus {
+    top: 0;
+}
+
+/* Focus Indicators */
+*:focus {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+}
+
+button:focus,
+a:focus {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+    :root {
+        --glass-border: rgba(255, 255, 255, 0.5);
+    }
+    
+    .glass-effect {
+        border-width: 2px;
+    }
+    
+    button {
+        border: 2px solid currentColor;
+    }
+}
+
+/* Mobile Optimizations */
+@media (max-width: 768px) {
+    .course-minimap {
+        display: none;
+    }
+    
+    .toast-container {
+        left: 10px;
+        right: 10px;
+    }
+    
+    .toast {
+        min-width: auto;
+    }
+    
+    .keyboard-shortcuts-modal {
+        display: none;
+    }
+    
+    /* Touch-friendly tap targets */
+    button,
+    a,
+    .clickable {
+        min-height: 44px;
+        min-width: 44px;
+    }
+}
+
+/* Print Styles */
+@media print {
+    .enhanced-nav,
+    .course-sidebar,
+    .course-minimap,
+    .audio-controls,
+    .toast-container,
+    .loading-overlay {
+        display: none !important;
+    }
+    
+    .segment-container {
+        break-inside: avoid;
+    }
+    
+    body {
+        background: white;
+        color: black;
+    }
+}

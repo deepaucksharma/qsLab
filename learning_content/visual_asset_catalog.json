@@ -1,0 +1,228 @@
+{
+  "visualAssets": {
+    "diagrams": {
+      "VISUAL_KAFKA_ARCHITECTURE": {
+        "id": "VISUAL_KAFKA_ARCHITECTURE",
+        "title": "Kafka Architecture Overview",
+        "type": "diagram",
+        "description": "High-level view of Kafka components: brokers, topics, partitions, producers, and consumers",
+        "keywords": ["architecture", "overview", "components"],
+        "suggestedSize": "1200x800",
+        "elements": [
+          "Kafka Cluster (3-5 brokers)",
+          "Topics with multiple partitions",
+          "Producer applications",
+          "Consumer groups",
+          "ZooKeeper ensemble"
+        ]
+      },
+      "VISUAL_PARTITION_DISTRIBUTION": {
+        "id": "VISUAL_PARTITION_DISTRIBUTION",
+        "title": "Partition Distribution Across Brokers",
+        "type": "diagram",
+        "description": "Shows how partitions are distributed and replicated across brokers",
+        "keywords": ["partitions", "replication", "distribution"],
+        "suggestedSize": "1000x600",
+        "elements": [
+          "Multiple brokers",
+          "Leader partitions (solid)",
+          "Follower partitions (dashed)",
+          "Replication flow arrows"
+        ]
+      },
+      "VISUAL_CONSUMER_GROUP_REBALANCE": {
+        "id": "VISUAL_CONSUMER_GROUP_REBALANCE",
+        "title": "Consumer Group Rebalancing Process",
+        "type": "sequence-diagram",
+        "description": "Step-by-step rebalancing when consumers join/leave",
+        "keywords": ["consumer", "rebalance", "coordination"],
+        "suggestedSize": "800x1000"
+      },
+      "VISUAL_SHARE_GROUP_ARCHITECTURE": {
+        "id": "VISUAL_SHARE_GROUP_ARCHITECTURE",
+        "title": "Share Groups Architecture",
+        "type": "diagram",
+        "description": "New Share Groups architecture with coordinator and state management",
+        "keywords": ["share groups", "kafka 4.0", "architecture"],
+        "suggestedSize": "1200x800",
+        "elements": [
+          "Share Group Coordinator",
+          "State Store",
+          "Message delivery tracking",
+          "Multiple consumers per partition"
+        ]
+      },
+      "VISUAL_JMX_LAYERS": {
+        "id": "VISUAL_JMX_LAYERS",
+        "title": "JMX Architecture Layers",
+        "type": "layered-diagram",
+        "description": "Three layers of JMX: Instrumentation, Agent, and Remote",
+        "keywords": ["JMX", "monitoring", "architecture"],
+        "suggestedSize": "800x600"
+      },
+      "VISUAL_METRIC_HIERARCHY": {
+        "id": "VISUAL_METRIC_HIERARCHY",
+        "title": "Kafka Metrics Hierarchy",
+        "type": "tree-diagram",
+        "description": "Hierarchical organization of Kafka metrics",
+        "keywords": ["metrics", "hierarchy", "monitoring"],
+        "suggestedSize": "1000x1200"
+      }
+    },
+    "infographics": {
+      "VISUAL_KAFKA_VS_MQ_COMPARISON": {
+        "id": "VISUAL_KAFKA_VS_MQ_COMPARISON",
+        "title": "Kafka vs Traditional MQ",
+        "type": "comparison-infographic",
+        "description": "Side-by-side comparison of Kafka and traditional message queues",
+        "keywords": ["comparison", "message queue", "architecture"],
+        "suggestedSize": "1200x600"
+      },
+      "VISUAL_USE_CASE_MATRIX": {
+        "id": "VISUAL_USE_CASE_MATRIX",
+        "title": "When to Use Kafka",
+        "type": "decision-matrix",
+        "description": "Decision matrix for choosing Kafka vs alternatives",
+        "keywords": ["use cases", "decision", "selection"],
+        "suggestedSize": "1000x800"
+      },
+      "VISUAL_METRIC_PATTERNS": {
+        "id": "VISUAL_METRIC_PATTERNS",
+        "title": "Healthy vs Unhealthy Metric Patterns",
+        "type": "pattern-comparison",
+        "description": "Visual patterns showing healthy and problematic metrics",
+        "keywords": ["metrics", "patterns", "troubleshooting"],
+        "suggestedSize": "1200x400"
+      }
+    },
+    "screenshots": {
+      "VISUAL_NEWRELIC_QUEUES_UI": {
+        "id": "VISUAL_NEWRELIC_QUEUES_UI",
+        "title": "NewRelic Queues & Streams UI",
+        "type": "screenshot",
+        "description": "Screenshot of the Queues & Streams UI dashboard",
+        "keywords": ["newrelic", "UI", "dashboard"],
+        "annotations": [
+          "Queue list sidebar",
+          "Metrics visualization area",
+          "Consumer group details",
+          "Time range selector"
+        ]
+      },
+      "VISUAL_JMX_CONSOLE": {
+        "id": "VISUAL_JMX_CONSOLE",
+        "title": "JMX Console View",
+        "type": "screenshot",
+        "description": "JConsole showing Kafka MBeans",
+        "keywords": ["JMX", "console", "monitoring"],
+        "highlights": [
+          "MBean tree",
+          "Attribute values",
+          "Operations tab"
+        ]
+      }
+    },
+    "animations": {
+      "VISUAL_MESSAGE_FLOW": {
+        "id": "VISUAL_MESSAGE_FLOW",
+        "title": "Message Flow Through Kafka",
+        "type": "animation",
+        "description": "Animated visualization of messages flowing from producers to consumers",
+        "keywords": ["flow", "animation", "messages"],
+        "duration": "30s",
+        "keyFrames": [
+          "Producer sends message",
+          "Message written to leader",
+          "Replication to followers",
+          "Consumer reads message"
+        ]
+      },
+      "VISUAL_REBALANCE_ANIMATION": {
+        "id": "VISUAL_REBALANCE_ANIMATION",
+        "title": "Consumer Rebalancing in Action",
+        "type": "animation",
+        "description": "Shows partition reassignment during rebalance",
+        "keywords": ["rebalance", "animation", "consumer"],
+        "duration": "20s"
+      }
+    },
+    "charts": {
+      "VISUAL_THROUGHPUT_GRAPH": {
+        "id": "VISUAL_THROUGHPUT_GRAPH",
+        "title": "Kafka Throughput Over Time",
+        "type": "line-chart",
+        "description": "Example throughput metrics chart",
+        "keywords": ["metrics", "throughput", "performance"],
+        "axes": {
+          "x": "Time",
+          "y": "Messages/sec"
+        }
+      },
+      "VISUAL_LAG_HEATMAP": {
+        "id": "VISUAL_LAG_HEATMAP",
+        "title": "Consumer Lag Heatmap",
+        "type": "heatmap",
+        "description": "Heatmap showing lag across partitions and consumer groups",
+        "keywords": ["lag", "heatmap", "monitoring"],
+        "dimensions": {
+          "x": "Partitions",
+          "y": "Consumer Groups"
+        }
+      }
+    },
+    "conceptual": {
+      "VISUAL_LOG_CONCEPT": {
+        "id": "VISUAL_LOG_CONCEPT",
+        "title": "The Log: Kafka's Core Abstraction",
+        "type": "conceptual",
+        "description": "Illustrates the append-only log concept",
+        "keywords": ["log", "concept", "fundamental"],
+        "elements": [
+          "Sequential messages",
+          "Offset numbers",
+          "Append point",
+          "Consumer positions"
+        ]
+      },
+      "VISUAL_CAP_THEOREM": {
+        "id": "VISUAL_CAP_THEOREM",
+        "title": "CAP Theorem and Kafka",
+        "type": "conceptual",
+        "description": "Shows where Kafka fits in CAP theorem",
+        "keywords": ["CAP", "distributed", "theory"],
+        "suggestedSize": "600x600"
+      }
+    }
+  },
+  "placeholders": {
+    "defaultDiagram": {
+      "template": "centered-text",
+      "backgroundColor": "#f0f0f0",
+      "textColor": "#666666",
+      "border": "2px dashed #cccccc"
+    },
+    "loadingAnimation": {
+      "type": "spinner",
+      "color": "#2196F3",
+      "size": "48px"
+    }
+  },
+  "guidelines": {
+    "colorScheme": {
+      "primary": "#2196F3",
+      "secondary": "#4CAF50",
+      "warning": "#FF9800",
+      "error": "#F44336",
+      "neutral": "#9E9E9E"
+    },
+    "typography": {
+      "headers": "Arial, sans-serif",
+      "body": "Arial, sans-serif",
+      "code": "Monaco, monospace"
+    },
+    "iconography": {
+      "style": "outlined",
+      "size": "24px default"
+    }
+  }
+}

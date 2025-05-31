@@ -216,30 +216,63 @@ class CourseNavigator {
     }
     
     renderCourses(courses) {
-        this.coursesGrid.innerHTML = courses.map(course => `
-            <div class="course-card" data-course-id="${course.id}">
-                <div class="course-icon">
-                    <i class="fas fa-book"></i>
-                </div>
-                <h3 class="course-title">${course.title}</h3>
-                <p class="course-description">${course.description || 'No description available'}</p>
-                <div class="course-stats">
-                    <div class="course-stat">
-                        <span class="stat-label">Lessons</span>
-                        <span class="stat-value">${course.lessonCount || 0}</span>
+        // Use DOM optimizer for efficient rendering if available
+        if (window.domOptimizer) {
+            window.domOptimizer.renderList(
+                this.coursesGrid,
+                courses,
+                (course) => {
+                    const card = document.createElement('div');
+                    card.className = 'course-card';
+                    card.dataset.courseId = course.id;
+                    card.innerHTML = `
+                        <div class="course-icon">
+                            <i class="fas fa-book"></i>
+                        </div>
+                        <h3 class="course-title">${course.title}</h3>
+                        <p class="course-description">${course.description || 'No description available'}</p>
+                        <div class="course-stats">
+                            <div class="course-stat">
+                                <span class="stat-label">Lessons</span>
+                                <span class="stat-value">${course.lessonCount || 0}</span>
+                            </div>
+                            <div class="course-stat">
+                                <span class="stat-label">Duration</span>
+                                <span class="stat-value">${course.totalEstimatedDuration || 'N/A'}</span>
+                            </div>
+                        </div>
+                    `;
+                    return card;
+                },
+                { batchSize: 5, delay: 0 }
+            );
+        } else {
+            // Fallback to original implementation
+            this.coursesGrid.innerHTML = courses.map(course => `
+                <div class="course-card" data-course-id="${course.id}">
+                    <div class="course-icon">
+                        <i class="fas fa-book"></i>
                     </div>
-                    <div class="course-stat">
-                        <span class="stat-label">Duration</span>
-                        <span class="stat-value">${course.totalEstimatedDuration || 'N/A'}</span>
+                    <h3 class="course-title">${course.title}</h3>
+                    <p class="course-description">${course.description || 'No description available'}</p>
+                    <div class="course-stats">
+                        <div class="course-stat">
+                            <span class="stat-label">Lessons</span>
+                            <span class="stat-value">${course.lessonCount || 0}</span>
+                        </div>
+                        <div class="course-stat">
+                            <span class="stat-label">Duration</span>
+                            <span class="stat-value">${course.totalEstimatedDuration || 'N/A'}</span>
+                        </div>
                     </div>
                 </div>
-            </div>
-        `).join('');
-        
-        // Add click handlers
-        this.coursesGrid.querySelectorAll('.course-card').forEach(card => {
-            card.addEventListener('click', () => this.selectCourse(card.dataset.courseId));
-        });
+            `).join('');
+            
+            // Add click handlers
+            this.coursesGrid.querySelectorAll('.course-card').forEach(card => {
+                card.addEventListener('click', () => this.selectCourse(card.dataset.courseId));
+            });
+        }
     }
     
     async selectCourse(courseId) {
@@ -428,6 +461,7 @@ class EpisodePlayer {
     async loadSegment(index) {
         if (index < 0 || index >= this.segments.length) return;
         
+        const startTime = Date.now();
         this.currentSegmentIndex = index;
         AppState.currentSegmentIndex = index;
         const segment = this.segments[index];
@@ -435,6 +469,11 @@ class EpisodePlayer {
         
         // Update UI
         this.currentSegmentEl.textContent = index + 1;
+        
+        // Show skeleton loader while rendering
+        if (window.loadingManager && window.FEATURES?.SKELETON_LOADERS) {
+            window.loadingManager.showSkeleton(this.segmentContainer, 'segment');
+        }
         
         // Render segment
         await segmentRenderer.render(segment);
@@ -444,8 +483,25 @@ class EpisodePlayer {
             audioManager.loadSegmentAudio(segment);
         }
         
+        // Prefetch assets for upcoming segments
+        if (window.assetManager && window.FEATURES?.ASSET_PRELOADING) {
+            window.assetManager.prefetchSegmentAssets(this.segments, index);
+        }
+        
         // Update navigation
         this.updateNavigation();
+        
+        // Track segment view in analytics
+        if (window.analytics) {
+            window.analytics.trackSegmentView(segment.id, 0);
+            window.analytics.trackEvent('segment_load', {
+                segmentId: segment.id,
+                segmentType: segment.segmentType,
+                episodeId: AppState.currentEpisode?.id,
+                courseId: AppState.currentCourse?.id,
+                loadTime: Date.now() - startTime
+            });
+        }
         
         // Log segment view
         eventBus.emit('segment:viewed', { segment });
@@ -490,9 +546,29 @@ class EpisodePlayer {
                     showToast(`+${result.pointsEarned} points earned!`, 'success');
                 }
                 
+                // Track segment completion in analytics
+                if (window.analytics) {
+                    window.analytics.trackEvent('segment_complete', {
+                        segmentId: segment.id,
+                        segmentType: segment.segmentType,
+                        episodeId: AppState.currentEpisode?.id,
+                        courseId: AppState.currentCourse?.id,
+                        pointsEarned: result.pointsEarned,
+                        totalPoints: result.totalPoints
+                    });
+                }
+                
                 // Check if episode completed
                 if (result.episodeCompleted) {
                     eventBus.emit('episode:completed', { episodeId: AppState.currentEpisode.id });
+                    
+                    // Track episode completion
+                    if (window.analytics) {
+                        window.analytics.trackEvent('episode_complete', {
+                            episodeId: AppState.currentEpisode.id,
+                            courseId: AppState.currentCourse?.id
+                        });
+                    }
                 }
             }
         } catch (error) {

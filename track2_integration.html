@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Track 2: Interactive Learning Enhancement - Test Page</title>
+    
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Core styles -->
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="segment_styles.css">
+    <link rel="stylesheet" href="new_interaction_styles.css">
+    
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .test-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+        }
+        
+        h1 {
+            color: white;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .interaction-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .interaction-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .interaction-card:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .interaction-card h3 {
+            color: #f6ad55;
+            margin-bottom: 10px;
+        }
+        
+        .interaction-card p {
+            color: #e2e8f0;
+            font-size: 14px;
+        }
+        
+        .demo-area {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+            min-height: 400px;
+        }
+        
+        .analytics-container {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 20px;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+        
+        .status-badge.new {
+            background: #48bb78;
+            color: white;
+        }
+        
+        .status-badge.existing {
+            background: #667eea;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>Track 2: Interactive Learning Enhancement Test Page</h1>
+        
+        <div class="interaction-grid">
+            <!-- Existing Interactions -->
+            <div class="interaction-card" data-type="hover_to_explore">
+                <h3>Hover to Explore <span class="status-badge existing">Existing</span></h3>
+                <p>Reveal information by hovering over specific areas</p>
+            </div>
+            
+            <div class="interaction-card" data-type="drag_to_distribute">
+                <h3>Drag to Distribute <span class="status-badge existing">Enhanced</span></h3>
+                <p>Drag items to their correct categories</p>
+            </div>
+            
+            <div class="interaction-card" data-type="click_to_compare">
+                <h3>Click to Compare <span class="status-badge existing">Existing</span></h3>
+                <p>Toggle between different states</p>
+            </div>
+            
+            <div class="interaction-card" data-type="simulation">
+                <h3>Simulation <span class="status-badge existing">Existing</span></h3>
+                <p>Interactive parameter adjustment</p>
+            </div>
+            
+            <div class="interaction-card" data-type="predict_value_change">
+                <h3>Predict Value Change <span class="status-badge existing">Existing</span></h3>
+                <p>Guess outcomes based on scenarios</p>
+            </div>
+            
+            <div class="interaction-card" data-type="code_completion">
+                <h3>Code Completion <span class="status-badge existing">Existing</span></h3>
+                <p>Fill in code blanks</p>
+            </div>
+            
+            <div class="interaction-card" data-type="scenario_selection">
+                <h3>Scenario Selection <span class="status-badge existing">Existing</span></h3>
+                <p>Choose the best option</p>
+            </div>
+            
+            <div class="interaction-card" data-type="pause_and_reflect">
+                <h3>Pause and Reflect <span class="status-badge existing">Existing</span></h3>
+                <p>Timed reflection moments</p>
+            </div>
+            
+            <div class="interaction-card" data-type="important_note">
+                <h3>Important Note <span class="status-badge existing">Existing</span></h3>
+                <p>Highlight critical information</p>
+            </div>
+            
+            <div class="interaction-card" data-type="interactive_explorer">
+                <h3>Interactive Explorer <span class="status-badge existing">Existing</span></h3>
+                <p>Click-based exploration</p>
+            </div>
+            
+            <div class="interaction-card" data-type="field_mapping_exercise">
+                <h3>Field Mapping <span class="status-badge existing">Existing</span></h3>
+                <p>Connect related items</p>
+            </div>
+            
+            <div class="interaction-card" data-type="ui_simulation">
+                <h3>UI Simulation <span class="status-badge existing">Existing</span></h3>
+                <p>Mock UI interactions</p>
+            </div>
+            
+            <!-- New Interactions -->
+            <div class="interaction-card" data-type="timeline_scrubber">
+                <h3>Timeline Scrubber <span class="status-badge new">New</span></h3>
+                <p>Explore events chronologically</p>
+            </div>
+            
+            <div class="interaction-card" data-type="pattern_matcher">
+                <h3>Pattern Matcher <span class="status-badge new">New</span></h3>
+                <p>Match patterns and sequences</p>
+            </div>
+            
+            <div class="interaction-card" data-type="code_sandbox">
+                <h3>Code Sandbox <span class="status-badge new">New</span></h3>
+                <p>Live code execution environment</p>
+            </div>
+            
+            <div class="interaction-card" data-type="visual_constructor">
+                <h3>Visual Constructor <span class="status-badge new">New</span></h3>
+                <p>Build diagrams by dragging components</p>
+            </div>
+            
+            <div class="interaction-card" data-type="decision_tree">
+                <h3>Decision Tree <span class="status-badge new">New</span></h3>
+                <p>Navigate through decision paths</p>
+            </div>
+            
+            <div class="interaction-card" data-type="collaborative_whiteboard">
+                <h3>Collaborative Whiteboard <span class="status-badge new">New</span></h3>
+                <p>Draw and annotate concepts</p>
+            </div>
+            
+            <div class="interaction-card" data-type="voice_command">
+                <h3>Voice Command <span class="status-badge new">New</span></h3>
+                <p>Voice-activated interactions</p>
+            </div>
+            
+            <div class="interaction-card" data-type="ar_overlay">
+                <h3>AR Overlay <span class="status-badge new">New</span></h3>
+                <p>3D model manipulation</p>
+            </div>
+        </div>
+        
+        <div class="demo-area" id="demoArea">
+            <p style="text-align: center; color: #a0aec0;">Select an interaction type above to see a demo</p>
+        </div>
+        
+        <div class="analytics-container">
+            <h2 style="color: white; margin-bottom: 20px;">Analytics Dashboard</h2>
+            <div id="analyticsDashboard"></div>
+        </div>
+    </div>
+    
+    <!-- Core Scripts -->
+    <script src="interactive_cues.js"></script>
+    <script src="new_interactive_types.js"></script>
+    <script src="interaction_analytics.js"></script>
+    
+    <script>
+        // Test data for demonstrations
+        const testData = {
+            hover_to_explore: {
+                promptText: 'Hover over the zones to discover information',
+                hoverZones: [
+                    { x: 20, y: 20, width: 25, height: 25, title: 'Top Left', description: 'This is the first zone' },
+                    { x: 55, y: 20, width: 25, height: 25, title: 'Top Right', description: 'This is the second zone' },
+                    { x: 20, y: 55, width: 25, height: 25, title: 'Bottom Left', description: 'This is the third zone' },
+                    { x: 55, y: 55, width: 25, height: 25, title: 'Bottom Right', description: 'This is the fourth zone' }
+                ]
+            },
+            drag_to_distribute: {
+                promptText: 'Drag the programming languages to their correct paradigm',
+                items: [
+                    { id: 'python', label: 'Python', icon: 'fab fa-python' },
+                    { id: 'haskell', label: 'Haskell', icon: 'fas fa-code' },
+                    { id: 'java', label: 'Java', icon: 'fab fa-java' },
+                    { id: 'lisp', label: 'Lisp', icon: 'fas fa-code' }
+                ],
+                zones: [
+                    { id: 'oop', label: 'Object-Oriented' },
+                    { id: 'functional', label: 'Functional' },
+                    { id: 'multi', label: 'Multi-Paradigm' }
+                ],
+                correctMapping: {
+                    'python': 'multi',
+                    'haskell': 'functional',
+                    'java': 'oop',
+                    'lisp': 'functional'
+                }
+            },
+            timeline_scrubber: {
+                promptText: 'Drag the handle to explore the history of programming languages',
+                timelineEvents: [
+                    { position: 10, title: '1950s', description: 'FORTRAN - First high-level language', label: 'FORTRAN' },
+                    { position: 25, title: '1970s', description: 'C Language - System programming', label: 'C' },
+                    { position: 50, title: '1990s', description: 'Java - Write once, run anywhere', label: 'Java' },
+                    { position: 75, title: '2000s', description: 'Python popularity surge', label: 'Python' },
+                    { position: 90, title: '2010s', description: 'JavaScript everywhere', label: 'JS' }
+                ]
+            },
+            pattern_matcher: {
+                promptText: 'Memorize and recreate the pattern sequence',
+                patterns: [
+                    [0, 1, 0],
+                    [1, 2, 3, 2, 1],
+                    [0, 1, 2, 3, 3, 2, 1, 0],
+                    [3, 0, 1, 2, 1, 0, 3]
+                ]
+            },
+            code_sandbox: {
+                promptText: 'Write a function that returns the sum of two numbers',
+                fileName: 'solution.js',
+                starterCode: 'function solution(input) {\n  // Your code here\n  \n}',
+                testCases: [
+                    { name: 'Basic addition', input: [2, 3], expected: 5 },
+                    { name: 'Negative numbers', input: [-5, 10], expected: 5 },
+                    { name: 'Zero handling', input: [0, 0], expected: 0 }
+                ]
+            },
+            visual_constructor: {
+                promptText: 'Build a simple web server architecture',
+                components: [
+                    { id: 'server', name: 'Server', icon: 'fas fa-server' },
+                    { id: 'database', name: 'Database', icon: 'fas fa-database' },
+                    { id: 'cache', name: 'Cache', icon: 'fas fa-memory' },
+                    { id: 'loadbalancer', name: 'Load Balancer', icon: 'fas fa-network-wired' }
+                ],
+                gridSize: { rows: 3, cols: 3 },
+                targetStructure: [
+                    { componentId: 'loadbalancer', position: 1 },
+                    { componentId: 'server', position: 4 },
+                    { componentId: 'cache', position: 5 },
+                    { componentId: 'database', position: 7 }
+                ]
+            },
+            decision_tree: {
+                promptText: 'Choose the best technology stack for your project',
+                decisionTree: {
+                    'start': {
+                        title: 'Project Type',
+                        description: 'What type of application are you building?',
+                        options: [
+                            { text: 'Web Application', icon: 'fas fa-globe', nextNode: 'webapp' },
+                            { text: 'Mobile App', icon: 'fas fa-mobile', nextNode: 'mobile' },
+                            { text: 'Desktop Software', icon: 'fas fa-desktop', nextNode: 'desktop' }
+                        ]
+                    },
+                    'webapp': {
+                        title: 'Web Framework',
+                        description: 'Choose your preferred approach',
+                        options: [
+                            { text: 'React', icon: 'fab fa-react', nextNode: 'react' },
+                            { text: 'Vue', icon: 'fab fa-vuejs', nextNode: 'vue' },
+                            { text: 'Angular', icon: 'fab fa-angular', nextNode: 'angular' }
+                        ]
+                    },
+                    'react': {
+                        title: 'React Stack',
+                        description: 'Great choice for component-based UIs',
+                        outcome: 'React + Next.js + Tailwind CSS',
+                        isOptimal: true
+                    },
+                    'vue': {
+                        title: 'Vue Stack',
+                        description: 'Perfect for progressive enhancement',
+                        outcome: 'Vue 3 + Nuxt + Vuetify',
+                        isOptimal: true
+                    }
+                }
+            },
+            collaborative_whiteboard: {
+                promptText: 'Draw a simple flowchart or diagram'
+            },
+            voice_command: {
+                promptText: 'Try saying "next slide" or "show answer"',
+                voiceCommands: [
+                    { phrase: 'next slide', description: 'Move forward', action: 'Navigate to next' },
+                    { phrase: 'previous slide', description: 'Move backward', action: 'Navigate to previous' },
+                    { phrase: 'show answer', description: 'Reveal solution', action: 'Display answer' },
+                    { phrase: 'play audio', description: 'Start audio playback', action: 'Play segment audio' }
+                ]
+            },
+            ar_overlay: {
+                promptText: 'Explore the 3D model - drag to rotate, use controls to zoom',
+                autoRotate: true,
+                annotations: [
+                    { vertexIndex: 0, label: '1', text: 'Front face of the cube' },
+                    { vertexIndex: 2, label: '2', text: 'Top edge' },
+                    { vertexIndex: 4, label: '3', text: 'Back corner' }
+                ]
+            }
+        };
+        
+        // Demo area element
+        const demoArea = document.getElementById('demoArea');
+        
+        // Initialize analytics dashboard
+        const analyticsDashboard = new AnalyticsDashboard(window.interactionAnalytics, 'analyticsDashboard');
+        
+        // Handle interaction card clicks
+        document.querySelectorAll('.interaction-card').forEach(card => {
+            card.addEventListener('click', () => {
+                const type = card.dataset.type;
+                const cueData = testData[type] || { promptText: `Demo for ${type}` };
+                
+                // Clear demo area
+                demoArea.innerHTML = '';
+                
+                // Create interaction
+                const segmentId = `test_${type}_${Date.now()}`;
+                const interactiveCue = {
+                    cueType: type,
+                    ...cueData
+                };
+                
+                // Create container for interaction
+                const container = document.createElement('div');
+                container.id = 'segmentContainer';
+                demoArea.appendChild(container);
+                
+                // Initialize interaction
+                if (window.interactiveCueManager) {
+                    window.interactiveCueManager.initialize(segmentId, interactiveCue);
+                }
+                
+                // Track demo view
+                window.interactionAnalytics.trackInteraction(segmentId, {
+                    type: 'demo_started',
+                    interactionType: type,
+                    timestamp: Date.now()
+                });
+            });
+        });
+        
+        // Add a clear demo button
+        const clearBtn = document.createElement('button');
+        clearBtn.innerHTML = '<i class="fas fa-times"></i> Clear Demo';
+        clearBtn.style.cssText = `
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 8px 16px;
+            background: rgba(245, 101, 101, 0.8);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        `;
+        clearBtn.addEventListener('click', () => {
+            if (window.interactiveCueManager) {
+                window.interactiveCueManager.cleanupAll();
+            }
+            demoArea.innerHTML = '<p style="text-align: center; color: #a0aec0;">Select an interaction type above to see a demo</p>';
+        });
+        demoArea.style.position = 'relative';
+        demoArea.appendChild(clearBtn);
+        
+        // Feature flag check
+        if (!window.FEATURES || !window.FEATURES.NEW_INTERACTIONS) {
+            const warning = document.createElement('div');
+            warning.style.cssText = `
+                background: #f56565;
+                color: white;
+                padding: 15px;
+                border-radius: 8px;
+                margin-bottom: 20px;
+                text-align: center;
+            `;
+            warning.innerHTML = '<i class="fas fa-exclamation-triangle"></i> New interactions feature flag is disabled. Enable it in feature_flags.js';
+            document.querySelector('.test-container').prepend(warning);
+        }
+    </script>
+</body>
+</html>

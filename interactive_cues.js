@@ -6,6 +6,9 @@
 class InteractiveCueManager {
     constructor() {
         this.activeInteractions = new Map();
+        this.hapticFeedback = this.initHapticFeedback();
+        this.soundEffects = this.initSoundEffects();
+        this.particleSystem = new ParticleSystem();
         this.interactionHandlers = {
             'hover_to_explore': new HoverToExploreHandler(),
             'drag_to_distribute': new DragToDistributeHandler(),
@@ -20,6 +23,36 @@ class InteractiveCueManager {
             'field_mapping_exercise': new FieldMappingHandler(),
             'ui_simulation': new UISimulationHandler()
         };
+    }
+    
+    initHapticFeedback() {
+        // Check for haptic feedback support
+        return 'vibrate' in navigator;
+    }
+    
+    initSoundEffects() {
+        const sounds = {
+            hover: new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEARKwAABCxAgAEABAAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIG2m98OScTgwOUarm7blmFgU7k9n1unEiBC13yO/eizEIHWq+8+OWT'),
+            click: new Audio('data:audio/wav;base64,UklGRjIGAABXQVZFZm10IBAAAAABAAEARKwAABCxAgAEABAAZGF0YQoGAAB/hIuFaVVMbp23rnZFDCxpwvXUnhYDH2+78OOhUAsLT6zn88ZcBAtQqOPuyVkQC1io5e/AYRQKUavq9bllFApJmtPyvH8pBDJzy/PYdBoLN4LK79SHLwU/e73n5aZPBAlTrO74sFsGFFax7PGsWgYWaLzx56hODApMqeP1u2MTC0ep4/K9Xg4NU6zs9L9eFAlFo9XvxnkdDS2C0/Xde'),
+            success: new Audio('data:audio/wav;base64,UklGRogGAABXQVZFZm10IBAAAAABAAEARKwAABCxAgAEABAAZGF0YQoGAAB3hIuDblVMcJ+9rnVFDjJzyPLRfBsEPnq77OaeRgoQW7Pr7btiFwZCk87tsnslAzSB0/fUdRYHQYbP89V+LARCiNPy0HIdBkKJzvXTgikGPYHH7N2GMgUxc77p66pTCgxVr+n1x2YVCVGo4vfOZxgJVazr88NYDg1PqN/wyHEtBjiS2PnObBYGPIfN7tyCKgU2c8Ts4ooyBSNqu+/lmj4KD1ux8+ubQQwTX7bv5ZU2CxBZr+3wsGQcCUGK0vrTeBkGPIbP8dx4Lg==')
+        };
+        
+        // Set volume
+        Object.values(sounds).forEach(sound => sound.volume = 0.1);
+        return sounds;
+    }
+    
+    triggerHaptic(pattern = [10]) {
+        if (this.hapticFeedback) {
+            navigator.vibrate(pattern);
+        }
+    }
+    
+    playSound(type) {
+        if (this.soundEffects[type]) {
+            this.soundEffects[type].currentTime = 0;
+            this.soundEffects[type].play().catch(() => {});
+        }
     }
     
     initialize(segmentId, interactiveCue) {
@@ -99,238 +132,470 @@ class InteractiveCueHandler {
         if (window.api && window.api.logInteraction) {
             window.api.logInteraction(segmentId, interactionData);
         }
+        
+        // Track interaction in analytics
+        if (window.analytics) {
+            window.analytics.trackInteraction(
+                segmentId, 
+                interactionData.interactionType, 
+                interactionData
+            );
+        }
     }
 }
 
-// === Hover to Explore Handler ===
+// === Enhanced Hover to Explore Handler ===
 class HoverToExploreHandler extends InteractiveCueHandler {
     create(cue, segmentId) {
         const container = super.create(cue, segmentId);
         
         container.innerHTML = `
-            <div class="interaction-prompt">
-                <i class="fas fa-hand-pointer"></i>
-                ${cue.promptText || 'Hover over elements to explore'}
-            </div>
-            <div class="hover-zones-container">
-                ${this.createHoverZones(cue)}
+            <div class="hover-explore-container">
+                <div class="hover-prompt animated-prompt">
+                    <i class="fas fa-hand-pointer pulse-icon"></i>
+                    <span>${cue.promptText || 'Hover over elements to explore'}</span>
+                </div>
+                <div class="hover-zones" id="hover-zones-${segmentId}"></div>
+                <div class="hover-progress">
+                    <div class="progress-bar"></div>
+                </div>
             </div>
         `;
         
-        this.setupHoverEvents(container, cue, segmentId);
         return container;
     }
     
-    createHoverZones(cue) {
-        const zones = cue.hoverZones || [];
-        return zones.map((zone, index) => `
-            <div class="hover-zone" data-zone-id="${index}">
-                <div class="hover-zone-trigger">
-                    <i class="fas fa-info-circle"></i>
-                    ${zone.label || `Zone ${index + 1}`}
-                </div>
-                <div class="hover-zone-content">
-                    ${zone.content || 'Hover content'}
-                </div>
-            </div>
-        `).join('');
+    activate(element, cue) {
+        super.activate(element, cue);
+        const visualElement = document.querySelector(`[data-visual-id="${cue.targetVisualId}"]`);
+        
+        if (visualElement) {
+            // Create hover zones with smooth transitions
+            this.createHoverZones(visualElement, element, cue);
+            
+            // Add glow effect to visual
+            visualElement.classList.add('hover-target-glow');
+        }
     }
     
-    setupHoverEvents(container, cue, segmentId) {
-        const zones = container.querySelectorAll('.hover-zone');
-        const hoveredZones = new Set();
+    createHoverZones(visualElement, container, cue) {
+        const zones = cue.hoverZones || this.generateDefaultZones();
+        const zonesContainer = container.querySelector('.hover-zones');
+        const discovered = new Set();
         
-        zones.forEach(zone => {
-            zone.addEventListener('mouseenter', () => {
-                zone.classList.add('hovered');
-                const zoneId = zone.dataset.zoneId;
-                
-                if (!hoveredZones.has(zoneId)) {
-                    hoveredZones.add(zoneId);
-                    this.logInteraction(segmentId, {
-                        interactionType: 'hover',
-                        zoneId: zoneId,
-                        timestamp: Date.now()
-                    });
-                    
-                    // Check if all zones explored
-                    if (hoveredZones.size === zones.length) {
-                        container.classList.add('completed');
-                        this.logInteraction(segmentId, {
-                            interactionType: 'hover_complete',
-                            zonesExplored: hoveredZones.size
-                        });
-                    }
+        zones.forEach((zone, index) => {
+            const zoneEl = document.createElement('div');
+            zoneEl.className = 'hover-zone';
+            zoneEl.style.cssText = `
+                left: ${zone.x}%;
+                top: ${zone.y}%;
+                width: ${zone.width}%;
+                height: ${zone.height}%;
+            `;
+            
+            // Hover effect with particle animation
+            zoneEl.addEventListener('mouseenter', () => {
+                if (!discovered.has(index)) {
+                    discovered.add(index);
+                    this.onZoneDiscovered(zoneEl, zone, discovered.size, zones.length);
+                    window.interactiveCueManager.playSound('hover');
+                    window.interactiveCueManager.triggerHaptic([5]);
                 }
             });
             
-            zone.addEventListener('mouseleave', () => {
-                setTimeout(() => zone.classList.remove('hovered'), 300);
+            // Touch support
+            zoneEl.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                if (!discovered.has(index)) {
+                    discovered.add(index);
+                    this.onZoneDiscovered(zoneEl, zone, discovered.size, zones.length);
+                    window.interactiveCueManager.playSound('hover');
+                    window.interactiveCueManager.triggerHaptic([5]);
+                }
             });
+            
+            zonesContainer.appendChild(zoneEl);
+        });
+    }
+    
+    onZoneDiscovered(zoneEl, zoneData, discoveredCount, totalZones) {
+        // Add discovery animation
+        zoneEl.classList.add('discovered');
+        
+        // Create tooltip with information
+        const tooltip = document.createElement('div');
+        tooltip.className = 'hover-tooltip animated-tooltip';
+        tooltip.innerHTML = `
+            <div class="tooltip-content">
+                <h4>${zoneData.title || 'Discovery!'}</h4>
+                <p>${zoneData.description || 'You found a hidden detail!'}</p>
+            </div>
+        `;
+        zoneEl.appendChild(tooltip);
+        
+        // Update progress
+        const progress = (discoveredCount / totalZones) * 100;
+        const progressBar = document.querySelector('.hover-progress .progress-bar');
+        if (progressBar) {
+            progressBar.style.width = `${progress}%`;
+        }
+        
+        // Create particle effect
+        window.interactiveCueManager.particleSystem.createBurst(
+            zoneEl.getBoundingClientRect(),
+            'discovery'
+        );
+        
+        // Check completion
+        if (discoveredCount === totalZones) {
+            this.onComplete();
+        }
+    }
+    
+    generateDefaultZones() {
+        // Generate 4 default zones in quadrants
+        return [
+            { x: 10, y: 10, width: 30, height: 30, title: 'Top Left Detail' },
+            { x: 60, y: 10, width: 30, height: 30, title: 'Top Right Detail' },
+            { x: 10, y: 60, width: 30, height: 30, title: 'Bottom Left Detail' },
+            { x: 60, y: 60, width: 30, height: 30, title: 'Bottom Right Detail' }
+        ];
+    }
+    
+    onComplete() {
+        window.interactiveCueManager.playSound('success');
+        window.interactiveCueManager.triggerHaptic([20, 50, 20]);
+        
+        // Completion animation
+        const container = document.querySelector('.hover-explore-container');
+        container.classList.add('completed');
+        
+        // Log completion
+        this.logInteraction(this.segmentId, {
+            type: 'hover_explore_completed',
+            duration: Date.now() - this.startTime,
+            zonesDiscovered: this.discoveredCount
         });
     }
 }
 
-// === Drag to Distribute Handler ===
+// === Enhanced Drag to Distribute Handler ===
 class DragToDistributeHandler extends InteractiveCueHandler {
     create(cue, segmentId) {
         const container = super.create(cue, segmentId);
         
         container.innerHTML = `
-            <div class="interaction-prompt">
-                <i class="fas fa-hand-rock"></i>
-                ${cue.promptText || 'Drag items to the correct categories'}
-            </div>
             <div class="drag-distribute-container">
-                <div class="drag-items">
-                    ${this.createDraggableItems(cue)}
+                <div class="drag-prompt">
+                    <i class="fas fa-arrows-alt"></i>
+                    <span>${cue.promptText || 'Drag items to the correct categories'}</span>
                 </div>
-                <div class="drop-zones">
-                    ${this.createDropZones(cue)}
-                </div>
+                <div class="drag-source" id="drag-source-${segmentId}"></div>
+                <div class="drop-zones" id="drop-zones-${segmentId}"></div>
+                <button class="reset-btn glass-button">
+                    <i class="fas fa-redo"></i> Reset
+                </button>
             </div>
-            <button class="reset-btn">
-                <i class="fas fa-redo"></i> Reset
-            </button>
         `;
         
-        this.setupDragAndDrop(container, cue, segmentId);
         return container;
     }
     
-    createDraggableItems(cue) {
-        const items = cue.draggables || [];
-        return items.map((item, index) => `
-            <div class="draggable-item" draggable="true" data-item-id="${index}">
-                <i class="fas fa-grip-vertical"></i>
-                ${item.label || `Item ${index + 1}`}
-            </div>
-        `).join('');
+    activate(element, cue) {
+        super.activate(element, cue);
+        this.setupDragAndDrop(element, cue);
     }
     
-    createDropZones(cue) {
-        const zones = cue.dropZones || [];
-        return zones.map((zone, index) => `
-            <div class="drop-zone" data-zone-id="${index}">
-                <h4>${zone.label || `Category ${index + 1}`}</h4>
-                <div class="drop-area" data-zone-id="${index}">
-                    Drop items here
-                </div>
-            </div>
-        `).join('');
-    }
-    
-    setupDragAndDrop(container, cue, segmentId) {
-        const draggables = container.querySelectorAll('.draggable-item');
-        const dropAreas = container.querySelectorAll('.drop-area');
-        const resetBtn = container.querySelector('.reset-btn');
+    setupDragAndDrop(element, cue) {
+        const sourceContainer = element.querySelector('.drag-source');
+        const zonesContainer = element.querySelector('.drop-zones');
         
-        let draggedElement = null;
-        const placements = new Map();
-        
-        // Drag start
-        draggables.forEach(item => {
-            item.addEventListener('dragstart', (e) => {
-                draggedElement = item;
-                item.classList.add('dragging');
-                e.dataTransfer.effectAllowed = 'move';
-            });
+        // Create draggable items with enhanced visuals
+        const items = cue.items || cue.draggables || [];
+        items.forEach((item, index) => {
+            const itemEl = document.createElement('div');
+            itemEl.className = 'draggable-item glass-effect';
+            itemEl.draggable = true;
+            itemEl.dataset.itemId = item.id || index;
+            itemEl.innerHTML = `
+                <i class="${item.icon || 'fas fa-cube'}"></i>
+                <span>${item.label || item}</span>
+            `;
             
-            item.addEventListener('dragend', () => {
-                item.classList.remove('dragging');
-            });
+            // Enhanced drag events
+            itemEl.addEventListener('dragstart', (e) => this.onDragStart(e, item));
+            itemEl.addEventListener('dragend', (e) => this.onDragEnd(e));
+            
+            // Touch support
+            this.addTouchSupport(itemEl, item);
+            
+            sourceContainer.appendChild(itemEl);
         });
         
-        // Drop zones
-        dropAreas.forEach(area => {
-            area.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                area.classList.add('drag-over');
-            });
+        // Create drop zones with visual feedback
+        const zones = cue.zones || cue.dropZones || [];
+        zones.forEach((zone, index) => {
+            const zoneEl = document.createElement('div');
+            zoneEl.className = 'drop-zone glass-effect';
+            zoneEl.dataset.zoneId = zone.id || index;
+            zoneEl.innerHTML = `
+                <h4>${zone.label}</h4>
+                <div class="drop-area">
+                    <i class="fas fa-inbox"></i>
+                    <p>Drop items here</p>
+                </div>
+                <div class="dropped-items"></div>
+            `;
             
-            area.addEventListener('dragleave', () => {
-                area.classList.remove('drag-over');
-            });
+            // Enhanced drop events
+            zoneEl.addEventListener('dragover', (e) => this.onDragOver(e, zoneEl));
+            zoneEl.addEventListener('dragleave', (e) => this.onDragLeave(e, zoneEl));
+            zoneEl.addEventListener('drop', (e) => this.onDrop(e, zoneEl, cue));
             
-            area.addEventListener('drop', (e) => {
-                e.preventDefault();
-                area.classList.remove('drag-over');
-                
-                if (draggedElement) {
-                    // Remove from previous location
-                    if (draggedElement.parentElement.classList.contains('drop-area')) {
-                        draggedElement.parentElement.classList.remove('has-items');
-                    }
-                    
-                    // Add to new location
-                    area.appendChild(draggedElement);
-                    area.classList.add('has-items');
-                    
-                    // Track placement
-                    const itemId = draggedElement.dataset.itemId;
-                    const zoneId = area.dataset.zoneId;
-                    placements.set(itemId, zoneId);
-                    
-                    // Log interaction
-                    this.logInteraction(segmentId, {
-                        interactionType: 'drag_drop',
-                        itemId: itemId,
-                        zoneId: zoneId,
-                        placements: Array.from(placements.entries())
-                    });
-                    
-                    // Check if complete
-                    if (placements.size === draggables.length) {
-                        this.checkCorrectPlacements(container, cue, placements, segmentId);
-                    }
-                    
-                    draggedElement = null;
-                }
-            });
+            zonesContainer.appendChild(zoneEl);
         });
         
         // Reset button
-        resetBtn.addEventListener('click', () => {
-            this.resetDragAndDrop(container, draggables);
-            placements.clear();
+        element.querySelector('.reset-btn').addEventListener('click', () => {
+            this.reset(element, cue);
         });
     }
     
-    checkCorrectPlacements(container, cue, placements, segmentId) {
-        const correctMapping = cue.correctMapping || {};
-        let allCorrect = true;
+    onDragStart(e, item) {
+        e.target.classList.add('dragging');
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/plain', JSON.stringify(item));
         
-        placements.forEach((zoneId, itemId) => {
-            if (correctMapping[itemId] !== zoneId) {
-                allCorrect = false;
-            }
+        // Visual feedback
+        document.body.classList.add('dragging-active');
+        window.interactiveCueManager.playSound('click');
+        window.interactiveCueManager.triggerHaptic([10]);
+    }
+    
+    onDragEnd(e) {
+        e.target.classList.remove('dragging');
+        document.body.classList.remove('dragging-active');
+        
+        // Clean up any hover states
+        document.querySelectorAll('.drop-zone.drag-over').forEach(zone => {
+            zone.classList.remove('drag-over');
+        });
+    }
+    
+    onDragOver(e, zoneEl) {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+        
+        if (!zoneEl.classList.contains('drag-over')) {
+            zoneEl.classList.add('drag-over');
+            window.interactiveCueManager.playSound('hover');
+        }
+    }
+    
+    onDragLeave(e, zoneEl) {
+        if (e.target === zoneEl || !zoneEl.contains(e.relatedTarget)) {
+            zoneEl.classList.remove('drag-over');
+        }
+    }
+    
+    onDrop(e, zoneEl, cue) {
+        e.preventDefault();
+        zoneEl.classList.remove('drag-over');
+        
+        const item = JSON.parse(e.dataTransfer.getData('text/plain'));
+        const droppedContainer = zoneEl.querySelector('.dropped-items');
+        
+        // Create dropped item element
+        const droppedEl = document.createElement('div');
+        droppedEl.className = 'dropped-item';
+        droppedEl.dataset.itemId = item.id;
+        droppedEl.innerHTML = `
+            <i class="${item.icon || 'fas fa-cube'}"></i>
+            <span>${item.label}</span>
+            <button class="remove-btn">×</button>
+        `;
+        
+        // Remove functionality
+        droppedEl.querySelector('.remove-btn').addEventListener('click', () => {
+            this.removeItem(droppedEl, item, cue);
         });
         
-        if (allCorrect) {
-            container.classList.add('completed');
-            this.showFeedback(container, 'Excellent! All items correctly placed!', 'success');
-        } else {
-            this.showFeedback(container, 'Not quite right. Try again!', 'warning');
+        droppedContainer.appendChild(droppedEl);
+        
+        // Remove original draggable
+        const originalEl = document.querySelector(`[data-item-id="${item.id}"]`);
+        if (originalEl) {
+            originalEl.style.opacity = '0';
+            setTimeout(() => originalEl.remove(), 300);
         }
         
-        this.logInteraction(segmentId, {
-            interactionType: 'drag_complete',
-            isCorrect: allCorrect,
-            attempts: container.dataset.attempts || 1
+        // Check if correct
+        const isCorrect = this.checkPlacement(item, zoneEl.dataset.zoneId, cue);
+        
+        if (isCorrect) {
+            droppedEl.classList.add('correct');
+            window.interactiveCueManager.playSound('success');
+            window.interactiveCueManager.particleSystem.createBurst(
+                droppedEl.getBoundingClientRect(),
+                'success'
+            );
+        } else {
+            droppedEl.classList.add('incorrect');
+            window.interactiveCueManager.playSound('click');
+        }
+        
+        // Check overall completion
+        this.checkCompletion(cue);
+    }
+    
+    addTouchSupport(element, item) {
+        let touchItem = null;
+        let touchOffset = { x: 0, y: 0 };
+        
+        element.addEventListener('touchstart', (e) => {
+            const touch = e.touches[0];
+            const rect = element.getBoundingClientRect();
+            
+            touchOffset = {
+                x: touch.clientX - rect.left,
+                y: touch.clientY - rect.top
+            };
+            
+            // Create floating element
+            touchItem = element.cloneNode(true);
+            touchItem.classList.add('touch-dragging');
+            touchItem.style.position = 'fixed';
+            touchItem.style.zIndex = '1000';
+            touchItem.style.left = `${touch.clientX - touchOffset.x}px`;
+            touchItem.style.top = `${touch.clientY - touchOffset.y}px`;
+            touchItem.style.pointerEvents = 'none';
+            
+            document.body.appendChild(touchItem);
+            element.style.opacity = '0.5';
+            
+            window.interactiveCueManager.playSound('click');
+            window.interactiveCueManager.triggerHaptic([10]);
+        });
+        
+        element.addEventListener('touchmove', (e) => {
+            if (!touchItem) return;
+            
+            const touch = e.touches[0];
+            touchItem.style.left = `${touch.clientX - touchOffset.x}px`;
+            touchItem.style.top = `${touch.clientY - touchOffset.y}px`;
+            
+            // Check for drop zones
+            const elementBelow = document.elementFromPoint(touch.clientX, touch.clientY);
+            const dropZone = elementBelow?.closest('.drop-zone');
+            
+            document.querySelectorAll('.drop-zone').forEach(zone => {
+                zone.classList.toggle('drag-over', zone === dropZone);
+            });
+        });
+        
+        element.addEventListener('touchend', (e) => {
+            if (!touchItem) return;
+            
+            const touch = e.changedTouches[0];
+            const elementBelow = document.elementFromPoint(touch.clientX, touch.clientY);
+            const dropZone = elementBelow?.closest('.drop-zone');
+            
+            if (dropZone) {
+                // Simulate drop
+                const dropEvent = new DragEvent('drop', {
+                    dataTransfer: new DataTransfer()
+                });
+                dropEvent.dataTransfer.setData('text/plain', JSON.stringify(item));
+                dropZone.dispatchEvent(dropEvent);
+            }
+            
+            // Clean up
+            touchItem.remove();
+            touchItem = null;
+            element.style.opacity = '1';
+            
+            document.querySelectorAll('.drop-zone').forEach(zone => {
+                zone.classList.remove('drag-over');
+            });
         });
     }
     
-    resetDragAndDrop(container, draggables) {
-        const itemsContainer = container.querySelector('.drag-items');
-        draggables.forEach(item => {
-            itemsContainer.appendChild(item);
+    checkPlacement(item, zoneId, cue) {
+        const correctMapping = cue.correctMapping || {};
+        return correctMapping[item.id] === zoneId;
+    }
+    
+    checkCompletion(cue) {
+        const items = cue.items || cue.draggables || [];
+        const totalItems = items.length;
+        const placedItems = document.querySelectorAll('.dropped-item').length;
+        const correctItems = document.querySelectorAll('.dropped-item.correct').length;
+        
+        if (placedItems === totalItems) {
+            const allCorrect = correctItems === totalItems;
+            
+            if (allCorrect) {
+                this.onSuccess();
+            } else {
+                this.onPartialSuccess(correctItems, totalItems);
+            }
+        }
+    }
+    
+    onSuccess() {
+        window.interactiveCueManager.playSound('success');
+        window.interactiveCueManager.triggerHaptic([50, 100, 50]);
+        
+        const container = document.querySelector('.drag-distribute-container');
+        container.classList.add('completed');
+        
+        // Celebration animation
+        for (let i = 0; i < 5; i++) {
+            setTimeout(() => {
+                const rect = container.getBoundingClientRect();
+                window.interactiveCueManager.particleSystem.createBurst(
+                    {
+                        left: rect.left + Math.random() * rect.width,
+                        top: rect.top + Math.random() * rect.height,
+                        width: 0,
+                        height: 0
+                    },
+                    'celebration'
+                );
+            }, i * 200);
+        }
+    }
+    
+    reset(element, cue) {
+        // Clear all dropped items
+        element.querySelectorAll('.dropped-item').forEach(item => item.remove());
+        
+        // Recreate source items
+        const sourceContainer = element.querySelector('.drag-source');
+        sourceContainer.innerHTML = '';
+        
+        const items = cue.items || cue.draggables || [];
+        items.forEach((item) => {
+            const itemEl = document.createElement('div');
+            itemEl.className = 'draggable-item glass-effect';
+            itemEl.draggable = true;
+            itemEl.dataset.itemId = item.id || index;
+            itemEl.innerHTML = `
+                <i class="${item.icon || 'fas fa-cube'}"></i>
+                <span>${item.label || item}</span>
+            `;
+            
+            itemEl.addEventListener('dragstart', (e) => this.onDragStart(e, item));
+            itemEl.addEventListener('dragend', (e) => this.onDragEnd(e));
+            this.addTouchSupport(itemEl, item);
+            
+            sourceContainer.appendChild(itemEl);
         });
         
-        container.querySelectorAll('.drop-area').forEach(area => {
-            area.classList.remove('has-items');
-        });
+        // Reset completion state
+        element.querySelector('.drag-distribute-container').classList.remove('completed');
         
-        container.dataset.attempts = (parseInt(container.dataset.attempts || 0) + 1).toString();
+        window.interactiveCueManager.playSound('click');
     }
     
     showFeedback(container, message, type) {
@@ -340,6 +605,33 @@ class DragToDistributeHandler extends InteractiveCueHandler {
         container.appendChild(feedback);
         
         setTimeout(() => feedback.remove(), 3000);
+    }
+    
+    onPartialSuccess(correctItems, totalItems) {
+        const message = `Good effort! ${correctItems} out of ${totalItems} items placed correctly.`;
+        this.showFeedback(document.querySelector('.drag-distribute-container'), message, 'warning');
+    }
+    
+    removeItem(droppedEl, item, cue) {
+        // Return item to source
+        const sourceContainer = document.querySelector('.drag-source');
+        const itemEl = document.createElement('div');
+        itemEl.className = 'draggable-item glass-effect';
+        itemEl.draggable = true;
+        itemEl.dataset.itemId = item.id;
+        itemEl.innerHTML = `
+            <i class="${item.icon || 'fas fa-cube'}"></i>
+            <span>${item.label}</span>
+        `;
+        
+        itemEl.addEventListener('dragstart', (e) => this.onDragStart(e, item));
+        itemEl.addEventListener('dragend', (e) => this.onDragEnd(e));
+        this.addTouchSupport(itemEl, item);
+        
+        sourceContainer.appendChild(itemEl);
+        droppedEl.remove();
+        
+        window.interactiveCueManager.playSound('click');
     }
 }
 
@@ -1173,6 +1465,79 @@ class UISimulationHandler extends InteractiveCueHandler {
         });
     }
 }
+
+// Particle System for Visual Feedback
+class ParticleSystem {
+    constructor() {
+        this.particles = [];
+        this.animationFrame = null;
+    }
+    
+    createBurst(rect, type = 'default') {
+        const count = type === 'celebration' ? 20 : 10;
+        const colors = {
+            default: ['#667eea', '#764ba2', '#f093fb'],
+            success: ['#48bb78', '#38a169', '#2f855a'],
+            discovery: ['#63b3ed', '#4299e1', '#3182ce'],
+            celebration: ['#f6ad55', '#ed8936', '#dd6b20', '#e53e3e', '#9f7aea']
+        };
+        
+        for (let i = 0; i < count; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.cssText = `
+                position: fixed;
+                left: ${rect.left + rect.width / 2}px;
+                top: ${rect.top + rect.height / 2}px;
+                width: 8px;
+                height: 8px;
+                background: ${colors[type][Math.floor(Math.random() * colors[type].length)]};
+                border-radius: 50%;
+                pointer-events: none;
+                z-index: 9999;
+            `;
+            
+            document.body.appendChild(particle);
+            
+            const angle = (Math.PI * 2 * i) / count;
+            const velocity = 2 + Math.random() * 3;
+            const lifetime = 1000 + Math.random() * 500;
+            
+            this.animateParticle(particle, angle, velocity, lifetime);
+        }
+    }
+    
+    animateParticle(particle, angle, velocity, lifetime) {
+        const startTime = Date.now();
+        const startX = parseFloat(particle.style.left);
+        const startY = parseFloat(particle.style.top);
+        
+        const animate = () => {
+            const elapsed = Date.now() - startTime;
+            const progress = elapsed / lifetime;
+            
+            if (progress >= 1) {
+                particle.remove();
+                return;
+            }
+            
+            const x = startX + Math.cos(angle) * velocity * elapsed;
+            const y = startY + Math.sin(angle) * velocity * elapsed + 0.5 * 9.8 * Math.pow(elapsed / 100, 2);
+            
+            particle.style.left = `${x}px`;
+            particle.style.top = `${y}px`;
+            particle.style.opacity = 1 - progress;
+            particle.style.transform = `scale(${1 - progress * 0.5})`;
+            
+            requestAnimationFrame(animate);
+        };
+        
+        requestAnimationFrame(animate);
+    }
+}
+
+// Initialize enhanced interactive cue manager
+window.interactiveCueManager = new InteractiveCueManager();
 
 // Export for use in main application
 window.InteractiveCueManager = InteractiveCueManager;

@@ -1,0 +1,32 @@
+{
+  "generated_at": "2025-06-01T01:10:15.676747",
+  "segments": 5,
+  "engines": {
+    "edge_tts": {
+      "files": 5,
+      "total_size_kb": 317.95,
+      "avg_size_kb": 63.59,
+      "format": ".mp3"
+    },
+    "gtts": {
+      "files": 5,
+      "total_size_kb": 483.56,
+      "avg_size_kb": 96.71,
+      "format": ".mp3"
+    },
+    "pyttsx3": {
+      "files": 1,
+      "total_size_kb": 378.54,
+      "avg_size_kb": 378.54,
+      "format": ".wav"
+    },
+    "tacotron2": {
+      "files": 5,
+      "total_size_kb": 2287.87,
+      "avg_size_kb": 457.57,
+      "format": ".wav",
+      "notes": "Original high-quality Tacotron2-DDC model"
+    }
+  },
+  "updated_at": "2025-06-01T01:13:39.077218"
+}

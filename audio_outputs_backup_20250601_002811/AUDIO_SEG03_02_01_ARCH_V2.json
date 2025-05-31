@@ -1,0 +1,15 @@
+{
+  "audioId": "AUDIO_SEG03_02_01_ARCH_V2",
+  "text": "Our custom OHI needs to bridge three worlds: scrape metrics from JMX or Prometheus endpoints, transform them into meaningful queue semantics, and emit both detailed diagnostic events and streamlined QueueSample v2 events for the UI.",
+  "generatedAt": "2025-05-31T23:37:27.844478",
+  "metadata": {
+    "segmentId": "SEGMENT_03_02_01_OHI_ARCHITECTURE_V2",
+    "lessonId": "LESSON_03_NEWRELIC_INTEGRATION_V2",
+    "episodeId": "EPISODE_03_02_CUSTOM_OHI_DEVELOPMENT_V2",
+    "title": "OHI Architecture for Share Groups"
+  },
+  "model": "Tacotron2-DDC",
+  "quality": "high",
+  "device": "cpu",
+  "speaker": null
+}

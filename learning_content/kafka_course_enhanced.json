@@ -1,0 +1,1051 @@
+{
+  "courseId": "kafka-monitoring-share-groups-v2",
+  "title": "Kafka Monitoring & Share Groups: The Complete Guide",
+  "description": "Master Kafka monitoring from fundamentals to the revolutionary Share Groups feature in Kafka 4.0+",
+  "enhancements": [
+    {
+      "lessonId": "LESSON_01_KAFKA_FUNDAMENTALS_V2",
+      "episodes": [
+        {
+          "episodeId": "EPISODE_01_01_WHY_KAFKA_V2",
+          "additionalSegments": [
+            {
+              "segmentId": "SEGMENT_01_01_04_KAFKA_VS_TRADITIONAL",
+              "order": 4,
+              "segmentType": "technology_comparison",
+              "title": "Kafka vs Traditional Message Queues",
+              "learningObjectives": [
+                "Understand key differences between Kafka and traditional MQ systems",
+                "Learn when to choose Kafka over alternatives",
+                "Recognize Kafka's unique strengths"
+              ],
+              "textContent": "Unlike traditional message queues that delete messages after consumption, Kafka persists messages for a configured time. This fundamental difference enables replay, multiple consumers, and event sourcing patterns that are impossible with traditional queues.",
+              "estimatedDuration": "4 minutes",
+              "mediaRefs": {
+                "audioId": "AUDIO_SEG01_01_04_COMPARISON",
+                "visualIds": ["VISUAL_KAFKA_VS_MQ_COMPARISON", "VISUAL_USE_CASE_MATRIX"]
+              },
+              "interactiveCue": {
+                "cueType": "click_to_compare",
+                "config": {
+                  "title": "Message Queue Approaches",
+                  "comparisons": [
+                    {
+                      "label": "Traditional MQ (RabbitMQ)",
+                      "features": {
+                        "persistence": "Messages deleted after consumption",
+                        "consumers": "Typically one consumer per message",
+                        "ordering": "FIFO within queue",
+                        "replay": "Not possible",
+                        "throughput": "10K-100K msgs/sec"
+                      }
+                    },
+                    {
+                      "label": "Apache Kafka",
+                      "features": {
+                        "persistence": "Configurable retention (time/size)",
+                        "consumers": "Multiple independent consumers",
+                        "ordering": "Per-partition ordering",
+                        "replay": "Full replay capability",
+                        "throughput": "1M+ msgs/sec"
+                      }
+                    }
+                  ]
+                }
+              },
+              "keywords": ["comparison", "message queue", "architecture"],
+              "pointsAwarded": 20
+            },
+            {
+              "segmentId": "SEGMENT_01_01_05_REAL_WORLD_USE_CASES",
+              "order": 5,
+              "segmentType": "practical_example",
+              "title": "Kafka in Action: Real-World Use Cases",
+              "learningObjectives": [
+                "See how major companies use Kafka",
+                "Understand different Kafka patterns",
+                "Connect theory to practice"
+              ],
+              "textContent": "Let's look at how companies like Netflix, Uber, and LinkedIn use Kafka. Netflix processes 8 million events per second for real-time recommendations. Uber uses Kafka to track every trip in real-time across their global fleet.",
+              "estimatedDuration": "5 minutes",
+              "mediaRefs": {
+                "audioId": "AUDIO_SEG01_01_05_USE_CASES",
+                "visualIds": ["VISUAL_NETFLIX_ARCHITECTURE", "VISUAL_UBER_DATA_FLOW", "VISUAL_USE_CASE_PATTERNS"]
+              },
+              "interactiveCue": {
+                "cueType": "interactive_explorer",
+                "config": {
+                  "title": "Explore Real-World Kafka Deployments",
+                  "hotspots": {
+                    "netflix": {
+                      "label": "Netflix",
+                      "details": {
+                        "scale": "8M events/sec",
+                        "useCase": "Real-time recommendations, viewing analytics",
+                        "clusters": "50+ Kafka clusters",
+                        "challenge": "Multi-region replication"
+                      }
+                    },
+                    "uber": {
+                      "label": "Uber",
+                      "details": {
+                        "scale": "Trillion+ messages/day",
+                        "useCase": "Trip tracking, surge pricing, driver dispatch",
+                        "architecture": "uReplicator for geo-distribution",
+                        "challenge": "Low-latency global updates"
+                      }
+                    },
+                    "linkedin": {
+                      "label": "LinkedIn",
+                      "details": {
+                        "scale": "7 trillion messages/day",
+                        "useCase": "Activity streams, metrics, logging",
+                        "history": "Birthplace of Kafka",
+                        "challenge": "Multi-tenant isolation"
+                      }
+                    }
+                  }
+                }
+              },
+              "keywords": ["use cases", "real world", "scale"],
+              "pointsAwarded": 25
+            }
+          ]
+        },
+        {
+          "episodeId": "EPISODE_01_02_CORE_ARCHITECTURE_V2",
+          "additionalSegments": [
+            {
+              "segmentId": "SEGMENT_01_02_04_PARTITION_STRATEGIES",
+              "order": 4,
+              "segmentType": "decision_framework",
+              "title": "Choosing the Right Partition Strategy",
+              "learningObjectives": [
+                "Learn different partitioning strategies",
+                "Understand trade-offs of each approach",
+                "Make informed partitioning decisions"
+              ],
+              "textContent": "Partitioning strategy is crucial for Kafka performance. You can partition by key (for ordering), round-robin (for load distribution), or custom logic. Each has trade-offs between ordering guarantees, load distribution, and consumer complexity.",
+              "estimatedDuration": "6 minutes",
+              "mediaRefs": {
+                "audioId": "AUDIO_SEG01_02_04_STRATEGIES",
+                "visualIds": ["VISUAL_PARTITION_STRATEGIES", "VISUAL_DECISION_MATRIX"]
+              },
+              "interactiveCue": {
+                "cueType": "scenario_selection",
+                "config": {
+                  "title": "Choose the Best Partitioning Strategy",
+                  "scenarios": [
+                    {
+                      "id": "user_activity",
+                      "description": "You're building a user activity stream where you need to maintain order of events per user",
+                      "options": [
+                        {
+                          "strategy": "Partition by User ID",
+                          "optimal": true,
+                          "reasoning": "Ensures all events for a user go to same partition, maintaining order"
+                        },
+                        {
+                          "strategy": "Round-robin",
+                          "optimal": false,
+                          "reasoning": "Better distribution but loses per-user ordering guarantee"
+                        }
+                      ]
+                    },
+                    {
+                      "id": "metrics_collection",
+                      "description": "You're collecting metrics from thousands of servers, order doesn't matter",
+                      "options": [
+                        {
+                          "strategy": "Round-robin",
+                          "optimal": true,
+                          "reasoning": "Maximizes throughput with even distribution"
+                        },
+                        {
+                          "strategy": "Partition by Server ID",
+                          "optimal": false,
+                          "reasoning": "May create hot partitions if some servers are chattier"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              "keywords": ["partitioning", "strategy", "decisions"],
+              "pointsAwarded": 30
+            },
+            {
+              "segmentId": "SEGMENT_01_02_05_OFFSET_MANAGEMENT",
+              "order": 5,
+              "segmentType": "practical_configuration",
+              "title": "Mastering Offset Management",
+              "learningObjectives": [
+                "Understand offset commit strategies",
+                "Learn about consumer group coordination",
+                "Configure offset retention and reset policies"
+              ],
+              "textContent": "Offsets track consumer progress through partitions. You can commit automatically (easy but risky) or manually (precise but complex). Understanding offset management is crucial for exactly-once processing and failure recovery.",
+              "estimatedDuration": "7 minutes",
+              "codeExample": {
+                "language": "java",
+                "code": "// Auto commit (default)\nproperties.put(\"enable.auto.commit\", \"true\");\nproperties.put(\"auto.commit.interval.ms\", \"5000\");\n\n// Manual commit for precise control\nproperties.put(\"enable.auto.commit\", \"false\");\n\nwhile (true) {\n    ConsumerRecords<String, String> records = consumer.poll(100);\n    for (ConsumerRecord<String, String> record : records) {\n        // Process record\n        processRecord(record);\n    }\n    // Commit after successful processing\n    consumer.commitSync();\n}",
+                "filename": "OffsetManagement.java"
+              },
+              "mediaRefs": {
+                "audioId": "AUDIO_SEG01_02_05_OFFSETS",
+                "visualIds": ["VISUAL_OFFSET_TIMELINE", "VISUAL_COMMIT_STRATEGIES"]
+              },
+              "interactiveCue": {
+                "cueType": "simulation",
+                "config": {
+                  "simulationType": "offset_management",
+                  "parameters": {
+                    "autoCommit": {
+                      "type": "boolean",
+                      "default": true
+                    },
+                    "commitInterval": {
+                      "type": "slider",
+                      "min": 1000,
+                      "max": 30000,
+                      "default": 5000,
+                      "unit": "ms"
+                    },
+                    "processingTime": {
+                      "type": "slider",
+                      "min": 10,
+                      "max": 1000,
+                      "default": 100,
+                      "unit": "ms"
+                    }
+                  },
+                  "scenarios": {
+                    "normalOperation": "See how offsets advance during normal processing",
+                    "consumerCrash": "Simulate consumer crash and recovery",
+                    "rebalance": "Observe offset behavior during rebalance"
+                  }
+                }
+              },
+              "keywords": ["offsets", "commits", "configuration"],
+              "pointsAwarded": 35
+            }
+          ]
+        },
+        {
+          "episodeId": "EPISODE_01_05_SHARE_GROUPS_V2",
+          "enhancedSegments": [
+            {
+              "segmentId": "SEGMENT_01_05_04_SHARE_GROUP_ARCHITECTURE",
+              "order": 4,
+              "segmentType": "architecture_design",
+              "title": "Share Groups Architecture Deep Dive",
+              "learningObjectives": [
+                "Understand Share Group Coordinator role",
+                "Learn about state management",
+                "See how delivery tracking works"
+              ],
+              "textContent": "Share Groups introduce a new coordinator that manages shared consumption state. Unlike consumer groups where each partition has one consumer, Share Groups allow multiple consumers to cooperatively process messages from the same partition.",
+              "estimatedDuration": "8 minutes",
+              "mediaRefs": {
+                "audioId": "AUDIO_SEG01_05_04_ARCHITECTURE",
+                "visualIds": ["VISUAL_SHARE_GROUP_ARCHITECTURE", "VISUAL_COORDINATOR_FLOW", "VISUAL_STATE_MACHINE"]
+              },
+              "interactiveCue": {
+                "cueType": "interactive_explorer",
+                "config": {
+                  "title": "Explore Share Group Components",
+                  "components": {
+                    "shareCoordinator": {
+                      "role": "Manages group membership and state",
+                      "responsibilities": [
+                        "Track active members",
+                        "Assign message batches",
+                        "Handle acknowledgments",
+                        "Manage delivery timeouts"
+                      ]
+                    },
+                    "stateStore": {
+                      "role": "Persists delivery state",
+                      "data": [
+                        "In-flight messages",
+                        "Acknowledgment status",
+                        "Retry counts",
+                        "Consumer assignments"
+                      ]
+                    },
+                    "deliveryTracker": {
+                      "role": "Tracks message delivery",
+                      "states": [
+                        "AVAILABLE",
+                        "ACQUIRED",
+                        "ACKNOWLEDGED",
+                        "ARCHIVED"
+                      ]
+                    }
+                  }
+                }
+              },
+              "keywords": ["architecture", "coordinator", "state management"],
+              "pointsAwarded": 40
+            },
+            {
+              "segmentId": "SEGMENT_01_05_05_SHARE_VS_CONSUMER_GROUPS",
+              "order": 5,
+              "segmentType": "paradigm_shift",
+              "title": "The Paradigm Shift: From Exclusive to Shared Consumption",
+              "learningObjectives": [
+                "Understand the fundamental shift in consumption model",
+                "Learn when to use Share Groups vs Consumer Groups",
+                "Recognize the trade-offs"
+              ],
+              "textContent": "Share Groups represent a paradigm shift from Kafka's traditional exclusive partition ownership. This enables work-queue semantics within Kafka, eliminating the need for external queue systems in many architectures.",
+              "estimatedDuration": "6 minutes",
+              "mediaRefs": {
+                "audioId": "AUDIO_SEG01_05_05_PARADIGM",
+                "visualIds": ["VISUAL_CONSUMPTION_MODELS", "VISUAL_PARADIGM_COMPARISON"]
+              },
+              "interactiveCue": {
+                "cueType": "drag_to_distribute",
+                "config": {
+                  "title": "Match Use Case to Consumption Model",
+                  "instruction": "Drag each use case to the appropriate consumption model",
+                  "items": [
+                    {
+                      "id": "1",
+                      "text": "User activity stream processing",
+                      "correctCategory": "consumer_groups",
+                      "reasoning": "Needs ordered processing per user"
+                    },
+                    {
+                      "id": "2",
+                      "text": "Work queue for image processing",
+                      "correctCategory": "share_groups",
+                      "reasoning": "Tasks can be processed in any order by any worker"
+                    },
+                    {
+                      "id": "3",
+                      "text": "Financial transaction processing",
+                      "correctCategory": "consumer_groups",
+                      "reasoning": "Requires strict ordering for account consistency"
+                    },
+                    {
+                      "id": "4",
+                      "text": "Email sending queue",
+                      "correctCategory": "share_groups",
+                      "reasoning": "Emails can be sent by any available worker"
+                    },
+                    {
+                      "id": "5",
+                      "text": "Real-time analytics aggregation",
+                      "correctCategory": "consumer_groups",
+                      "reasoning": "Needs to see all events in order for accurate windowing"
+                    }
+                  ],
+                  "categories": [
+                    {
+                      "id": "consumer_groups",
+                      "label": "Traditional Consumer Groups",
+                      "description": "Exclusive partition ownership, ordered processing"
+                    },
+                    {
+                      "id": "share_groups",
+                      "label": "Share Groups",
+                      "description": "Shared consumption, work-queue semantics"
+                    }
+                  ]
+                }
+              },
+              "keywords": ["paradigm shift", "consumption models", "use cases"],
+              "pointsAwarded": 35
+            }
+          ]
+        },
+        {
+          "episodeId": "EPISODE_01_06_SHARE_GROUP_METRICS_V2",
+          "additionalSegments": [
+            {
+              "segmentId": "SEGMENT_01_06_05_METRIC_PATTERNS",
+              "order": 5,
+              "segmentType": "metric_taxonomy",
+              "title": "Share Group Metric Patterns and Anti-Patterns",
+              "learningObjectives": [
+                "Recognize healthy vs unhealthy metric patterns",
+                "Learn common Share Group issues",
+                "Build monitoring intuition"
+              ],
+              "textContent": "Share Group metrics follow patterns that indicate system health. High acknowledgment rates with low redeliveries indicate healthy processing. Increasing lock durations or high archive rates suggest problems.",
+              "estimatedDuration": "7 minutes",
+              "mediaRefs": {
+                "audioId": "AUDIO_SEG01_06_05_PATTERNS",
+                "visualIds": ["VISUAL_METRIC_PATTERNS", "VISUAL_ANOMALY_EXAMPLES"]
+              },
+              "interactiveCue": {
+                "cueType": "predict_value_change",
+                "config": {
+                  "title": "Predict Metric Impact",
+                  "scenarios": [
+                    {
+                      "setup": "A consumer in your Share Group crashes",
+                      "question": "What happens to the unacknowledged message age metric?",
+                      "options": [
+                        "Stays the same",
+                        "Decreases",
+                        "Increases rapidly"
+                      ],
+                      "correct": "Increases rapidly",
+                      "explanation": "Messages acquired by the crashed consumer aren't acknowledged, aging until timeout"
+                    },
+                    {
+                      "setup": "You double the number of consumers in the Share Group",
+                      "question": "What happens to average lock duration?",
+                      "options": [
+                        "Increases",
+                        "Decreases",
+                        "No change"
+                      ],
+                      "correct": "Decreases",
+                      "explanation": "More consumers mean faster processing and shorter lock times per message"
+                    }
+                  ]
+                }
+              },
+              "keywords": ["patterns", "anti-patterns", "monitoring"],
+              "pointsAwarded": 30
+            },
+            {
+              "segmentId": "SEGMENT_01_06_06_TROUBLESHOOTING_GUIDE",
+              "order": 6,
+              "segmentType": "decision_framework",
+              "title": "Share Group Troubleshooting Decision Tree",
+              "learningObjectives": [
+                "Learn systematic troubleshooting approach",
+                "Identify root causes from symptoms",
+                "Apply fixes effectively"
+              ],
+              "textContent": "When Share Groups misbehave, systematic troubleshooting is key. Start with redelivery metrics, check consumer health, verify acknowledgment patterns, and examine lock durations. Each metric tells part of the story.",
+              "estimatedDuration": "8 minutes",
+              "mediaRefs": {
+                "audioId": "AUDIO_SEG01_06_06_TROUBLESHOOTING",
+                "visualIds": ["VISUAL_DECISION_TREE", "VISUAL_TROUBLESHOOTING_FLOW"]
+              },
+              "interactiveCue": {
+                "cueType": "scenario_selection",
+                "config": {
+                  "title": "Diagnose the Share Group Issue",
+                  "scenarios": [
+                    {
+                      "id": "high_redelivery",
+                      "symptoms": "Redelivery rate at 40%, consumers seem healthy",
+                      "question": "What's the most likely cause?",
+                      "options": [
+                        {
+                          "diagnosis": "Processing logic throwing exceptions",
+                          "optimal": true,
+                          "action": "Check consumer logs for exceptions during processing"
+                        },
+                        {
+                          "diagnosis": "Network issues",
+                          "optimal": false,
+                          "action": "Would show connection errors, not high redelivery"
+                        },
+                        {
+                          "diagnosis": "Kafka broker issues",
+                          "optimal": false,
+                          "action": "Broker issues would affect all metrics, not just redelivery"
+                        }
+                      ]
+                    },
+                    {
+                      "id": "increasing_lag",
+                      "symptoms": "Message age increasing, lock duration normal, consumers active",
+                      "question": "What should you investigate first?",
+                      "options": [
+                        {
+                          "diagnosis": "Insufficient consumer capacity",
+                          "optimal": true,
+                          "action": "Scale up consumers to match ingestion rate"
+                        },
+                        {
+                          "diagnosis": "Slow processing logic",
+                          "optimal": false,
+                          "action": "Lock duration would be high if processing was slow"
+                        },
+                        {
+                          "diagnosis": "Configuration issues",
+                          "optimal": false,
+                          "action": "Config issues would show different symptom patterns"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              "keywords": ["troubleshooting", "diagnosis", "solutions"],
+              "pointsAwarded": 40
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "lessonId": "LESSON_02_JMX_AND_METRIC_COLLECTION_V2",
+      "episodes": [
+        {
+          "episodeId": "EPISODE_02_01_UNDERSTANDING_JMX_V2",
+          "additionalSegments": [
+            {
+              "segmentId": "SEGMENT_02_01_03_JMX_ARCHITECTURE",
+              "order": 3,
+              "segmentType": "architecture_design",
+              "title": "JMX Architecture: How It All Fits Together",
+              "learningObjectives": [
+                "Understand JMX component architecture",
+                "Learn how MBeans expose metrics",
+                "See the collection flow"
+              ],
+              "textContent": "JMX architecture consists of three layers: Instrumentation (MBeans), Agent (MBean Server), and Remote Management. Kafka registers MBeans with the platform MBean Server, which collectors query to retrieve metrics.",
+              "estimatedDuration": "6 minutes",
+              "mediaRefs": {
+                "audioId": "AUDIO_SEG02_01_03_ARCHITECTURE",
+                "visualIds": ["VISUAL_JMX_LAYERS", "VISUAL_MBEAN_REGISTRATION", "VISUAL_COLLECTION_FLOW"]
+              },
+              "interactiveCue": {
+                "cueType": "hover_to_explore",
+                "config": {
+                  "title": "Explore JMX Architecture Layers",
+                  "hotspots": [
+                    {
+                      "id": "instrumentation",
+                      "label": "Instrumentation Layer",
+                      "content": "MBeans that expose Kafka metrics. Each Kafka component (Producer, Consumer, Broker) registers its own MBeans."
+                    },
+                    {
+                      "id": "agent",
+                      "label": "Agent Layer",
+                      "content": "MBean Server that manages all registered MBeans. Acts as a registry and provides query interface."
+                    },
+                    {
+                      "id": "remote",
+                      "label": "Remote Layer",
+                      "content": "Connectors and adaptors for remote access. Allows monitoring tools to connect and retrieve metrics."
+                    }
+                  ]
+                }
+              },
+              "keywords": ["JMX", "architecture", "MBeans"],
+              "pointsAwarded": 25
+            }
+          ]
+        },
+        {
+          "episodeId": "EPISODE_02_02_KAFKA_JMX_METRICS_V2",
+          "additionalSegments": [
+            {
+              "segmentId": "SEGMENT_02_02_03_METRIC_HIERARCHIES",
+              "order": 3,
+              "segmentType": "metrics_overview",
+              "title": "Navigating Kafka's Metric Hierarchies",
+              "learningObjectives": [
+                "Understand Kafka's metric naming conventions",
+                "Learn to navigate metric hierarchies",
+                "Find metrics efficiently"
+              ],
+              "textContent": "Kafka metrics follow a hierarchical naming pattern: kafka.[component]:[type]=[name],name=[metric]. Understanding this pattern helps you quickly locate the metrics you need among thousands available.",
+              "estimatedDuration": "5 minutes",
+              "codeExample": {
+                "language": "text",
+                "code": "# Producer metrics\nkafka.producer:type=producer-metrics,client-id=producer-1\n  - record-send-rate\n  - request-latency-avg\n  - outgoing-byte-rate\n\n# Consumer metrics  \nkafka.consumer:type=consumer-metrics,client-id=consumer-1\n  - records-consumed-rate\n  - bytes-consumed-rate\n  - fetch-latency-avg\n\n# Broker metrics\nkafka.server:type=BrokerTopicMetrics,name=MessagesInPerSec\n  - Count\n  - FifteenMinuteRate\n  - FiveMinuteRate",
+                "filename": "metric_examples.txt"
+              },
+              "mediaRefs": {
+                "audioId": "AUDIO_SEG02_02_03_HIERARCHIES",
+                "visualIds": ["VISUAL_METRIC_TREE", "VISUAL_NAMING_PATTERN"]
+              },
+              "interactiveCue": {
+                "cueType": "field_mapping_exercise",
+                "config": {
+                  "title": "Match Metrics to Components",
+                  "instruction": "Connect each metric to its component",
+                  "leftSide": [
+                    {"id": "m1", "label": "record-send-rate"},
+                    {"id": "m2", "label": "fetch-latency-avg"},
+                    {"id": "m3", "label": "UnderReplicatedPartitions"},
+                    {"id": "m4", "label": "records-lag-max"}
+                  ],
+                  "rightSide": [
+                    {"id": "c1", "label": "Producer"},
+                    {"id": "c2", "label": "Consumer"},
+                    {"id": "c3", "label": "Broker"}
+                  ],
+                  "correctMappings": {
+                    "m1": "c1",
+                    "m2": "c2",
+                    "m3": "c3",
+                    "m4": "c2"
+                  }
+                }
+              },
+              "keywords": ["metrics", "hierarchy", "naming"],
+              "pointsAwarded": 20
+            },
+            {
+              "segmentId": "SEGMENT_02_02_04_CRITICAL_METRICS",
+              "order": 4,
+              "segmentType": "important_note",
+              "title": "The Critical Metrics You Can't Ignore",
+              "learningObjectives": [
+                "Identify the most critical Kafka metrics",
+                "Understand why these metrics matter",
+                "Learn healthy ranges and thresholds"
+              ],
+              "textContent": "While Kafka exposes thousands of metrics, a handful are critical for health monitoring: UnderReplicatedPartitions (should be 0), OfflinePartitionsCount (must be 0), ActiveControllerCount (exactly 1 per cluster), and ISR shrink/expansion rates.",
+              "estimatedDuration": "6 minutes",
+              "mediaRefs": {
+                "audioId": "AUDIO_SEG02_02_04_CRITICAL",
+                "visualIds": ["VISUAL_CRITICAL_METRICS_DASHBOARD", "VISUAL_THRESHOLD_GUIDE"]
+              },
+              "interactiveCue": {
+                "cueType": "important_note",
+                "config": {
+                  "emphasis": "critical",
+                  "icon": "alert",
+                  "title": "Critical Metrics Checklist",
+                  "points": [
+                    {
+                      "metric": "UnderReplicatedPartitions",
+                      "healthy": "0",
+                      "action": "Non-zero indicates replication lag - investigate broker health"
+                    },
+                    {
+                      "metric": "OfflinePartitionsCount",
+                      "healthy": "0",
+                      "action": "Any offline partitions mean data unavailability - URGENT"
+                    },
+                    {
+                      "metric": "ActiveControllerCount",
+                      "healthy": "1",
+                      "action": "0 means no controller (critical), >1 means split-brain"
+                    },
+                    {
+                      "metric": "Request Handler Idle Ratio",
+                      "healthy": ">0.3",
+                      "action": "<0.3 indicates broker overload - scale or optimize"
+                    }
+                  ]
+                }
+              },
+              "keywords": ["critical", "metrics", "monitoring"],
+              "pointsAwarded": 30
+            }
+          ]
+        },
+        {
+          "episodeId": "EPISODE_02_03_MICROMETER_VS_JMX_V2",
+          "additionalSegments": [
+            {
+              "segmentId": "SEGMENT_02_03_04_MIGRATION_STRATEGY",
+              "order": 4,
+              "segmentType": "practical_configuration",
+              "title": "Migrating from JMX to Micrometer: A Practical Guide",
+              "learningObjectives": [
+                "Learn migration strategies",
+                "Configure dual reporting",
+                "Validate metric parity"
+              ],
+              "textContent": "Migrating from JMX to Micrometer doesn't have to be all-or-nothing. Start with dual reporting, validate metric parity, then gradually shift dashboards and alerts to Micrometer-based metrics.",
+              "estimatedDuration": "8 minutes",
+              "codeExample": {
+                "language": "yaml",
+                "code": "# Kafka configuration for dual metrics\n# Enable JMX (existing)\nmetrics.reporters=kafka.metrics.JmxReporter\n\n# Add Micrometer reporter\nmetrics.reporters=kafka.metrics.JmxReporter,io.micrometer.kafka.KafkaMetricsReporter\n\n# Micrometer configuration\nmicrometer.registry.type=prometheus\nmicrometer.registry.prometheus.port=9090\nmicrometer.registry.prometheus.path=/metrics\n\n# Tag configuration for better organization\nmicrometer.tags.application=kafka\nmicrometer.tags.cluster=production\nmicrometer.tags.region=us-east-1",
+                "filename": "dual_metrics_config.yaml"
+              },
+              "mediaRefs": {
+                "audioId": "AUDIO_SEG02_03_04_MIGRATION",
+                "visualIds": ["VISUAL_MIGRATION_PHASES", "VISUAL_DUAL_REPORTING_ARCHITECTURE"]
+              },
+              "interactiveCue": {
+                "cueType": "ui_simulation",
+                "config": {
+                  "simulation": "migration_dashboard",
+                  "steps": [
+                    {
+                      "instruction": "Enable Micrometer alongside JMX",
+                      "validation": "Check both reporters are active"
+                    },
+                    {
+                      "instruction": "Compare JMX vs Micrometer metrics",
+                      "validation": "Verify values match within 1%"
+                    },
+                    {
+                      "instruction": "Create Micrometer-based dashboard",
+                      "validation": "Ensure all critical metrics present"
+                    },
+                    {
+                      "instruction": "Switch alerts to Micrometer",
+                      "validation": "Confirm alerts fire correctly"
+                    }
+                  ]
+                }
+              },
+              "keywords": ["migration", "configuration", "dual reporting"],
+              "pointsAwarded": 35
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "lessonId": "LESSON_03_NEWRELIC_INTEGRATION_V2",
+      "episodes": [
+        {
+          "episodeId": "EPISODE_03_01_QUEUESAMPLE_V2_V2",
+          "additionalSegments": [
+            {
+              "segmentId": "SEGMENT_03_01_04_SCHEMA_EVOLUTION",
+              "order": 4,
+              "segmentType": "paradigm_shift",
+              "title": "The Evolution: From QueueSample v1 to v2",
+              "learningObjectives": [
+                "Understand why QueueSample needed to evolve",
+                "Learn what changed in v2",
+                "See the benefits of the new schema"
+              ],
+              "textContent": "QueueSample v2 represents a fundamental shift in how we model streaming systems. Where v1 focused on simple queue metrics, v2 embraces the complexity of modern streaming platforms with partition-level granularity and consumer group awareness.",
+              "estimatedDuration": "5 minutes",
+              "mediaRefs": {
+                "audioId": "AUDIO_SEG03_01_04_EVOLUTION",
+                "visualIds": ["VISUAL_V1_VS_V2_SCHEMA", "VISUAL_EVOLUTION_TIMELINE"]
+              },
+              "interactiveCue": {
+                "cueType": "click_to_compare",
+                "config": {
+                  "title": "QueueSample v1 vs v2",
+                  "comparisons": [
+                    {
+                      "label": "QueueSample v1",
+                      "schema": {
+                        "queue.name": "Simple queue identifier",
+                        "queue.size": "Total messages",
+                        "consumer.count": "Active consumers",
+                        "limitations": [
+                          "No partition visibility",
+                          "No consumer group details",
+                          "Limited to queue semantics"
+                        ]
+                      }
+                    },
+                    {
+                      "label": "QueueSample v2",
+                      "schema": {
+                        "messaging.system": "System type (kafka, rabbitmq, etc)",
+                        "partition.id": "Partition-level granularity",
+                        "consumer.group.name": "Consumer group tracking",
+                        "consumer.group.lag": "Per-partition lag",
+                        "benefits": [
+                          "Full streaming support",
+                          "Partition-aware metrics",
+                          "Multi-system compatibility"
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              "keywords": ["evolution", "schema", "v2"],
+              "pointsAwarded": 25
+            }
+          ]
+        },
+        {
+          "episodeId": "EPISODE_03_02_CUSTOM_OHI_DEVELOPMENT_V2",
+          "additionalSegments": [
+            {
+              "segmentId": "SEGMENT_03_02_03_OHI_BEST_PRACTICES",
+              "order": 3,
+              "segmentType": "practical_example",
+              "title": "OHI Development: Real-World Best Practices",
+              "learningObjectives": [
+                "Learn OHI development patterns",
+                "Avoid common pitfalls",
+                "Build production-ready integrations"
+              ],
+              "textContent": "Building a production OHI requires attention to error handling, efficient metric collection, and proper configuration management. Let's walk through a real Kafka OHI that handles millions of metrics efficiently.",
+              "estimatedDuration": "10 minutes",
+              "codeExample": {
+                "language": "go",
+                "code": "// Production-ready Kafka OHI excerpt\ntype KafkaIntegration struct {\n    client     *KafkaClient\n    collectors []MetricCollector\n    config     *Config\n    limiter    *rate.Limiter\n}\n\nfunc (k *KafkaIntegration) Collect(ctx context.Context) error {\n    // Rate limiting to prevent overwhelming Kafka\n    if err := k.limiter.Wait(ctx); err != nil {\n        return fmt.Errorf(\"rate limit: %w\", err)\n    }\n    \n    // Parallel collection with timeout\n    g, ctx := errgroup.WithContext(ctx)\n    \n    for _, collector := range k.collectors {\n        collector := collector // capture loop var\n        g.Go(func() error {\n            return k.collectWithTimeout(ctx, collector)\n        })\n    }\n    \n    if err := g.Wait(); err != nil {\n        // Log but don't fail entire collection\n        log.Warnf(\"Partial collection failure: %v\", err)\n    }\n    \n    return k.submitMetrics()\n}\n\n// Efficient batch submission\nfunc (k *KafkaIntegration) submitMetrics() error {\n    batch := make([]Metric, 0, 1000)\n    \n    for metric := range k.metricChan {\n        batch = append(batch, metric)\n        \n        if len(batch) >= 1000 {\n            if err := k.sendBatch(batch); err != nil {\n                return err\n            }\n            batch = batch[:0] // reuse slice\n        }\n    }\n    \n    // Send remaining\n    return k.sendBatch(batch)\n}",
+                "filename": "kafka_ohi_production.go"
+              },
+              "mediaRefs": {
+                "audioId": "AUDIO_SEG03_02_03_PRACTICES",
+                "visualIds": ["VISUAL_OHI_ARCHITECTURE", "VISUAL_ERROR_HANDLING_FLOW"]
+              },
+              "interactiveCue": {
+                "cueType": "code_completion",
+                "config": {
+                  "title": "Complete the Error Handling",
+                  "template": "func (k *KafkaIntegration) handleMetricError(err error, metric string) {\n    // Increment error counter\n    k.errorCounter.Inc()\n    \n    // Determine if retriable\n    if ___ {\n        k.retryQueue.Add(metric)\n    } else {\n        // Log and skip\n        log.Errorf(\"Permanent failure for %s: %v\", metric, err)\n    }\n}",
+                  "solution": "isRetriable(err)",
+                  "hints": [
+                    "Some errors are temporary (timeouts, network)",
+                    "Others are permanent (auth failures, missing metrics)",
+                    "Check if the error type indicates a retriable condition"
+                  ]
+                }
+              },
+              "keywords": ["OHI", "best practices", "production"],
+              "pointsAwarded": 40
+            }
+          ]
+        },
+        {
+          "episodeId": "EPISODE_03_03_QUEUES_STREAMS_UI_V2",
+          "additionalSegments": [
+            {
+              "segmentId": "SEGMENT_03_03_03_ADVANCED_UI_FEATURES",
+              "order": 3,
+              "segmentType": "new_feature_discovery",
+              "title": "Hidden Gems: Advanced UI Features You're Missing",
+              "learningObjectives": [
+                "Discover advanced UI capabilities",
+                "Learn power-user shortcuts",
+                "Master complex visualizations"
+              ],
+              "textContent": "The Queues & Streams UI has powerful features that many users miss: partition heatmaps, consumer group drift visualization, and predictive lag alerts. Let's explore these hidden gems that can transform your monitoring.",
+              "estimatedDuration": "7 minutes",
+              "mediaRefs": {
+                "audioId": "AUDIO_SEG03_03_03_ADVANCED",
+                "visualIds": ["VISUAL_HEATMAP_EXAMPLE", "VISUAL_DRIFT_VISUALIZATION", "VISUAL_PREDICTIVE_ALERTS"]
+              },
+              "interactiveCue": {
+                "cueType": "ui_simulation",
+                "config": {
+                  "simulation": "advanced_ui_features",
+                  "freeExploration": true,
+                  "features": {
+                    "partitionHeatmap": {
+                      "description": "Visualize hot partitions at a glance",
+                      "howTo": "Click 'Heatmap View' in partition list",
+                      "useCase": "Quickly identify uneven load distribution"
+                    },
+                    "consumerDrift": {
+                      "description": "Track consumer processing speed vs production rate",
+                      "howTo": "Enable 'Drift Analysis' in consumer group view",
+                      "useCase": "Predict when consumers will fall behind"
+                    },
+                    "smartAlerts": {
+                      "description": "ML-powered anomaly detection",
+                      "howTo": "Configure in Alert Policies > Smart Alerts",
+                      "useCase": "Catch issues before they impact users"
+                    },
+                    "timeshiftCompare": {
+                      "description": "Compare current metrics with past periods",
+                      "howTo": "Hold Shift and click time range",
+                      "useCase": "Identify unusual patterns vs normal behavior"
+                    }
+                  }
+                }
+              },
+              "keywords": ["UI", "advanced features", "visualization"],
+              "pointsAwarded": 30
+            },
+            {
+              "segmentId": "SEGMENT_03_03_04_DASHBOARD_PATTERNS",
+              "order": 4,
+              "segmentType": "decision_framework",
+              "title": "Dashboard Design Patterns for Different Scenarios",
+              "learningObjectives": [
+                "Learn dashboard design patterns",
+                "Choose layouts for different use cases",
+                "Build effective monitoring screens"
+              ],
+              "textContent": "Different monitoring scenarios require different dashboard approaches. An operations dashboard differs from a capacity planning view, which differs from a troubleshooting layout. Let's explore proven patterns for each.",
+              "estimatedDuration": "8 minutes",
+              "mediaRefs": {
+                "audioId": "AUDIO_SEG03_03_04_PATTERNS",
+                "visualIds": ["VISUAL_DASHBOARD_PATTERNS", "VISUAL_LAYOUT_EXAMPLES"]
+              },
+              "interactiveCue": {
+                "cueType": "scenario_selection",
+                "config": {
+                  "title": "Choose the Right Dashboard Pattern",
+                  "scenarios": [
+                    {
+                      "id": "incident_response",
+                      "context": "It's 3 AM and you're paged for Kafka lag alerts",
+                      "question": "Which dashboard layout would you use?",
+                      "options": [
+                        {
+                          "pattern": "Troubleshooting Layout",
+                          "optimal": true,
+                          "components": [
+                            "Large lag trend graph at top",
+                            "Consumer group table with sort by lag",
+                            "Partition distribution view",
+                            "Recent error logs panel"
+                          ],
+                          "reasoning": "Focuses on quick problem identification and drill-down"
+                        },
+                        {
+                          "pattern": "Executive Overview",
+                          "optimal": false,
+                          "reasoning": "Too high-level for troubleshooting"
+                        }
+                      ]
+                    },
+                    {
+                      "id": "capacity_planning",
+                      "context": "Quarterly planning meeting to discuss Kafka scaling",
+                      "question": "Which dashboard pattern fits best?",
+                      "options": [
+                        {
+                          "pattern": "Capacity Planning Layout",
+                          "optimal": true,
+                          "components": [
+                            "90-day trend graphs",
+                            "Growth projections",
+                            "Resource utilization heatmaps",
+                            "Cost analysis widgets"
+                          ],
+                          "reasoning": "Long-term trends and projections for planning decisions"
+                        },
+                        {
+                          "pattern": "Real-time Operations",
+                          "optimal": false,
+                          "reasoning": "Too focused on current state, not trends"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              "keywords": ["dashboard", "patterns", "design"],
+              "pointsAwarded": 35
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "newSegmentTypes": {
+    "simulation": {
+      "enhancedConfig": {
+        "kafka_load_simulator": {
+          "parameters": {
+            "producerCount": {"min": 1, "max": 50, "default": 10},
+            "messageRate": {"min": 100, "max": 100000, "default": 1000},
+            "messageSize": {"min": 100, "max": 10000, "default": 1000},
+            "partitionCount": {"min": 1, "max": 100, "default": 10},
+            "consumerCount": {"min": 1, "max": 50, "default": 5}
+          },
+          "metrics": [
+            "throughput",
+            "lag",
+            "partitionDistribution",
+            "consumerUtilization"
+          ],
+          "scenarios": {
+            "normal": "Balanced load",
+            "spike": "Sudden traffic increase",
+            "consumerFailure": "Consumers crash",
+            "skewedPartitions": "Uneven distribution"
+          }
+        }
+      }
+    }
+  },
+  "assessmentBank": {
+    "checkpoints": [
+      {
+        "id": "checkpoint-kafka-fundamentals",
+        "title": "Kafka Fundamentals Mastery",
+        "questions": [
+          {
+            "type": "multiple_choice",
+            "question": "What is the key architectural difference between Kafka and traditional message queues?",
+            "options": [
+              "Kafka is faster",
+              "Kafka persists messages and allows replay",
+              "Kafka uses HTTP instead of TCP",
+              "Kafka only supports one consumer"
+            ],
+            "correctAnswer": "Kafka persists messages and allows replay",
+            "explanation": "Unlike traditional MQs that delete messages after consumption, Kafka's log-based architecture persists messages, enabling replay and multiple consumers.",
+            "points": 10
+          },
+          {
+            "type": "scenario",
+            "scenario": "Your team needs to process 1 million events/second with the ability to replay data for reprocessing after algorithm updates.",
+            "question": "Which technology would you recommend?",
+            "correctAnswer": "Apache Kafka",
+            "explanation": "Kafka's persistent log architecture and high throughput make it ideal for this use case.",
+            "points": 15
+          },
+          {
+            "type": "practical",
+            "task": "Given a topic with 20 partitions and 5 consumers in a group, how many partitions per consumer?",
+            "correctAnswer": "4",
+            "explanation": "20 partitions / 5 consumers = 4 partitions per consumer for even distribution",
+            "points": 10
+          }
+        ],
+        "passingScore": 0.8,
+        "badge": "kafka-fundamentals-master"
+      },
+      {
+        "id": "checkpoint-share-groups",
+        "title": "Share Groups Expert",
+        "questions": [
+          {
+            "type": "multiple_choice",
+            "question": "What is the primary advantage of Share Groups over Consumer Groups?",
+            "options": [
+              "Higher throughput",
+              "Better ordering guarantees",
+              "Multiple consumers can process messages from the same partition",
+              "Lower latency"
+            ],
+            "correctAnswer": "Multiple consumers can process messages from the same partition",
+            "explanation": "Share Groups enable work-queue semantics where multiple consumers can cooperatively process messages from the same partition.",
+            "points": 15
+          },
+          {
+            "type": "scenario",
+            "scenario": "You have a work queue of image processing tasks where order doesn't matter but you need dynamic scaling.",
+            "question": "Would you use Consumer Groups or Share Groups?",
+            "correctAnswer": "Share Groups",
+            "explanation": "Share Groups are ideal for work-queue patterns where ordering isn't required but you need flexible scaling.",
+            "points": 20
+          }
+        ],
+        "passingScore": 0.8,
+        "badge": "share-groups-expert"
+      }
+    ]
+  },
+  "contentGuidelines": {
+    "segmentWriting": {
+      "principles": [
+        "Start with why - explain the problem before the solution",
+        "Use analogies to make complex concepts relatable",
+        "Include real-world examples from major companies",
+        "Keep segments focused on 1-2 learning objectives",
+        "End with practical application or reflection"
+      ],
+      "voiceAndTone": {
+        "characteristics": ["Conversational", "Encouraging", "Expert but approachable"],
+        "avoid": ["Jargon without explanation", "Condescending tone", "Information overload"]
+      }
+    },
+    "interactivityGuidelines": {
+      "when": {
+        "hover_to_explore": "Use for diagrams and architecture overviews",
+        "drag_to_distribute": "Use for categorization and sorting exercises",
+        "click_to_compare": "Use for before/after or A/B comparisons",
+        "simulation": "Use for system behavior and what-if scenarios",
+        "scenario_selection": "Use for decision-making practice"
+      },
+      "frequency": "Include interaction every 3-5 segments to maintain engagement"
+    }
+  }
+}
