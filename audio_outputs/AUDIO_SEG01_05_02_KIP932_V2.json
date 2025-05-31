@@ -1,0 +1,12 @@
+{
+  "segmentId": "SEGMENT_01_05_02_ENTER_SHARE_GROUPS_KIP932_V2",
+  "segmentType": "feature_introduction",
+  "title": "Enter Share Groups (KIP-932)",
+  "text": "February 2025 marked a watershed moment for Kafka with Share Groups (KIP-932) in early access. After two years of development, Kafka finally addresses use cases it's historically struggled with\u2014true queue semantics within the Kafka ecosystem.",
+  "audioId": "AUDIO_SEG01_05_02_KIP932_V2",
+  "generatedAt": "2025-06-01T02:32:56.668569",
+  "audioFile": "AUDIO_SEG01_05_02_KIP932_V2.mp3",
+  "voice": "en-US-JennyNeural",
+  "audioGenerated": true,
+  "voiceType": "adult_professional"
+}

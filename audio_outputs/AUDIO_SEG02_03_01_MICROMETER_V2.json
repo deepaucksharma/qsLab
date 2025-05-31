@@ -1,0 +1,12 @@
+{
+  "segmentId": "SEGMENT_02_03_01_MICROMETER_INTRO_V2",
+  "segmentType": "technology_comparison",
+  "title": "Enter Micrometer: Modern Metrics for Spring",
+  "text": "While JMX exporters work great for traditional Kafka deployments, modern Spring Boot applications often use Micrometer. Think of Micrometer as a universal translator\u2014it speaks to Prometheus, New Relic, DataDog, and more, all from one consistent API.",
+  "audioId": "AUDIO_SEG02_03_01_MICROMETER_V2",
+  "generatedAt": "2025-06-01T02:33:14.380220",
+  "audioFile": "AUDIO_SEG02_03_01_MICROMETER_V2.mp3",
+  "voice": "en-US-ChristopherNeural",
+  "audioGenerated": true,
+  "voiceType": "adult_professional"
+}

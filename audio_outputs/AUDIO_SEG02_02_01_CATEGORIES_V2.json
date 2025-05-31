@@ -1,0 +1,12 @@
+{
+  "segmentId": "SEGMENT_02_02_01_KAFKA_METRIC_CATEGORIES_V2",
+  "segmentType": "metric_taxonomy",
+  "title": "Kafka's Metric Categories",
+  "text": "Kafka exposes hundreds of MBeans, organized logically. Broker-level metrics live under kafka.server, network metrics under kafka.network, and our new Share Group metrics? They're under kafka.server:type=share-group-metrics.",
+  "audioId": "AUDIO_SEG02_02_01_CATEGORIES_V2",
+  "generatedAt": "2025-06-01T02:33:10.901735",
+  "audioFile": "AUDIO_SEG02_02_01_CATEGORIES_V2.mp3",
+  "voice": "en-US-GuyNeural",
+  "audioGenerated": true,
+  "voiceType": "adult_professional"
+}

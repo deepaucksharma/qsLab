@@ -1,0 +1,12 @@
+{
+  "segmentId": "SEGMENT_03_03_01_UI_NAVIGATION_V2",
+  "segmentType": "ui_walkthrough",
+  "title": "Navigating Share Groups in the UI",
+  "text": "With our QueueSample v2 events flowing, the Queues & Streams UI comes alive. You can now filter by shareGroupId, compare different processingModes side-by-side, and get queue-specific insights that were impossible with traditional monitoring.",
+  "audioId": "AUDIO_SEG03_03_01_UI_NAV_V2",
+  "generatedAt": "2025-06-01T02:33:25.541719",
+  "audioFile": "AUDIO_SEG03_03_01_UI_NAV_V2.mp3",
+  "voice": "en-US-MichelleNeural",
+  "audioGenerated": true,
+  "voiceType": "adult_professional"
+}

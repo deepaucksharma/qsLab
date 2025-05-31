@@ -1,0 +1,266 @@
+{
+  "visualType": "metric-dashboard",
+  "visualId": "visual-unack-age-dashboard-v2",
+  "title": "Understanding unacknowledged_age_ms",
+  "canvas": {
+    "width": 1920,
+    "height": 1080,
+    "background": {
+      "type": "solid",
+      "color": "#f8f9fa"
+    }
+  },
+  "layout": {
+    "type": "grid",
+    "columns": 3,
+    "rows": 2,
+    "gap": 20,
+    "padding": 40
+  },
+  "widgets": [
+    {
+      "id": "main-metric-display",
+      "type": "hero-metric",
+      "gridPosition": {"col": 0, "row": 0, "colspan": 3},
+      "metric": {
+        "name": "unacknowledged_age_ms",
+        "label": "Oldest Unacknowledged Message Age",
+        "value": 0,
+        "unit": "ms",
+        "format": "duration"
+      },
+      "visualization": {
+        "type": "animated-gauge",
+        "min": 0,
+        "max": 120000,
+        "thresholds": [
+          {"value": 0, "color": "#34a853", "label": "Healthy"},
+          {"value": 30000, "color": "#fbbc04", "label": "Warning"},
+          {"value": 60000, "color": "#ea4335", "label": "Critical"}
+        ],
+        "needle": {
+          "animated": true,
+          "smoothing": 0.3
+        }
+      },
+      "subtitle": "Real-time age of the oldest delivered but unacknowledged message"
+    },
+    {
+      "id": "time-series-chart",
+      "type": "time-series",
+      "gridPosition": {"col": 0, "row": 1, "colspan": 2},
+      "title": "Message Age Over Time",
+      "metrics": [
+        {
+          "name": "unacknowledged_age_ms",
+          "label": "Age (ms)",
+          "color": "#1a73e8",
+          "style": "area"
+        }
+      ],
+      "timeRange": "5m",
+      "updateInterval": 1000,
+      "axes": {
+        "y": {
+          "label": "Age (milliseconds)",
+          "format": "duration"
+        },
+        "x": {
+          "label": "Time",
+          "format": "time"
+        }
+      },
+      "annotations": [
+        {
+          "type": "threshold",
+          "value": 30000,
+          "label": "Warning Threshold",
+          "color": "#fbbc04",
+          "style": "dashed"
+        },
+        {
+          "type": "threshold",
+          "value": 60000,
+          "label": "Critical Threshold",
+          "color": "#ea4335",
+          "style": "dashed"
+        }
+      ]
+    },
+    {
+      "id": "comparison-view",
+      "type": "comparison-chart",
+      "gridPosition": {"col": 2, "row": 1},
+      "title": "Offset Lag vs Unack Age",
+      "metrics": [
+        {
+          "name": "traditional_offset_lag",
+          "label": "Traditional Lag",
+          "value": 0,
+          "color": "#5f6368",
+          "icon": "trending_down"
+        },
+        {
+          "name": "unacknowledged_age_ms",
+          "label": "Unack Age",
+          "value": 32500,
+          "color": "#ea4335",
+          "icon": "warning"
+        }
+      ],
+      "visualization": {
+        "type": "side-by-side-bars",
+        "showDifference": true,
+        "differenceLabel": "Hidden Queue Depth"
+      },
+      "insight": {
+        "text": "Zero lag doesn't mean zero problems!",
+        "highlight": true
+      }
+    },
+    {
+      "id": "interactive-simulation",
+      "type": "interactive-widget",
+      "gridPosition": {"col": 0, "row": 2, "colspan": 3},
+      "title": "What Happens When a Consumer Hangs?",
+      "simulation": {
+        "type": "consumer-hang-scenario",
+        "controls": [
+          {
+            "id": "hang-button",
+            "type": "button",
+            "label": "Simulate Consumer Hang",
+            "action": "startHang"
+          },
+          {
+            "id": "recover-button",
+            "type": "button",
+            "label": "Recover Consumer",
+            "action": "recover",
+            "disabled": true
+          }
+        ],
+        "visualization": {
+          "type": "live-metric-flow",
+          "showMessageFlow": true,
+          "showConsumerState": true,
+          "showMetricValue": true
+        }
+      }
+    }
+  ],
+  "dataSource": {
+    "type": "simulated",
+    "profiles": {
+      "normal": {
+        "unacknowledged_age_ms": {
+          "base": 5000,
+          "variance": 2000,
+          "trend": "stable"
+        }
+      },
+      "hanging": {
+        "unacknowledged_age_ms": {
+          "base": 5000,
+          "increment": 1000,
+          "trend": "linear-increase"
+        }
+      }
+    },
+    "initialProfile": "normal"
+  },
+  "animations": [
+    {
+      "trigger": "onLoad",
+      "sequence": [
+        {
+          "action": "fadeIn",
+          "target": "main-metric-display",
+          "duration": 800,
+          "delay": 0
+        },
+        {
+          "action": "drawChart",
+          "target": "time-series-chart",
+          "duration": 1500,
+          "delay": 500
+        },
+        {
+          "action": "slideInRight",
+          "target": "comparison-view",
+          "duration": 800,
+          "delay": 1000
+        },
+        {
+          "action": "expandHeight",
+          "target": "interactive-simulation",
+          "duration": 1000,
+          "delay": 1500
+        }
+      ]
+    }
+  ],
+  "interactions": [
+    {
+      "type": "predict_value_change",
+      "triggerAt": 45,
+      "question": "If a consumer processing a message suddenly hangs indefinitely, what happens to unacknowledged_age_ms?",
+      "options": [
+        "Caps at timeout",
+        "Resets to zero",
+        "Grows continuously",
+        "Stays constant"
+      ],
+      "correctAnswer": 2,
+      "feedback": {
+        "correct": "Exactly! The metric grows continuously until the message is acknowledged or times out.",
+        "incorrect": "Not quite. Think about what 'age' means - it's the time since delivery!"
+      },
+      "visualization": {
+        "showAnswer": true,
+        "animateCorrectBehavior": true
+      }
+    },
+    {
+      "type": "hover",
+      "target": "time-series-chart.dataPoints",
+      "action": "showTooltip",
+      "tooltip": {
+        "template": "Time: {time}\nAge: {value}ms\nStatus: {status}"
+      }
+    },
+    {
+      "type": "click",
+      "target": "interactive-simulation.hang-button",
+      "action": "simulateHang",
+      "effects": [
+        {
+          "target": "dataSource",
+          "action": "switchProfile",
+          "profile": "hanging"
+        },
+        {
+          "target": "main-metric-display",
+          "action": "flashWarning",
+          "duration": 500
+        },
+        {
+          "target": "interactive-simulation.recover-button",
+          "action": "enable"
+        }
+      ]
+    }
+  ],
+  "accessibility": {
+    "ariaLabel": "Dashboard showing the unacknowledged_age_ms metric for Share Groups. Includes a real-time gauge, time series chart, comparison with traditional offset lag, and an interactive simulation.",
+    "liveRegions": {
+      "main-metric-display": "polite",
+      "interactive-simulation": "assertive"
+    },
+    "keyboardShortcuts": {
+      "s": "Start simulation",
+      "r": "Recover consumer",
+      "space": "Pause/resume updates"
+    }
+  }
+}

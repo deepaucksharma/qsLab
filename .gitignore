@@ -4,50 +4,66 @@ __pycache__/
 *$py.class
 *.so
 .Python
-env/
 venv/
+env/
 ENV/
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
+.venv
 
-# Virtual Environment
-venv/
-env/
-ENV/
+# Flask
+instance/
+.webassets-cache
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Audio outputs
+audio_outputs/*.wav
+audio_outputs/*.mp3
 
 # IDE
 .vscode/
 .idea/
 *.swp
 *.swo
-*~
-
-# Project specific
-audio_outputs/*.wav
-audio_outputs/*.mp3
-*.wav
-*.mp3
-
-# OS
 .DS_Store
-Thumbs.db
 
 # Logs
 *.log
 
-# Model cache
+# Archive directories from cleanup
+archive_*/
+
+# Virtual environments
+venv/
+virtualenv/
+
+# Temporary files
+*.tmp
+*.temp
 .cache/
-*.pth
+
+# Generated placeholders (keep directory, ignore contents)
+static/placeholders/*.svg
+static/placeholders/*.png
+!static/placeholders/.gitkeep
+
+# Model downloads
+models/
+xtts_models/
+
+# Environment variables
+.env
+.env.local
+
+# Testing
+.coverage
+htmlcov/
+.pytest_cache/
+.tox/
+
+# Documentation build
+docs/_build/
+docs/_static/
+docs/_templates/venv_tts/

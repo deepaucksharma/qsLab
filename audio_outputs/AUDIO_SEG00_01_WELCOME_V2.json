@@ -1,0 +1,12 @@
+{
+  "segmentId": "SEGMENT_00_01_WELCOME_V2",
+  "segmentType": "course_opening",
+  "title": "Welcome and Setting the Scene",
+  "text": "Welcome, New Relic engineers! Grab your favorite beverage and settle in for the next few hours as we embark on a deep dive into the world of Kafka monitoring.",
+  "audioId": "AUDIO_SEG00_01_WELCOME_V2",
+  "generatedAt": "2025-06-01T02:32:47.682263",
+  "audioFile": "AUDIO_SEG00_01_WELCOME_V2.mp3",
+  "voice": "en-US-EricNeural",
+  "audioGenerated": true,
+  "voiceType": "adult_professional"
+}

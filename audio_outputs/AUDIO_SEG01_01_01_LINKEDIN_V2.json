@@ -1,0 +1,12 @@
+{
+  "segmentId": "SEGMENT_01_01_01_LINKEDIN_2010_V2",
+  "segmentType": "historical_context",
+  "title": "The LinkedIn Data Crisis of 2010",
+  "text": "Picture this: It's 2010 at LinkedIn. The engineering team is drowning in point-to-point data pipelines. Every new data integration looks like adding another strand to an already tangled ball of yarn. Sound familiar?",
+  "audioId": "AUDIO_SEG01_01_01_LINKEDIN_V2",
+  "generatedAt": "2025-06-01T02:32:49.248897",
+  "audioFile": "AUDIO_SEG01_01_01_LINKEDIN_V2.mp3",
+  "voice": "en-US-ChristopherNeural",
+  "audioGenerated": true,
+  "voiceType": "adult_professional"
+}

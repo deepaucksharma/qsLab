@@ -1,0 +1,12 @@
+{
+  "segmentId": "SEGMENT_03_01_03_COMPLETE_EXAMPLE_V2",
+  "segmentType": "practical_example",
+  "title": "Complete QueueSample v2 Example",
+  "text": "Let's build a complete QueueSample event for our payment-processors Share Group. Notice how we map Kafka metrics to queue concepts: unacknowledged messages become the queue depth, oldest unacked age becomes message age.",
+  "audioId": "AUDIO_SEG03_01_03_EXAMPLE_V2",
+  "generatedAt": "2025-06-01T02:33:19.031206",
+  "audioFile": "AUDIO_SEG03_01_03_EXAMPLE_V2.mp3",
+  "voice": "en-US-EricNeural",
+  "audioGenerated": true,
+  "voiceType": "adult_professional"
+}

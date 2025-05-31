@@ -1,0 +1,12 @@
+{
+  "segmentId": "SEGMENT_02_03_03_CHOOSING_APPROACH_V2",
+  "segmentType": "decision_framework",
+  "title": "Choosing Your Metrics Strategy",
+  "text": "So when should you use what? JMX exporters are perfect for broker-side metrics and legacy systems. Micrometer shines in Spring Boot applications where you're already in the Java ecosystem. The key is consistency across your monitoring stack.",
+  "audioId": "AUDIO_SEG02_03_03_CHOOSING_V2",
+  "generatedAt": "2025-06-01T02:33:15.936845",
+  "audioFile": "AUDIO_SEG02_03_03_CHOOSING_V2.mp3",
+  "voice": "en-US-GuyNeural",
+  "audioGenerated": true,
+  "voiceType": "adult_professional"
+}

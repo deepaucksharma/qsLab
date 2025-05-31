@@ -1,0 +1,12 @@
+{
+  "segmentId": "SEGMENT_01_06_04_MAX_LOCK_DURATION_V2",
+  "segmentType": "new_metric_deep_dive",
+  "title": "Metric Deep Dive: max_lock_duration_ms",
+  "text": "The 'max_lock_duration_ms' shows the longest time any message has been locked by a consumer. This helps identify slow processors or hung consumers before they cause redeliveries. It's your early warning system.",
+  "audioId": "AUDIO_SEG01_06_04_LOCK_DURATION_V2",
+  "generatedAt": "2025-06-01T02:33:06.370321",
+  "audioFile": "AUDIO_SEG01_06_04_LOCK_DURATION_V2.mp3",
+  "voice": "en-US-ChristopherNeural",
+  "audioGenerated": true,
+  "voiceType": "adult_professional"
+}

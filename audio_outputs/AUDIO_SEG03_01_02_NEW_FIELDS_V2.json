@@ -1,0 +1,12 @@
+{
+  "segmentId": "SEGMENT_03_01_02_V2_NEW_FIELDS_V2",
+  "segmentType": "new_feature_highlight",
+  "title": "New in v2: shareGroupId & processingMode",
+  "text": "The January 2025 QueueSample v2 update brings two critical fields for Share Groups. The 'shareGroupId' explicitly identifies which Share Group generated this sample. The 'processingMode' field distinguishes between 'share_group', 'consumer_group', or other queue types.",
+  "audioId": "AUDIO_SEG03_01_02_NEW_FIELDS_V2",
+  "generatedAt": "2025-06-01T02:33:17.441241",
+  "audioFile": "AUDIO_SEG03_01_02_NEW_FIELDS_V2.mp3",
+  "voice": "en-US-JennyNeural",
+  "audioGenerated": true,
+  "voiceType": "adult_professional"
+}

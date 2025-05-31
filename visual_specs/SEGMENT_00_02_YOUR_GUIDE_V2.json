@@ -1,0 +1,299 @@
+{
+  "visualType": "animated-diagram",
+  "visualId": "visual-journey-map-v2",
+  "title": "Your Guide and Journey Overview",
+  "canvas": {
+    "width": 1920,
+    "height": 1080,
+    "background": {
+      "type": "gradient",
+      "gradient": {
+        "type": "radial",
+        "center": {"x": 960, "y": 540},
+        "radius": 1000,
+        "stops": [
+          {"offset": 0, "color": "#ffffff"},
+          {"offset": 60, "color": "#f8f9fa"},
+          {"offset": 100, "color": "#e8f0fe"}
+        ]
+      }
+    }
+  },
+  "components": [
+    {
+      "type": "instructor-avatar",
+      "id": "guide-avatar",
+      "position": {"x": 960, "y": 150},
+      "properties": {
+        "size": 120,
+        "style": "professional",
+        "glow": {
+          "color": "#1a73e8",
+          "radius": 20,
+          "opacity": 0.3
+        }
+      }
+    },
+    {
+      "type": "text",
+      "id": "guide-intro",
+      "content": "Your Journey Through Kafka Monitoring",
+      "position": {"x": 960, "y": 280},
+      "style": {
+        "fontSize": 36,
+        "fontWeight": 400,
+        "color": "#202124",
+        "textAlign": "center"
+      }
+    },
+    {
+      "type": "journey-path",
+      "id": "learning-path",
+      "position": {"x": 960, "y": 540},
+      "path": {
+        "type": "curved",
+        "points": [
+          {"x": 200, "y": 0, "label": "Start"},
+          {"x": 600, "y": -100, "label": "Fundamentals"},
+          {"x": 1000, "y": 0, "label": "Monitoring"},
+          {"x": 1400, "y": -100, "label": "Share Groups"},
+          {"x": 1720, "y": 0, "label": "Mastery"}
+        ],
+        "style": {
+          "stroke": "#1a73e8",
+          "strokeWidth": 4,
+          "fill": "none",
+          "dashArray": "10,5"
+        }
+      }
+    },
+    {
+      "type": "pillar-cards",
+      "id": "course-pillars",
+      "position": {"x": 960, "y": 600},
+      "cards": [
+        {
+          "id": "pillar-1",
+          "title": "Kafka Fundamentals",
+          "subtitle": "The Foundation",
+          "icon": "layers",
+          "color": "#1a73e8",
+          "position": {"x": -400, "y": 0},
+          "content": [
+            "Core concepts",
+            "Architecture patterns",
+            "Consumer groups"
+          ]
+        },
+        {
+          "id": "pillar-2",
+          "title": "Monitoring & Metrics",
+          "subtitle": "The Insights",
+          "icon": "analytics",
+          "color": "#34a853",
+          "position": {"x": 0, "y": 0},
+          "content": [
+            "JMX monitoring",
+            "Metric collection",
+            "Dashboard design"
+          ]
+        },
+        {
+          "id": "pillar-3",
+          "title": "Share Groups 4.0",
+          "subtitle": "The Innovation",
+          "icon": "share",
+          "color": "#ea4335",
+          "position": {"x": 400, "y": 0},
+          "content": [
+            "Queue semantics",
+            "Cooperative consumption",
+            "New metrics"
+          ],
+          "badge": {
+            "text": "NEW",
+            "color": "#ea4335",
+            "pulse": true
+          }
+        }
+      ]
+    },
+    {
+      "type": "feature-highlight",
+      "id": "share-groups-callout",
+      "position": {"x": 1360, "y": 450},
+      "properties": {
+        "style": "attention",
+        "arrow": {
+          "from": {"x": 0, "y": 0},
+          "to": {"x": 0, "y": 150},
+          "curve": 0.3
+        }
+      },
+      "content": {
+        "title": "Early Access Preview",
+        "text": "Kafka 4.0 Share Groups",
+        "style": {
+          "background": "#fef7e0",
+          "border": "#fbbc04",
+          "color": "#9e7e00"
+        }
+      }
+    },
+    {
+      "type": "progress-indicator",
+      "id": "journey-progress",
+      "position": {"x": 960, "y": 900},
+      "properties": {
+        "width": 600,
+        "height": 8,
+        "segments": 3,
+        "currentSegment": 0,
+        "style": {
+          "background": "#e8eaed",
+          "fill": "#1a73e8",
+          "borderRadius": 4
+        }
+      }
+    }
+  ],
+  "animations": [
+    {
+      "trigger": "onLoad",
+      "sequence": [
+        {
+          "action": "fadeIn",
+          "target": "guide-avatar",
+          "duration": 800,
+          "delay": 0,
+          "scale": {"from": 0.8, "to": 1}
+        },
+        {
+          "action": "typewriter",
+          "target": "guide-intro",
+          "duration": 2000,
+          "delay": 800,
+          "speed": 30
+        },
+        {
+          "action": "drawPath",
+          "target": "learning-path",
+          "duration": 3000,
+          "delay": 1500,
+          "easing": "ease-in-out"
+        },
+        {
+          "action": "slideInUp",
+          "target": "course-pillars.cards",
+          "duration": 1000,
+          "delay": 2500,
+          "stagger": 200,
+          "spring": {
+            "stiffness": 100,
+            "damping": 15
+          }
+        },
+        {
+          "action": "bounceIn",
+          "target": "share-groups-callout",
+          "duration": 800,
+          "delay": 4000
+        },
+        {
+          "action": "expandWidth",
+          "target": "journey-progress",
+          "duration": 1000,
+          "delay": 4500,
+          "from": 0,
+          "to": 600
+        }
+      ]
+    },
+    {
+      "trigger": "continuous",
+      "animations": [
+        {
+          "target": "guide-avatar",
+          "action": "glow",
+          "duration": 3000,
+          "repeat": "infinite",
+          "alternate": true
+        },
+        {
+          "target": "pillar-3.badge",
+          "action": "pulse",
+          "duration": 2000,
+          "repeat": "infinite",
+          "scale": {"min": 1, "max": 1.2}
+        },
+        {
+          "target": "learning-path",
+          "action": "dash-animate",
+          "duration": 10000,
+          "repeat": "infinite"
+        }
+      ]
+    }
+  ],
+  "interactions": [
+    {
+      "type": "hover",
+      "target": "course-pillars.cards",
+      "action": "expand",
+      "properties": {
+        "scale": 1.05,
+        "shadow": "0 12px 24px rgba(0,0,0,0.15)",
+        "showContent": true
+      }
+    },
+    {
+      "type": "click",
+      "target": "course-pillars.cards",
+      "action": "showDetails",
+      "modal": {
+        "title": "{card.title}",
+        "content": "{card.detailedContent}",
+        "actions": ["Learn More", "Close"]
+      }
+    },
+    {
+      "type": "hover",
+      "target": "learning-path.points",
+      "action": "showTooltip",
+      "content": {
+        "Start": "Begin your journey here",
+        "Fundamentals": "Master Kafka basics",
+        "Monitoring": "Learn JMX and metrics",
+        "Share Groups": "Explore Kafka 4.0 features",
+        "Mastery": "Become a Kafka expert"
+      }
+    },
+    {
+      "type": "pause_and_reflect",
+      "triggerAt": 20,
+      "duration": 5000,
+      "overlay": {
+        "type": "thought-bubble",
+        "position": {"x": 960, "y": 400},
+        "content": "Can you recall the three main pillars of this course?",
+        "revealAnswer": {
+          "delay": 5000,
+          "content": "1. Kafka Fundamentals\n2. Monitoring & Metrics\n3. Share Groups"
+        }
+      }
+    }
+  ],
+  "accessibility": {
+    "ariaLabel": "Journey overview showing three main course pillars: Kafka Fundamentals, Monitoring & Metrics, and Share Groups 4.0. A learning path connects all concepts from start to mastery.",
+    "descriptions": {
+      "guide-avatar": "Your instructor avatar",
+      "learning-path": "Visual representation of your learning journey",
+      "course-pillars": "Three main pillars of the course with detailed content",
+      "share-groups-callout": "Highlighting Kafka 4.0 Share Groups as early access preview"
+    },
+    "keyboardNavigation": {
+      "tabOrder": ["guide-avatar", "pillar-1", "pillar-2", "pillar-3", "share-groups-callout"],
+      "enterToActivate": true
+    }
+  }
+}

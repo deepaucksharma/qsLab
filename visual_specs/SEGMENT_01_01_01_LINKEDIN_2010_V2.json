@@ -1,0 +1,226 @@
+{
+  "visualType": "interactive-timeline",
+  "visualId": "visual-linkedin-crisis-timeline-v2",
+  "title": "The LinkedIn Data Crisis of 2010",
+  "canvas": {
+    "width": 1920,
+    "height": 1080,
+    "background": {
+      "type": "solid",
+      "color": "#1a1a1a",
+      "overlay": {
+        "type": "grid",
+        "color": "rgba(26, 115, 232, 0.1)",
+        "size": 50
+      }
+    }
+  },
+  "components": [
+    {
+      "type": "timeline-axis",
+      "id": "main-timeline",
+      "position": {"x": 960, "y": 540},
+      "properties": {
+        "orientation": "horizontal",
+        "length": 1600,
+        "markers": [
+          {"position": 0, "label": "2008", "type": "minor"},
+          {"position": 400, "label": "2009", "type": "minor"},
+          {"position": 800, "label": "2010", "type": "major", "highlight": true},
+          {"position": 1200, "label": "2011", "type": "minor"},
+          {"position": 1600, "label": "2012", "type": "minor"}
+        ],
+        "style": {
+          "stroke": "#4285f4",
+          "strokeWidth": 3,
+          "markerColor": "#8ab4f8"
+        }
+      }
+    },
+    {
+      "type": "data-pipeline-network",
+      "id": "tangled-network",
+      "position": {"x": 960, "y": 300},
+      "properties": {
+        "nodes": [
+          {"id": "db1", "label": "User DB", "type": "database", "position": {"x": -300, "y": -100}},
+          {"id": "db2", "label": "Activity DB", "type": "database", "position": {"x": -300, "y": 100}},
+          {"id": "db3", "label": "Profile DB", "type": "database", "position": {"x": -100, "y": 0}},
+          {"id": "app1", "label": "Search", "type": "application", "position": {"x": 100, "y": -150}},
+          {"id": "app2", "label": "Feed", "type": "application", "position": {"x": 100, "y": 0}},
+          {"id": "app3", "label": "Analytics", "type": "application", "position": {"x": 100, "y": 150}},
+          {"id": "service1", "label": "Email Service", "type": "service", "position": {"x": 300, "y": -100}},
+          {"id": "service2", "label": "Recommendation", "type": "service", "position": {"x": 300, "y": 100}}
+        ],
+        "connections": [
+          {"from": "db1", "to": "app1", "stress": 0.8},
+          {"from": "db1", "to": "app2", "stress": 0.9},
+          {"from": "db1", "to": "app3", "stress": 0.7},
+          {"from": "db2", "to": "app1", "stress": 0.6},
+          {"from": "db2", "to": "app2", "stress": 0.95},
+          {"from": "db2", "to": "service2", "stress": 0.8},
+          {"from": "db3", "to": "app1", "stress": 0.7},
+          {"from": "db3", "to": "service1", "stress": 0.6},
+          {"from": "app1", "to": "service1", "stress": 0.5},
+          {"from": "app2", "to": "service2", "stress": 0.85},
+          {"from": "app3", "to": "service1", "stress": 0.6},
+          {"from": "app3", "to": "service2", "stress": 0.7}
+        ],
+        "style": {
+          "nodeSize": 60,
+          "connectionStyle": "curved",
+          "stressColors": {
+            "low": "#34a853",
+            "medium": "#fbbc04",
+            "high": "#ea4335"
+          }
+        }
+      }
+    },
+    {
+      "type": "metric-display",
+      "id": "crisis-metrics",
+      "position": {"x": 960, "y": 750},
+      "metrics": [
+        {
+          "id": "pipelines",
+          "label": "Point-to-Point Pipelines",
+          "value": 0,
+          "targetValue": 142,
+          "unit": "",
+          "color": "#ea4335"
+        },
+        {
+          "id": "maintenance",
+          "label": "Maintenance Hours/Week",
+          "value": 0,
+          "targetValue": 320,
+          "unit": "hrs",
+          "color": "#fbbc04"
+        },
+        {
+          "id": "latency",
+          "label": "Data Latency",
+          "value": 0,
+          "targetValue": 24,
+          "unit": "hrs",
+          "color": "#ea4335"
+        }
+      ]
+    },
+    {
+      "type": "text-overlay",
+      "id": "crisis-quote",
+      "position": {"x": 960, "y": 900},
+      "content": "\"Every new data integration looks like adding another strand to an already tangled ball of yarn.\"",
+      "style": {
+        "fontSize": 24,
+        "fontStyle": "italic",
+        "color": "#8ab4f8",
+        "textAlign": "center",
+        "maxWidth": 800
+      }
+    }
+  ],
+  "animations": [
+    {
+      "trigger": "onLoad",
+      "sequence": [
+        {
+          "action": "drawTimeline",
+          "target": "main-timeline",
+          "duration": 2000,
+          "delay": 0
+        },
+        {
+          "action": "fadeIn",
+          "target": "tangled-network.nodes",
+          "duration": 500,
+          "delay": 1000,
+          "stagger": 100
+        },
+        {
+          "action": "drawConnections",
+          "target": "tangled-network.connections",
+          "duration": 2000,
+          "delay": 2000,
+          "stagger": 50,
+          "animateStress": true
+        },
+        {
+          "action": "countUp",
+          "target": "crisis-metrics.metrics",
+          "duration": 3000,
+          "delay": 3000,
+          "easing": "ease-out"
+        },
+        {
+          "action": "typewriter",
+          "target": "crisis-quote",
+          "duration": 3000,
+          "delay": 4000,
+          "speed": 40
+        }
+      ]
+    },
+    {
+      "trigger": "continuous",
+      "animations": [
+        {
+          "target": "tangled-network.connections",
+          "action": "pulseStress",
+          "duration": 2000,
+          "repeat": "infinite",
+          "intensity": "stress-based"
+        }
+      ]
+    }
+  ],
+  "interactions": [
+    {
+      "type": "hover_to_explore",
+      "target": "tangled-network.connections",
+      "action": "showMaintenanceBurden",
+      "tooltip": {
+        "template": "Connection: {from} → {to}\nStress Level: {stress}%\nMaintenance: {hours} hrs/week\nIssues: {issues}",
+        "data": {
+          "hours": "stress * 10",
+          "issues": ["Schema mismatch", "Version conflicts", "Sync delays"]
+        }
+      },
+      "highlight": {
+        "connection": true,
+        "connectedNodes": true,
+        "dimOthers": 0.3
+      }
+    },
+    {
+      "type": "click",
+      "target": "tangled-network.nodes",
+      "action": "showNodeDetails",
+      "modal": {
+        "title": "{node.label} Details",
+        "content": {
+          "connections": "{node.connectionCount}",
+          "dataVolume": "{node.volume} GB/day",
+          "issues": "{node.commonIssues}"
+        }
+      }
+    },
+    {
+      "type": "timeline-scrub",
+      "target": "main-timeline",
+      "action": "updateNetworkComplexity",
+      "showYearIndicator": true,
+      "snapToMarkers": true
+    }
+  ],
+  "accessibility": {
+    "ariaLabel": "Interactive timeline showing LinkedIn's data integration crisis in 2010. The visualization displays a complex network of point-to-point connections between databases, applications, and services, highlighting the maintenance burden.",
+    "descriptions": {
+      "tangled-network": "Network diagram showing 8 systems with 12 interconnected data pipelines",
+      "crisis-metrics": "Key metrics showing 142 pipelines requiring 320 maintenance hours per week",
+      "main-timeline": "Timeline from 2008 to 2012 with 2010 highlighted as the crisis year"
+    }
+  }
+}

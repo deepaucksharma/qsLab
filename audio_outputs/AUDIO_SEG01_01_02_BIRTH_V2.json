@@ -1,0 +1,12 @@
+{
+  "segmentId": "SEGMENT_01_01_02_BIRTH_OF_KAFKA_V2",
+  "segmentType": "origin_story",
+  "title": "The Birth of Apache Kafka",
+  "text": "This is the world that gave birth to Apache Kafka. Kafka emerged to solve a fundamental problem: how do you handle massive streams of real-time data in a way that's scalable, fault-tolerant, and doesn't create a maintenance nightmare?",
+  "audioId": "AUDIO_SEG01_01_02_BIRTH_V2",
+  "generatedAt": "2025-06-01T02:32:50.006526",
+  "audioFile": "AUDIO_SEG01_01_02_BIRTH_V2.mp3",
+  "voice": "en-US-AriaNeural",
+  "audioGenerated": true,
+  "voiceType": "adult_professional"
+}

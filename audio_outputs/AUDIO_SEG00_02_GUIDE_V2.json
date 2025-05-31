@@ -1,0 +1,12 @@
+{
+  "segmentId": "SEGMENT_00_02_YOUR_GUIDE_V2",
+  "segmentType": "instructor_introduction",
+  "title": "Your Guide and Journey Overview",
+  "text": "I'm your guide through this journey, and together we'll explore everything from Kafka's fundamental concepts to the exciting new Share Groups feature that's now available in Kafka 4.0 as an early access preview.",
+  "audioId": "AUDIO_SEG00_02_GUIDE_V2",
+  "generatedAt": "2025-06-01T02:32:48.480288",
+  "audioFile": "AUDIO_SEG00_02_GUIDE_V2.mp3",
+  "voice": "en-US-AriaNeural",
+  "audioGenerated": true,
+  "voiceType": "adult_professional"
+}

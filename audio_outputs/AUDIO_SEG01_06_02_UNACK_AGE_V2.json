@@ -1,0 +1,12 @@
+{
+  "segmentId": "SEGMENT_01_06_02_UNACK_AGE_MS_V2",
+  "segmentType": "new_metric_deep_dive",
+  "title": "Metric Deep Dive: unacknowledged_age_ms",
+  "text": "A crucial metric introduced with Share Groups is 'unacknowledged_age_ms'. This tracks the age of the oldest message that has been delivered to a consumer but not yet acknowledged. Think of it as the 'time-in-waiting' for your longest pending task.",
+  "audioId": "AUDIO_SEG01_06_02_UNACK_AGE_V2",
+  "generatedAt": "2025-06-01T02:33:02.894841",
+  "audioFile": "AUDIO_SEG01_06_02_UNACK_AGE_V2.mp3",
+  "voice": "en-US-ChristopherNeural",
+  "audioGenerated": true,
+  "voiceType": "adult_professional"
+}

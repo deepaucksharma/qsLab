@@ -1,0 +1,12 @@
+{
+  "segmentId": "SEGMENT_01_06_01_INTRO_SG_METRICS_V2",
+  "segmentType": "metrics_overview",
+  "title": "Why Traditional Metrics Don't Work",
+  "text": "With Share Groups, traditional consumer lag becomes meaningless. A Share Group might show zero lag while hundreds of messages sit unacknowledged. We need entirely new metrics to understand queue health.",
+  "audioId": "AUDIO_SEG01_06_01_INTRO_METRICS_V2",
+  "generatedAt": "2025-06-01T02:33:00.349923",
+  "audioFile": "AUDIO_SEG01_06_01_INTRO_METRICS_V2.mp3",
+  "voice": "en-US-GuyNeural",
+  "audioGenerated": true,
+  "voiceType": "adult_professional"
+}

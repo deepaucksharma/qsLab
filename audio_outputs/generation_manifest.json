@@ -1,0 +1,134 @@
+{
+  "generatedAt": "2025-06-01T02:33:30.000000",
+  "totalSegments": 29,
+  "successfullyProcessed": 29,
+  "failed": 0,
+  "voicePolicy": "adult_professional_only",
+  "voicesUsed": [
+    "en-US-EricNeural",
+    "en-US-AriaNeural",
+    "en-US-ChristopherNeural",
+    "en-US-JennyNeural",
+    "en-US-GuyNeural",
+    "en-US-MichelleNeural"
+  ],
+  "notes": "All audio regenerated with adult professional voices only. No child or young-sounding voices used.",
+  "audioFiles": [
+    {
+      "filename": "AUDIO_SEG00_01_WELCOME_V2.mp3",
+      "voice": "en-US-EricNeural"
+    },
+    {
+      "filename": "AUDIO_SEG00_02_GUIDE_V2.mp3",
+      "voice": "en-US-AriaNeural"
+    },
+    {
+      "filename": "AUDIO_SEG01_01_01_LINKEDIN_V2.mp3",
+      "voice": "en-US-ChristopherNeural"
+    },
+    {
+      "filename": "AUDIO_SEG01_01_02_BIRTH_V2.mp3",
+      "voice": "en-US-AriaNeural"
+    },
+    {
+      "filename": "AUDIO_SEG01_01_03_NOT_QUEUE_V2.mp3",
+      "voice": "en-US-JennyNeural"
+    },
+    {
+      "filename": "AUDIO_SEG01_02_01_TOPICS_V2.mp3",
+      "voice": "en-US-ChristopherNeural"
+    },
+    {
+      "filename": "AUDIO_SEG01_02_03_PARTITIONS_V2.mp3",
+      "voice": "en-US-GuyNeural"
+    },
+    {
+      "filename": "AUDIO_SEG01_02_05_OFFSETS_V2.mp3",
+      "voice": "en-US-GuyNeural"
+    },
+    {
+      "filename": "AUDIO_SEG01_05_01_LIMITS_V2.mp3",
+      "voice": "en-US-GuyNeural"
+    },
+    {
+      "filename": "AUDIO_SEG01_05_02_KIP932_V2.mp3",
+      "voice": "en-US-JennyNeural"
+    },
+    {
+      "filename": "AUDIO_SEG01_05_03_COOPERATIVE_V2.mp3",
+      "voice": "en-US-ChristopherNeural"
+    },
+    {
+      "filename": "AUDIO_SEG01_06_01_INTRO_METRICS_V2.mp3",
+      "voice": "en-US-GuyNeural"
+    },
+    {
+      "filename": "AUDIO_SEG01_06_02_UNACK_AGE_V2.mp3",
+      "voice": "en-US-ChristopherNeural"
+    },
+    {
+      "filename": "AUDIO_SEG01_06_03_REDELIVERY_V2.mp3",
+      "voice": "en-US-ChristopherNeural"
+    },
+    {
+      "filename": "AUDIO_SEG01_06_04_LOCK_DURATION_V2.mp3",
+      "voice": "en-US-ChristopherNeural"
+    },
+    {
+      "filename": "AUDIO_SEG02_01_01_JMX_INTRO_V2.mp3",
+      "voice": "en-US-GuyNeural"
+    },
+    {
+      "filename": "AUDIO_SEG02_01_02_MBEANS_V2.mp3",
+      "voice": "en-US-ChristopherNeural"
+    },
+    {
+      "filename": "AUDIO_SEG02_02_01_CATEGORIES_V2.mp3",
+      "voice": "en-US-GuyNeural"
+    },
+    {
+      "filename": "AUDIO_SEG02_02_02_SG_MBEANS_V2.mp3",
+      "voice": "en-US-AriaNeural"
+    },
+    {
+      "filename": "AUDIO_SEG02_03_01_MICROMETER_V2.mp3",
+      "voice": "en-US-ChristopherNeural"
+    },
+    {
+      "filename": "AUDIO_SEG02_03_02_CONFIG_V2.mp3",
+      "voice": "en-US-GuyNeural"
+    },
+    {
+      "filename": "AUDIO_SEG02_03_03_CHOOSING_V2.mp3",
+      "voice": "en-US-GuyNeural"
+    },
+    {
+      "filename": "AUDIO_SEG03_01_01_QS_INTRO_V2.mp3",
+      "voice": "en-US-GuyNeural"
+    },
+    {
+      "filename": "AUDIO_SEG03_01_02_NEW_FIELDS_V2.mp3",
+      "voice": "en-US-JennyNeural"
+    },
+    {
+      "filename": "AUDIO_SEG03_01_03_EXAMPLE_V2.mp3",
+      "voice": "en-US-EricNeural"
+    },
+    {
+      "filename": "AUDIO_SEG03_02_01_ARCH_V2.mp3",
+      "voice": "en-US-GuyNeural"
+    },
+    {
+      "filename": "AUDIO_SEG03_02_02_TRANSFORM_V2.mp3",
+      "voice": "en-US-GuyNeural"
+    },
+    {
+      "filename": "AUDIO_SEG03_03_01_UI_NAV_V2.mp3",
+      "voice": "en-US-MichelleNeural"
+    },
+    {
+      "filename": "AUDIO_SEG03_03_02_DASHBOARDS_V2.mp3",
+      "voice": "en-US-GuyNeural"
+    }
+  ]
+}
