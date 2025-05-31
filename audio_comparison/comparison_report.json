@@ -19,6 +19,14 @@
       "total_size_kb": 378.54,
       "avg_size_kb": 378.54,
       "format": ".wav"
+    },
+    "tacotron2": {
+      "files": 5,
+      "total_size_kb": 2287.87,
+      "avg_size_kb": 457.57,
+      "format": ".wav",
+      "notes": "Original high-quality Tacotron2-DDC model"
     }
-  }
+  },
+  "updated_at": "2025-06-01T01:13:39.077218"
 }

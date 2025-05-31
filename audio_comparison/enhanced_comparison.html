@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>TTS Audio Quality Comparison - Neural Learn</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; margin: 0; background: #1a1a2e; color: #eee; }
+        .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+        .header { text-align: center; padding: 40px 0; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); margin: -20px -20px 30px; }
+        h1 { margin: 0; font-size: 2.5em; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+        .subtitle { margin-top: 10px; opacity: 0.9; }
+        
+        .summary { background: #16213e; padding: 20px; border-radius: 10px; margin-bottom: 30px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
+        .stat-card { background: #0f3460; padding: 15px; border-radius: 8px; text-align: center; }
+        .stat-value { font-size: 2em; font-weight: bold; color: #667eea; }
+        .stat-label { opacity: 0.8; margin-top: 5px; }
+        
+        .segment { margin: 30px 0; background: #16213e; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+        .segment-header { background: #0f3460; padding: 20px; }
+        .segment h2 { margin: 0; color: #fff; }
+        .segment-type { display: inline-block; background: #667eea; color: white; padding: 4px 12px; border-radius: 15px; font-size: 0.85em; margin-left: 10px; }
+        .segment-text { padding: 15px 20px; font-style: italic; opacity: 0.9; border-left: 4px solid #667eea; margin: 0 20px; background: rgba(102, 126, 234, 0.1); }
+        
+        .engines { padding: 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+        .engine { background: #0f3460; padding: 20px; border-radius: 10px; transition: transform 0.2s; }
+        .engine:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3); }
+        .engine h3 { margin: 0 0 15px 0; color: #667eea; display: flex; justify-content: space-between; align-items: center; }
+        .quality-badge { font-size: 0.7em; padding: 3px 8px; border-radius: 10px; background: #667eea; color: white; }
+        audio { width: 100%; margin: 10px 0; }
+        .info { display: flex; justify-content: space-between; font-size: 0.85em; opacity: 0.7; margin-top: 10px; }
+        
+        .legend { background: #16213e; padding: 20px; border-radius: 10px; margin-top: 40px; }
+        .legend h3 { color: #667eea; margin-bottom: 15px; }
+        .legend-item { display: flex; align-items: center; margin: 10px 0; }
+        .legend-color { width: 20px; height: 20px; border-radius: 4px; margin-right: 10px; }
+        
+        @media (max-width: 768px) {
+            .engines { grid-template-columns: 1fr; }
+            h1 { font-size: 1.8em; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎙️ TTS Audio Quality Comparison</h1>
+            <div class="subtitle">Compare different Text-to-Speech engines for Neural Learn</div>
+        </div>
+        
+        <div class="summary">
+            <div class="stat-card">
+                <div class="stat-value">4</div>
+                <div class="stat-label">TTS Engines</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">5</div>
+                <div class="stat-label">Sample Segments</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">Quality</div>
+                <div class="stat-label">Comparison Focus</div>
+            </div>
+        </div>
+
+        <div class="segment">
+            <div class="segment-header">
+                <h2>SEG00_01_WELCOME <span class="segment-type">Course Opening</span></h2>
+            </div>
+            <div class="segment-text">"Welcome to the Kafka Monitoring with Share Groups course! I'm excited to guide you through this comprehensive journey into advanced Kafka monitoring concepts."</div>
+            <div class="engines">
+
+                <div class="engine">
+                    <h3>
+                        Tacotron2-DDC
+                        <span class="quality-badge" style="background: #4ade80">HIGH</span>
+                    </h3>
+                    <audio controls preload="none">
+                        <source src="tacotron2/SEG00_01_WELCOME.wav" type="audio/wav">
+                    </audio>
+                    <div class="info">
+                        <span>.WAV • 457.6 KB</span>
+                        <span>Original production quality</span>
+                    </div>
+                </div>
+
+                <div class="engine">
+                    <h3>
+                        Edge TTS (Microsoft)
+                        <span class="quality-badge" style="background: #60a5fa">GOOD</span>
+                    </h3>
+                    <audio controls preload="none">
+                        <source src="edge_tts/SEG00_01_WELCOME.mp3" type="audio/mp3">
+                    </audio>
+                    <div class="info">
+                        <span>.MP3 • 59.2 KB</span>
+                        <span>Neural voices, multi-speaker</span>
+                    </div>
+                </div>
+
+                <div class="engine">
+                    <h3>
+                        Google TTS
+                        <span class="quality-badge" style="background: #fbbf24">FAIR</span>
+                    </h3>
+                    <audio controls preload="none">
+                        <source src="gtts/SEG00_01_WELCOME.mp3" type="audio/mp3">
+                    </audio>
+                    <div class="info">
+                        <span>.MP3 • 86.8 KB</span>
+                        <span>Simple, cloud-based</span>
+                    </div>
+                </div>
+
+                <div class="engine">
+                    <h3>
+                        pyttsx3
+                        <span class="quality-badge" style="background: #f87171">BASIC</span>
+                    </h3>
+                    <audio controls preload="none">
+                        <source src="pyttsx3/SEG00_01_WELCOME.wav" type="audio/wav">
+                    </audio>
+                    <div class="info">
+                        <span>.WAV • 378.5 KB</span>
+                        <span>Offline, system voices</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="segment">
+            <div class="segment-header">
+                <h2>SEG01_01_TECHNICAL <span class="segment-type">Technical Introduction</span></h2>
+            </div>
+            <div class="segment-text">"Kafka's architecture consists of brokers, topics, partitions, and consumer groups. Each component plays a crucial role in the distributed messaging system."</div>
+            <div class="engines">
+
+                <div class="engine">
+                    <h3>
+                        Tacotron2-DDC
+                        <span class="quality-badge" style="background: #4ade80">HIGH</span>
+                    </h3>
+                    <audio controls preload="none">
+                        <source src="tacotron2/SEG01_01_TECHNICAL.wav" type="audio/wav">
+                    </audio>
+                    <div class="info">
+                        <span>.WAV • 457.6 KB</span>
+                        <span>Original production quality</span>
+                    </div>
+                </div>
+
+                <div class="engine">
+                    <h3>
+                        Edge TTS (Microsoft)
+                        <span class="quality-badge" style="background: #60a5fa">GOOD</span>
+                    </h3>
+                    <audio controls preload="none">
+                        <source src="edge_tts/SEG01_01_TECHNICAL.mp3" type="audio/mp3">
+                    </audio>
+                    <div class="info">
+                        <span>.MP3 • 60.5 KB</span>
+                        <span>Neural voices, multi-speaker</span>
+                    </div>
+                </div>
+
+                <div class="engine">
+                    <h3>
+                        Google TTS
+                        <span class="quality-badge" style="background: #fbbf24">FAIR</span>
+                    </h3>
+                    <audio controls preload="none">
+                        <source src="gtts/SEG01_01_TECHNICAL.mp3" type="audio/mp3">
+                    </audio>
+                    <div class="info">
+                        <span>.MP3 • 97.7 KB</span>
+                        <span>Simple, cloud-based</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="segment">
+            <div class="segment-header">
+                <h2>SEG01_02_CONCEPT <span class="segment-type">Concept Explanation</span></h2>
+            </div>
+            <div class="segment-text">"Share Groups represent a paradigm shift in how we think about message consumption. Unlike traditional consumer groups, they enable multiple consumers to share the same messages dynamically."</div>
+            <div class="engines">
+
+                <div class="engine">
+                    <h3>
+                        Tacotron2-DDC
+                        <span class="quality-badge" style="background: #4ade80">HIGH</span>
+                    </h3>
+                    <audio controls preload="none">
+                        <source src="tacotron2/SEG01_02_CONCEPT.wav" type="audio/wav">
+                    </audio>
+                    <div class="info">
+                        <span>.WAV • 457.6 KB</span>
+                        <span>Original production quality</span>
+                    </div>
+                </div>
+
+                <div class="engine">
+                    <h3>
+                        Edge TTS (Microsoft)
+                        <span class="quality-badge" style="background: #60a5fa">GOOD</span>
+                    </h3>
+                    <audio controls preload="none">
+                        <source src="edge_tts/SEG01_02_CONCEPT.mp3" type="audio/mp3">
+                    </audio>
+                    <div class="info">
+                        <span>.MP3 • 69.6 KB</span>
+                        <span>Neural voices, multi-speaker</span>
+                    </div>
+                </div>
+
+                <div class="engine">
+                    <h3>
+                        Google TTS
+                        <span class="quality-badge" style="background: #fbbf24">FAIR</span>
+                    </h3>
+                    <audio controls preload="none">
+                        <source src="gtts/SEG01_02_CONCEPT.mp3" type="audio/mp3">
+                    </audio>
+                    <div class="info">
+                        <span>.MP3 • 107.4 KB</span>
+                        <span>Simple, cloud-based</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="segment">
+            <div class="segment-header">
+                <h2>SEG02_01_METRICS <span class="segment-type">Metrics Overview</span></h2>
+            </div>
+            <div class="segment-text">"Key metrics to monitor include consumer lag, partition distribution, and rebalance frequency. These indicators help maintain optimal cluster performance."</div>
+            <div class="engines">
+
+                <div class="engine">
+                    <h3>
+                        Tacotron2-DDC
+                        <span class="quality-badge" style="background: #4ade80">HIGH</span>
+                    </h3>
+                    <audio controls preload="none">
+                        <source src="tacotron2/SEG02_01_METRICS.wav" type="audio/wav">
+                    </audio>
+                    <div class="info">
+                        <span>.WAV • 457.6 KB</span>
+                        <span>Original production quality</span>
+                    </div>
+                </div>
+
+                <div class="engine">
+                    <h3>
+                        Edge TTS (Microsoft)
+                        <span class="quality-badge" style="background: #60a5fa">GOOD</span>
+                    </h3>
+                    <audio controls preload="none">
+                        <source src="edge_tts/SEG02_01_METRICS.mp3" type="audio/mp3">
+                    </audio>
+                    <div class="info">
+                        <span>.MP3 • 66.0 KB</span>
+                        <span>Neural voices, multi-speaker</span>
+                    </div>
+                </div>
+
+                <div class="engine">
+                    <h3>
+                        Google TTS
+                        <span class="quality-badge" style="background: #fbbf24">FAIR</span>
+                    </h3>
+                    <audio controls preload="none">
+                        <source src="gtts/SEG02_01_METRICS.mp3" type="audio/mp3">
+                    </audio>
+                    <div class="info">
+                        <span>.MP3 • 93.2 KB</span>
+                        <span>Simple, cloud-based</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="segment">
+            <div class="segment-header">
+                <h2>SEG03_01_CODE <span class="segment-type">Code Walkthrough</span></h2>
+            </div>
+            <div class="segment-text">"Let's examine the code implementation. First, we initialize the consumer with the new share group configuration, then we process messages using the acknowledgment API."</div>
+            <div class="engines">
+
+                <div class="engine">
+                    <h3>
+                        Tacotron2-DDC
+                        <span class="quality-badge" style="background: #4ade80">HIGH</span>
+                    </h3>
+                    <audio controls preload="none">
+                        <source src="tacotron2/SEG03_01_CODE.wav" type="audio/wav">
+                    </audio>
+                    <div class="info">
+                        <span>.WAV • 457.6 KB</span>
+                        <span>Original production quality</span>
+                    </div>
+                </div>
+
+                <div class="engine">
+                    <h3>
+                        Edge TTS (Microsoft)
+                        <span class="quality-badge" style="background: #60a5fa">GOOD</span>
+                    </h3>
+                    <audio controls preload="none">
+                        <source src="edge_tts/SEG03_01_CODE.mp3" type="audio/mp3">
+                    </audio>
+                    <div class="info">
+                        <span>.MP3 • 62.7 KB</span>
+                        <span>Neural voices, multi-speaker</span>
+                    </div>
+                </div>
+
+                <div class="engine">
+                    <h3>
+                        Google TTS
+                        <span class="quality-badge" style="background: #fbbf24">FAIR</span>
+                    </h3>
+                    <audio controls preload="none">
+                        <source src="gtts/SEG03_01_CODE.mp3" type="audio/mp3">
+                    </audio>
+                    <div class="info">
+                        <span>.MP3 • 98.4 KB</span>
+                        <span>Simple, cloud-based</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="legend">
+            <h3>Quality Ratings</h3>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #4ade80"></div>
+                <span><strong>HIGH</strong> - Production quality, natural prosody, clear pronunciation</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #60a5fa"></div>
+                <span><strong>GOOD</strong> - Good quality, neural TTS, suitable for most uses</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #fbbf24"></div>
+                <span><strong>FAIR</strong> - Acceptable quality, some robotic elements</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #f87171"></div>
+                <span><strong>BASIC</strong> - Basic quality, system TTS voices</span>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
