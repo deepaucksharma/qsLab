@@ -1,0 +1,15 @@
+{
+  "audioId": "AUDIO_SEG03_02_02_TRANSFORM_V2",
+  "text": "The heart of our OHI is the transformation logic. We aggregate per-partition metrics, calculate derived values like error rates, and ensure every QueueSample event has the new shareGroupId and processingMode fields properly set.",
+  "generatedAt": "2025-05-31T23:37:35.123555",
+  "metadata": {
+    "segmentId": "SEGMENT_03_02_02_TRANSFORMATION_LOGIC_V2",
+    "lessonId": "LESSON_03_NEWRELIC_INTEGRATION_V2",
+    "episodeId": "EPISODE_03_02_CUSTOM_OHI_DEVELOPMENT_V2",
+    "title": "Transforming Metrics to QueueSample v2"
+  },
+  "model": "Tacotron2-DDC",
+  "quality": "high",
+  "device": "cpu",
+  "speaker": null
+}

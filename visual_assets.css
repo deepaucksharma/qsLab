@@ -1,0 +1,390 @@
+/* Visual Asset System Styles */
+
+/* Visual Asset Placeholder */
+.visual-asset-placeholder {
+    position: relative;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px;
+}
+
+.visual-asset-placeholder.loading {
+    background: linear-gradient(
+        135deg,
+        rgba(102, 126, 234, 0.05) 0%,
+        rgba(240, 147, 251, 0.05) 100%
+    );
+}
+
+/* Asset Loader Animation */
+.asset-loader {
+    width: 48px;
+    height: 48px;
+    position: relative;
+}
+
+.asset-loader::before,
+.asset-loader::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border: 3px solid transparent;
+    border-radius: 50%;
+    animation: assetLoaderSpin 1.5s linear infinite;
+}
+
+.asset-loader::before {
+    border-top-color: var(--primary-color);
+    animation-delay: 0;
+}
+
+.asset-loader::after {
+    border-bottom-color: var(--secondary-color);
+    animation-delay: 0.25s;
+}
+
+@keyframes assetLoaderSpin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Visual Asset Container */
+.visual-asset-container {
+    position: relative;
+    width: 100%;
+    background: var(--bg-dark);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.visual-asset-container.fullscreen {
+    background: black;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Visual Asset Image */
+.visual-asset-image {
+    display: block;
+    width: 100%;
+    height: auto;
+    transition: transform var(--transition-base);
+    transform-origin: center;
+}
+
+.visual-asset-image.zoomable {
+    cursor: grab;
+    user-select: none;
+}
+
+.visual-asset-image.zoomable:active {
+    cursor: grabbing;
+}
+
+/* Visual Asset Caption */
+.visual-asset-caption {
+    padding: var(--spacing-md);
+    background: var(--glass-bg);
+    border-top: 1px solid var(--glass-border);
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    text-align: center;
+    font-style: italic;
+}
+
+/* Zoom Controls */
+.zoom-controls {
+    position: absolute;
+    top: var(--spacing-md);
+    right: var(--spacing-md);
+    display: flex;
+    gap: var(--spacing-sm);
+    background: var(--glass-bg);
+    padding: var(--spacing-xs);
+    border-radius: var(--radius-md);
+    backdrop-filter: blur(10px);
+    opacity: 0;
+    transition: opacity var(--transition-fast);
+}
+
+.visual-asset-container:hover .zoom-controls {
+    opacity: 1;
+}
+
+.zoom-btn {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.zoom-btn:hover {
+    background: var(--primary-color);
+    color: white;
+    transform: scale(1.1);
+}
+
+.zoom-btn:active {
+    transform: scale(0.95);
+}
+
+/* Visual Asset Error State */
+.visual-asset-error {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-xl);
+    color: var(--text-muted);
+}
+
+.visual-asset-error i {
+    font-size: 2.5rem;
+    color: var(--danger-color);
+    opacity: 0.5;
+}
+
+.visual-asset-error p {
+    margin: 0;
+    font-size: 0.875rem;
+}
+
+.retry-btn {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    font-size: 0.875rem;
+}
+
+.retry-btn:hover {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+/* Visual Asset Grid */
+.visual-assets-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: var(--spacing-lg);
+    margin: var(--spacing-lg) 0;
+}
+
+/* Inline Visual Assets */
+.segment-visual {
+    margin: var(--spacing-lg) 0;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+}
+
+.segment-visual-left {
+    float: left;
+    margin-right: var(--spacing-lg);
+    margin-bottom: var(--spacing-md);
+    max-width: 40%;
+}
+
+.segment-visual-right {
+    float: right;
+    margin-left: var(--spacing-lg);
+    margin-bottom: var(--spacing-md);
+    max-width: 40%;
+}
+
+.segment-visual-center {
+    display: block;
+    margin: var(--spacing-lg) auto;
+    max-width: 80%;
+}
+
+/* Visual Asset Gallery */
+.visual-gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: var(--spacing-md);
+    margin: var(--spacing-lg) 0;
+}
+
+.visual-gallery .visual-asset-placeholder {
+    min-height: 150px;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.visual-gallery .visual-asset-placeholder:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Diagram Specific Styles */
+.diagram-container {
+    background: white;
+    padding: var(--spacing-lg);
+    border-radius: var(--radius-lg);
+    margin: var(--spacing-lg) 0;
+}
+
+.diagram-container .visual-asset-image {
+    background: white;
+}
+
+/* Architecture Diagram */
+.architecture-diagram {
+    min-height: 400px;
+    background: var(--glass-bg);
+    padding: var(--spacing-xl);
+}
+
+/* Metric Visualization */
+.metric-visualization-asset {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(240, 147, 251, 0.1));
+    padding: var(--spacing-lg);
+    border-radius: var(--radius-lg);
+}
+
+/* Screenshot Style */
+.screenshot-asset {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--glass-border);
+}
+
+/* Icon Visual */
+.icon-visual {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto var(--spacing-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    border-radius: var(--radius-full);
+    color: white;
+    font-size: 2rem;
+}
+
+/* Loading States */
+.visual-loading-skeleton {
+    background: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0.1) 25%,
+        rgba(255, 255, 255, 0.2) 50%,
+        rgba(255, 255, 255, 0.1) 75%
+    );
+    background-size: 200% 100%;
+    animation: skeleton 1.5s infinite;
+}
+
+@keyframes skeleton {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .segment-visual-left,
+    .segment-visual-right {
+        float: none;
+        max-width: 100%;
+        margin: var(--spacing-lg) 0;
+    }
+    
+    .visual-assets-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .visual-gallery {
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    }
+    
+    .zoom-controls {
+        opacity: 1;
+        top: var(--spacing-sm);
+        right: var(--spacing-sm);
+    }
+    
+    .zoom-btn {
+        width: 32px;
+        height: 32px;
+        font-size: 0.875rem;
+    }
+}
+
+/* Dark Mode Overrides */
+@media (prefers-color-scheme: dark) {
+    .diagram-container {
+        background: var(--bg-dark);
+        filter: invert(1) hue-rotate(180deg);
+    }
+    
+    .diagram-container .visual-asset-image {
+        filter: invert(1) hue-rotate(180deg);
+    }
+}
+
+/* Print Styles */
+@media print {
+    .zoom-controls {
+        display: none;
+    }
+    
+    .visual-asset-placeholder.loading {
+        display: none;
+    }
+    
+    .visual-asset-image {
+        max-width: 100%;
+        page-break-inside: avoid;
+    }
+}
+
+/* Animation Classes */
+.visual-fade-in {
+    animation: visualFadeIn 0.5s ease;
+}
+
+@keyframes visualFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.visual-slide-up {
+    animation: visualSlideUp 0.5s ease;
+}
+
+@keyframes visualSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

@@ -1,0 +1,15 @@
+{
+  "audioId": "AUDIO_SEG01_02_05_OFFSETS_V2",
+  "text": "Here's where it gets interesting. Each partition is an ordered, immutable sequence of messages. When a message arrives, it gets an offset\u2014think of it as a permanent street address. Partition 0, Offset 42 will always refer to the same message, forever.",
+  "generatedAt": "2025-05-31T23:35:14.809664",
+  "metadata": {
+    "segmentId": "SEGMENT_01_02_05_OFFSET_CONCEPT_V2",
+    "lessonId": "LESSON_01_KAFKA_FUNDAMENTALS_V2",
+    "episodeId": "EPISODE_01_02_CORE_ARCH_PART1_V2",
+    "title": "Offsets: Permanent Addresses for Messages"
+  },
+  "model": "Tacotron2-DDC",
+  "quality": "high",
+  "device": "cpu",
+  "speaker": null
+}

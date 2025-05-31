@@ -3,190 +3,220 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Neural Learn</title>
+    <title>Neural Learn - Course Platform</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="segment_styles.css">
+    <link rel="stylesheet" href="visual_assets.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
 </head>
 <body>
-    <!-- Minimal Navigation -->
-    <nav id="navbar">
-        <div class="nav-inner">
-            <div class="nav-left">
-                <span class="logo">Neural Learn</span>
-                <div class="breadcrumb" id="breadcrumb"></div>
+    <!-- Background Animation -->
+    <div class="animated-bg"></div>
+    
+    <!-- Main Application Container -->
+    <div id="app" class="app-container">
+        
+        <!-- Header with Progress -->
+        <header class="app-header glass-effect">
+            <div class="header-left">
+                <button class="menu-toggle" id="menuToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1 class="app-title">Neural Learn</h1>
             </div>
-            <div class="nav-center">
-                <div class="mode-toggle">
-                    <button class="mode-btn active" data-mode="learn" onclick="switchMode('learn')">Learn</button>
-                    <button class="mode-btn" data-mode="create" onclick="switchMode('create')">Create</button>
-                </div>
-            </div>
-            <div class="nav-right">
-                <span class="progress-badge" id="progressBadge">0%</span>
-                <span class="streak-badge">🔥 <span id="streak">0</span></span>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Learn Mode - Fluid Grid Layout -->
-    <div id="learnMode" class="mode-container active">
-        <div class="fluid-grid">
             
-            <!-- Top Section: Course & Lesson Info -->
-            <section class="grid-section course-header">
-                <div class="course-selector-inline" id="courseSelectorInline"></div>
-                <h1 class="lesson-title" id="lessonTitle">Select a course to begin</h1>
-                <div class="lesson-meta" id="lessonMeta"></div>
-            </section>
-
-            <!-- Main Content Grid -->
-            <div class="content-grid">
+            <!-- Breadcrumb Navigation -->
+            <nav class="breadcrumb-nav" id="breadcrumbNav">
+                <span class="breadcrumb-item">Courses</span>
+            </nav>
+            
+            <div class="header-right">
+                <!-- Points Display -->
+                <div class="points-display">
+                    <i class="fas fa-star"></i>
+                    <span id="userPoints">0</span> pts
+                </div>
                 
-                <!-- Left: Navigation & Progress -->
-                <aside class="grid-nav">
-                    <div class="module-tree compact" id="moduleTree"></div>
-                    <div class="progress-widget">
-                        <div class="progress-ring-mini">
-                            <svg width="60" height="60">
-                                <circle cx="30" cy="30" r="25" class="progress-bg"></circle>
-                                <circle cx="30" cy="30" r="25" class="progress-fill" id="progressRing"></circle>
-                            </svg>
-                            <span class="progress-text" id="progressText">0%</span>
-                        </div>
-                        <div class="segment-dots" id="segmentDots"></div>
-                    </div>
-                </aside>
-
-                <!-- Center: Main Content -->
-                <main class="grid-content">
-                    <div class="content-wrapper">
-                        <!-- Segment Header -->
-                        <div class="segment-header">
-                            <span class="segment-type" id="segmentType">Introduction</span>
-                            <span class="segment-nav">
-                                <button class="nav-mini" onclick="navigateSegment('prev')" id="prevBtn">←</button>
-                                <span id="segmentIndex">1/10</span>
-                                <button class="nav-mini" onclick="navigateSegment('next')" id="nextBtn">→</button>
-                            </span>
-                        </div>
-
-                        <!-- Text Content -->
-                        <div class="content-text" id="contentText"></div>
-
-                        <!-- Dynamic Content Area -->
-                        <div class="dynamic-content" id="dynamicContent">
-                            <!-- Visuals Grid -->
-                            <div class="visuals-grid" id="visualsGrid"></div>
-                            
-                            <!-- Code Block -->
-                            <div class="code-block" id="codeBlock" style="display: none;">
-                                <div class="code-header">
-                                    <span id="codeLang">Python</span>
-                                    <button onclick="copyCode()">Copy</button>
-                                </div>
-                                <pre><code id="codeContent"></code></pre>
-                            </div>
-
-                            <!-- Data Visualization -->
-                            <div class="data-viz" id="dataViz"></div>
-                        </div>
-
-                        <!-- Inline Audio Player -->
-                        <div class="audio-player-inline">
-                            <button class="play-btn" onclick="toggleAudio()" id="playBtn">▶</button>
-                            <div class="audio-progress" id="audioProgress">
-                                <div class="audio-bar">
-                                    <div class="audio-fill" id="audioFill"></div>
-                                </div>
-                                <span class="audio-time" id="audioTime">0:00</span>
-                            </div>
-                            <button class="speed-btn" onclick="cycleSpeed()" id="speedBtn">1x</button>
-                            <audio id="audioPlayer"></audio>
-                        </div>
-                    </div>
-                </main>
-
-                <!-- Right: Context & Tools -->
-                <aside class="grid-tools">
-                    <!-- Key Concepts -->
-                    <div class="tool-widget" id="conceptsWidget">
-                        <h4>Key Concepts</h4>
-                        <div class="concept-tags" id="conceptTags"></div>
-                    </div>
-
-                    <!-- Quick Notes -->
-                    <div class="tool-widget">
-                        <h4>Quick Notes</h4>
-                        <textarea class="notes-input" id="notesInput" placeholder="Jot down thoughts..."></textarea>
-                    </div>
-
-                    <!-- References -->
-                    <div class="tool-widget" id="referencesWidget">
-                        <h4>References</h4>
-                        <div class="reference-list" id="referenceList"></div>
-                    </div>
-
-                    <!-- Related Topics -->
-                    <div class="tool-widget" id="relatedWidget">
-                        <h4>Explore Next</h4>
-                        <div class="related-items" id="relatedItems"></div>
-                    </div>
-                </aside>
+                <!-- Badge Count -->
+                <div class="badge-count">
+                    <i class="fas fa-medal"></i>
+                    <span id="badgeCount">0</span>
+                </div>
+                
+                <!-- User Menu -->
+                <button class="user-menu-btn">
+                    <i class="fas fa-user-circle"></i>
+                </button>
             </div>
-
-            <!-- Bottom Timeline -->
-            <section class="grid-timeline">
-                <div class="timeline-track" id="timelineTrack"></div>
-            </section>
-        </div>
-    </div>
-
-    <!-- Create Mode - Efficient Layout -->
-    <div id="createMode" class="mode-container">
-        <div class="create-layout">
-            <!-- Structure Tree -->
-            <aside class="create-tree">
-                <div class="tree-header">
-                    <input type="search" placeholder="Search content..." class="tree-search">
-                    <button class="btn-new" onclick="showNewDialog()">+</button>
+        </header>
+        
+        <!-- Main Content Area -->
+        <div class="main-content">
+            
+            <!-- Course Sidebar Navigation -->
+            <aside class="course-sidebar glass-effect" id="courseSidebar">
+                <div class="sidebar-header">
+                    <h2>Course Navigation</h2>
+                    <button class="sidebar-close" id="sidebarClose">
+                        <i class="fas fa-times"></i>
+                    </button>
                 </div>
-                <div class="tree-content" id="treeContent"></div>
+                
+                <div class="course-structure" id="courseStructure">
+                    <!-- Dynamically populated -->
+                </div>
+                
+                <!-- Learning Profile Container -->
+                <div id="learningProfileContainer"></div>
+                
+                <!-- Overall Progress -->
+                <div class="overall-progress">
+                    <h3>Course Progress</h3>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="courseProgressFill" style="width: 0%"></div>
+                    </div>
+                    <p class="progress-text"><span id="progressPercent">0</span>% Complete</p>
+                </div>
             </aside>
-
-            <!-- Editor Area -->
-            <main class="create-editor">
-                <div class="editor-tabs">
-                    <button class="tab active" onclick="switchTab('edit')">Edit</button>
-                    <button class="tab" onclick="switchTab('preview')">Preview</button>
-                    <button class="tab" onclick="switchTab('media')">Media</button>
-                </div>
-                <div class="editor-content" id="editorContent">
-                    <div class="empty-state">
-                        <p>Select content to edit or create new</p>
+            
+            <!-- Content Display Area -->
+            <main class="content-area">
+                
+                <!-- Course Selection View -->
+                <div id="courseSelectionView" class="view-container active">
+                    <div class="view-header">
+                        <h2>Available Courses</h2>
+                        <div class="view-controls">
+                            <button class="view-toggle" data-view="grid">
+                                <i class="fas fa-th-large"></i>
+                            </button>
+                            <button class="view-toggle" data-view="list">
+                                <i class="fas fa-list"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="courses-grid" id="coursesGrid">
+                        <!-- Course cards dynamically populated -->
                     </div>
                 </div>
+                
+                <!-- Episode Player View -->
+                <div id="episodePlayerView" class="view-container">
+                    <!-- Episode Header -->
+                    <div class="episode-header glass-effect">
+                        <button class="back-btn" id="backToCoursesBtn">
+                            <i class="fas fa-arrow-left"></i>
+                        </button>
+                        <div class="episode-info">
+                            <h2 id="episodeTitle">Episode Title</h2>
+                            <p id="episodeDuration">Duration: 0 min</p>
+                        </div>
+                        <div class="episode-progress">
+                            <span id="currentSegment">1</span> / <span id="totalSegments">1</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Segment Container -->
+                    <div class="segment-container" id="segmentContainer">
+                        <!-- Dynamic segment content -->
+                    </div>
+                    
+                    <!-- Segment Controls -->
+                    <div class="segment-controls glass-effect">
+                        <button class="control-btn" id="prevSegmentBtn" disabled>
+                            <i class="fas fa-chevron-left"></i>
+                            Previous
+                        </button>
+                        
+                        <div class="audio-controls">
+                            <button class="audio-btn" id="playPauseBtn">
+                                <i class="fas fa-play"></i>
+                            </button>
+                            <div class="audio-progress">
+                                <div class="audio-progress-bar">
+                                    <div class="audio-progress-fill" id="audioProgressFill"></div>
+                                </div>
+                                <span class="audio-time" id="audioTime">0:00 / 0:00</span>
+                            </div>
+                            <button class="audio-speed-btn" id="audioSpeedBtn">1x</button>
+                        </div>
+                        
+                        <button class="control-btn" id="nextSegmentBtn">
+                            Next
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Interactive Overlays -->
+                <div id="interactiveOverlay" class="interactive-overlay hidden">
+                    <!-- Dynamic interactive content -->
+                </div>
+                
+                <!-- Checkpoint Modal -->
+                <div id="checkpointModal" class="modal hidden">
+                    <div class="modal-content glass-effect">
+                        <div class="modal-header">
+                            <h2>Episode Checkpoint</h2>
+                            <button class="modal-close" id="checkpointClose">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <div class="modal-body" id="checkpointContent">
+                            <!-- Dynamic checkpoint content -->
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-secondary" id="skipCheckpointBtn">Skip</button>
+                            <button class="btn btn-primary" id="submitCheckpointBtn">Submit</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Badge Earned Modal -->
+                <div id="badgeModal" class="modal hidden">
+                    <div class="modal-content glass-effect badge-modal">
+                        <div class="badge-celebration">
+                            <i class="fas fa-medal badge-icon"></i>
+                            <h2>Badge Earned!</h2>
+                            <h3 id="badgeName">Badge Name</h3>
+                            <p id="badgeDescription">Badge description</p>
+                            <button class="btn btn-primary" id="closeBadgeModal">Continue</button>
+                        </div>
+                    </div>
+                </div>
+                
             </main>
-
-            <!-- Quick Actions -->
-            <aside class="create-actions">
-                <div class="action-panel">
-                    <h4>Audio Queue</h4>
-                    <div class="queue-stats">
-                        <span class="stat">Pending: <strong id="pendingCount">0</strong></span>
-                        <span class="stat">Processing: <strong id="processingCount">0</strong></span>
-                    </div>
-                    <button class="btn-action" onclick="generateAllAudio()">Generate All</button>
-                </div>
-            </aside>
         </div>
+        
+        <!-- Loading Overlay -->
+        <div id="loadingOverlay" class="loading-overlay hidden">
+            <div class="loading-spinner"></div>
+            <p>Loading...</p>
+        </div>
+        
+        <!-- Toast Notifications -->
+        <div id="toastContainer" class="toast-container"></div>
+        
     </div>
-
-    <!-- Minimal Floating Tools -->
-    <div class="float-tools">
-        <button class="tool-btn" onclick="toggleSearch()" title="Search">🔍</button>
-        <button class="tool-btn" onclick="toggleBookmarks()" title="Bookmarks">🔖</button>
-        <button class="tool-btn" onclick="toggleHelp()" title="Help">?</button>
-    </div>
-
+    
+    <!-- Audio element for TTS playback -->
+    <audio id="audioPlayer" preload="auto"></audio>
+    
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-go.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-java.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+    <script src="visual_assets.js"></script>
     <script src="script.js"></script>
+    <script src="segment_renderers.js"></script>
+    <script src="interactive_cues.js"></script>
+    <!-- Adaptive learning disabled for now
+    <script src="adaptive_learning.js"></script>
+    -->
 </body>
 </html>
