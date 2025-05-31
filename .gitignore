@@ -36,8 +36,8 @@ ENV/
 *~
 
 # Project specific
-audio_outputs/
-learning_content/
+audio_outputs/*.wav
+audio_outputs/*.mp3
 *.wav
 *.mp3
 
