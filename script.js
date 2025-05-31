@@ -1,353 +1,529 @@
-// API Configuration
+// script_fluid.js - Efficient, Fluid Layout JavaScript
+
 const API_URL = 'http://localhost:5000/api';
 
-// State Management
-let currentPath = null;
-let currentLanguage = 'en';
-let isPlaying = false;
-let currentAudioTaskId = null;
+// State
+let currentMode = 'learn';
+let currentUser = 'user123';
+let currentCourse = null;
+let currentLesson = null;
+let currentSegments = [];
+let currentSegmentIndex = 0;
+let completedSegments = new Set();
+let audioPlayer = null;
+let playbackSpeed = 1;
 
-// Initialize App
+// Initialize
 document.addEventListener('DOMContentLoaded', () => {
-    loadLearningPaths();
-    loadLanguages();
-    createAudioVisualizer();
-    updateProgress();
-    
-    // Navbar scroll effect
-    window.addEventListener('scroll', () => {
-        const navbar = document.getElementById('navbar');
-        if (window.scrollY > 50) {
-            navbar.classList.add('scrolled');
-        } else {
-            navbar.classList.remove('scrolled');
-        }
-    });
+    audioPlayer = document.getElementById('audioPlayer');
+    initializeEventListeners();
+    loadCourses();
+    initializeSampleData();
 });
 
-// Load Learning Paths
-async function loadLearningPaths() {
-    try {
-        const response = await fetch(`${API_URL}/learning-paths`);
-        const paths = await response.json();
-        
-        const container = document.getElementById('learningPaths');
-        container.innerHTML = paths.map(path => `
-            <div class="path-card" onclick="selectPath('${path.id}')" data-path="${path.id}">
-                <div class="path-icon">${path.icon}</div>
-                <div class="path-name">${path.name}</div>
-                <div class="path-description">${path.description}</div>
-            </div>
-        `).join('');
-    } catch (error) {
-        console.error('Error loading paths:', error);
+function initializeEventListeners() {
+    // Audio events
+    audioPlayer.addEventListener('timeupdate', updateAudioProgress);
+    audioPlayer.addEventListener('ended', onAudioEnded);
+    
+    // Keyboard shortcuts
+    document.addEventListener('keydown', handleKeyboard);
+    
+    // Save notes on blur
+    const notesInput = document.getElementById('notesInput');
+    if (notesInput) {
+        notesInput.addEventListener('blur', saveNotes);
     }
 }
 
-// Load Supported Languages
-async function loadLanguages() {
-    try {
-        const response = await fetch(`${API_URL}/supported-languages`);
-        const languages = await response.json();
-        
-        const container = document.getElementById('languageSelector');
-        container.innerHTML = languages.map(lang => `
-            <div class="lang-chip ${lang.code === currentLanguage ? 'active' : ''}" 
-                 onclick="selectLanguage('${lang.code}')" data-lang="${lang.code}">
-                <span>${lang.flag}</span>
-                <span>${lang.name}</span>
-            </div>
-        `).join('');
-    } catch (error) {
-        console.error('Error loading languages:', error);
+function handleKeyboard(e) {
+    if (currentMode === 'learn') {
+        switch(e.key) {
+            case 'ArrowLeft':
+                if (!e.target.matches('input, textarea')) {
+                    navigateSegment('prev');
+                }
+                break;
+            case 'ArrowRight':
+                if (!e.target.matches('input, textarea')) {
+                    navigateSegment('next');
+                }
+                break;
+            case ' ':
+                if (!e.target.matches('input, textarea')) {
+                    e.preventDefault();
+                    toggleAudio();
+                }
+                break;
+        }
     }
 }
 
-// Select Learning Path
-function selectPath(pathId) {
-    currentPath = pathId;
+// Mode switching
+function switchMode(mode) {
+    currentMode = mode;
+    
+    document.querySelectorAll('.mode-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.mode === mode);
+    });
+    
+    document.querySelectorAll('.mode-container').forEach(container => {
+        container.classList.toggle('active', container.id === mode + 'Mode');
+    });
+    
+    if (mode === 'create') {
+        loadContentTree();
+    }
+}
+
+// Initialize sample data
+async function initializeSampleData() {
+    try {
+        await fetch(`${API_URL}/init-sample-data`, { method: 'POST' });
+    } catch (error) {
+        console.error('Error initializing sample data:', error);
+    }
+}
+
+// Load courses
+async function loadCourses() {
+    try {
+        const response = await fetch(`${API_URL}/courses`);
+        const courses = await response.json();
+        
+        const selector = document.getElementById('courseSelectorInline');
+        selector.innerHTML = courses.map(course => `
+            <div class="course-chip" onclick="selectCourse('${course.id}')" data-course-id="${course.id}">
+                ${course.title}
+            </div>
+        `).join('');
+        
+        // Auto-select first course if available
+        if (courses.length > 0) {
+            selectCourse(courses[0].id);
+        }
+    } catch (error) {
+        console.error('Error loading courses:', error);
+    }
+}
+
+// Select course
+async function selectCourse(courseId) {
+    currentCourse = courseId;
     
     // Update UI
-    document.querySelectorAll('.path-card').forEach(card => {
-        card.classList.remove('active');
+    document.querySelectorAll('.course-chip').forEach(chip => {
+        chip.classList.toggle('active', chip.dataset.courseId === courseId);
     });
-    document.querySelector(`[data-path="${pathId}"]`).classList.add('active');
+    
+    try {
+        const response = await fetch(`${API_URL}/courses/${courseId}/learning-view`);
+        const data = await response.json();
+        
+        displayModuleTree(data.modules);
+        updateBreadcrumb([data.course.title]);
+    } catch (error) {
+        console.error('Error loading course:', error);
+    }
+}
+
+// Display module tree
+function displayModuleTree(modules) {
+    const tree = document.getElementById('moduleTree');
+    tree.innerHTML = modules.map(module => `
+        <div class="module-item">
+            <div class="module-header" onclick="toggleModule('${module.id}')">
+                <span>📁 ${module.title}</span>
+            </div>
+            <div class="lesson-list" id="lessons-${module.id}">
+                ${module.lessons.map(lesson => `
+                    <div class="lesson-item ${lesson.id === currentLesson ? 'active' : ''}" 
+                         onclick="selectLesson('${lesson.id}')" 
+                         data-lesson-id="${lesson.id}">
+                        <span>${lesson.title}</span>
+                        <span>${lesson.duration}m</span>
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+    `).join('');
+}
+
+function toggleModule(moduleId) {
+    const lessonList = document.getElementById(`lessons-${moduleId}`);
+    if (lessonList) {
+        lessonList.style.display = lessonList.style.display === 'none' ? 'block' : 'none';
+    }
+}
+
+// Select lesson
+async function selectLesson(lessonId) {
+    currentLesson = lessonId;
+    
+    // Update UI
+    document.querySelectorAll('.lesson-item').forEach(item => {
+        item.classList.toggle('active', item.dataset.lessonId === lessonId);
+    });
+    
+    try {
+        const response = await fetch(`${API_URL}/lessons/${lessonId}/learning-content`);
+        const data = await response.json();
+        
+        // Update lesson info
+        document.getElementById('lessonTitle').textContent = data.lesson.title;
+        
+        const meta = [];
+        if (data.lesson.objectives && data.lesson.objectives.length > 0) {
+            meta.push(data.lesson.objectives.join(' • '));
+        }
+        document.getElementById('lessonMeta').textContent = meta.join(' | ');
+        
+        // Store segments
+        currentSegments = data.segments;
+        currentSegmentIndex = 0;
+        
+        // Display first segment
+        displaySegment(0);
+        
+        // Update timeline
+        updateTimeline();
+        
+        // Load progress
+        loadUserProgress();
+    } catch (error) {
+        console.error('Error loading lesson:', error);
+    }
+}
+
+// Display segment
+function displaySegment(index) {
+    if (index < 0 || index >= currentSegments.length) return;
+    
+    const segment = currentSegments[index];
+    currentSegmentIndex = index;
+    
+    // Update segment info
+    document.getElementById('segmentType').textContent = segment.type.replace(/_/g, ' ');
+    document.getElementById('segmentIndex').textContent = `${index + 1}/${currentSegments.length}`;
     
     // Update content
-    const pathNames = {
-        'vocab-builder': 'Vocabulary Builder',
-        'language-learning': 'Language Learning',
-        'concept-mastery': 'Concept Mastery',
-        'pronunciation': 'Pronunciation Practice'
-    };
+    document.getElementById('contentText').innerHTML = `<p>${segment.text}</p>`;
     
-    document.querySelector('.lesson-title').textContent = pathNames[pathId] || 'Learning Path';
+    // Handle visuals
+    displayVisuals(segment.visuals);
     
-    // Show sample content
-    updateLearningCard('front', `Let's explore ${pathNames[pathId]}!`, 'Click to see more');
-}
-
-// Select Language
-function selectLanguage(langCode) {
-    currentLanguage = langCode;
-    
-    document.querySelectorAll('.lang-chip').forEach(chip => {
-        chip.classList.remove('active');
-    });
-    document.querySelector(`[data-lang="${langCode}"]`).classList.add('active');
-}
-
-// Flip Learning Card
-function flipCard() {
-    const card = document.getElementById('learningCard');
-    card.classList.toggle('flipped');
-}
-
-// Update Learning Card Content
-function updateLearningCard(face, title, content) {
-    const selector = face === 'front' ? '.card-front .card-content' : '.card-back .card-content';
-    const cardContent = document.querySelector(selector);
-    cardContent.innerHTML = `
-        <h3>${title}</h3>
-        <p class="card-text">${content}</p>
-    `;
-}
-
-// Generate Audio
-async function generateAudio() {
-    const text = document.getElementById('textInput').value.trim();
-    if (!text) {
-        alert('Please enter some text to generate audio');
-        return;
-    }
-    
-    try {
-        // Show loading state
-        const playButton = document.getElementById('playButton');
-        playButton.innerHTML = '<div class="loading"></div>';
-        
-        // Request audio generation
-        const response = await fetch(`${API_URL}/generate-audio`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                text: text,
-                language: currentLanguage,
-                speed: 1.0
-            })
-        });
-        
-        const data = await response.json();
-        currentAudioTaskId = data.task_id;
-        
-        // Poll for completion
-        pollAudioStatus();
-        
-    } catch (error) {
-        console.error('Error generating audio:', error);
-        alert('Failed to generate audio');
-    }
-}
-
-// Poll Audio Generation Status
-async function pollAudioStatus() {
-    if (!currentAudioTaskId) return;
-    
-    try {
-        const response = await fetch(`${API_URL}/audio-status/${currentAudioTaskId}`);
-        const status = await response.json();
-        
-        if (status.status === 'completed') {
-            // Load audio
-            const audioPlayer = document.getElementById('audioPlayer');
-            audioPlayer.src = status.url;
-            audioPlayer.load();
-            
-            // Update UI
-            document.getElementById('playButton').innerHTML = '<span id="playIcon">▶️</span>';
-            
-            // Update stats
-            incrementStat('wordsLearned', 10);
-            
-        } else if (status.status === 'error') {
-            alert('Audio generation failed');
-            document.getElementById('playButton').innerHTML = '<span id="playIcon">▶️</span>';
-            
-        } else {
-            // Continue polling
-            setTimeout(pollAudioStatus, 1000);
-        }
-    } catch (error) {
-        console.error('Error checking status:', error);
-    }
-}
-
-// Generate Lesson
-async function generateLesson() {
-    if (!currentPath) {
-        alert('Please select a learning path first');
-        return;
-    }
-    
-    const topic = document.getElementById('textInput').value.trim() || 'general topic';
-    
-    try {
-        const response = await fetch(`${API_URL}/generate-lesson`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                type: currentPath,
-                topic: topic,
-                difficulty: 'beginner'
-            })
-        });
-        
-        const lesson = await response.json();
-        
-        // Update UI with lesson
-        document.querySelector('.lesson-title').textContent = lesson.title;
-        
-        // Show first segment
-        if (lesson.segments.length > 0) {
-            const firstSegment = lesson.segments[0];
-            updateLearningCard('front', firstSegment.type, firstSegment.text);
-            
-            // Start audio generation for first segment
-            currentAudioTaskId = firstSegment.audio_task_id;
-            pollAudioStatus();
-        }
-        
-        // Update stats
-        incrementStat('lessonsCompleted', 1);
-        
-    } catch (error) {
-        console.error('Error generating lesson:', error);
-    }
-}
-
-// Toggle Audio Playback
-function togglePlay() {
-    const audioPlayer = document.getElementById('audioPlayer');
-    const playIcon = document.getElementById('playIcon');
-    
-    if (!audioPlayer.src) {
-        alert('Please generate audio first');
-        return;
-    }
-    
-    if (isPlaying) {
-        audioPlayer.pause();
-        playIcon.textContent = '▶️';
-        stopVisualizer();
+    // Handle code
+    if (segment.code_example) {
+        const codeBlock = document.getElementById('codeBlock');
+        codeBlock.style.display = 'block';
+        document.getElementById('codeLang').textContent = segment.code_example.language;
+        document.getElementById('codeContent').textContent = segment.code_example.code;
     } else {
-        audioPlayer.play();
-        playIcon.textContent = '⏸️';
-        startVisualizer();
-        incrementStat('minutesListened', 1);
+        document.getElementById('codeBlock').style.display = 'none';
     }
     
-    isPlaying = !isPlaying;
+    // Update audio
+    if (segment.audio_url) {
+        audioPlayer.src = segment.audio_url;
+        document.getElementById('playBtn').disabled = false;
+    } else {
+        audioPlayer.src = '';
+        document.getElementById('playBtn').disabled = true;
+    }
+    
+    // Update tools
+    updateTools(segment);
+    
+    // Update navigation
+    updateNavigation();
+    updateSegmentDots();
 }
 
-// Create Audio Visualizer
-function createAudioVisualizer() {
-    const visualizer = document.getElementById('visualizer');
-    for (let i = 0; i < 20; i++) {
-        const bar = document.createElement('div');
-        bar.className = 'audio-bar';
-        bar.style.height = '10px';
-        visualizer.appendChild(bar);
+// Display visuals
+function displayVisuals(visuals) {
+    const grid = document.getElementById('visualsGrid');
+    
+    if (!visuals || visuals.length === 0) {
+        grid.innerHTML = '';
+        return;
+    }
+    
+    grid.innerHTML = visuals.map(visual => {
+        switch (visual.type) {
+            case 'static_image':
+            case 'annotated_diagram':
+                return `
+                    <div class="visual-item">
+                        <img src="${visual.url}" alt="${visual.alt_text}">
+                        ${visual.caption ? `<div class="visual-caption">${visual.caption}</div>` : ''}
+                    </div>
+                `;
+            case 'data_table':
+                if (visual.data) {
+                    return `
+                        <div class="visual-item">
+                            <table>
+                                <thead>
+                                    <tr>${visual.data.headers.map(h => `<th>${h}</th>`).join('')}</tr>
+                                </thead>
+                                <tbody>
+                                    ${visual.data.rows.map(row => 
+                                        `<tr>${row.map(cell => `<td>${cell}</td>`).join('')}</tr>`
+                                    ).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    `;
+                }
+                break;
+        }
+        return '';
+    }).join('');
+}
+
+// Update tools
+function updateTools(segment) {
+    // Keywords
+    if (segment.keywords && segment.keywords.length > 0) {
+        document.getElementById('conceptsWidget').style.display = 'block';
+        document.getElementById('conceptTags').innerHTML = segment.keywords.map(keyword => 
+            `<span class="concept-tag" onclick="searchConcept('${keyword}')">${keyword}</span>`
+        ).join('');
+    } else {
+        document.getElementById('conceptsWidget').style.display = 'none';
+    }
+    
+    // References
+    if (segment.further_reading_links && segment.further_reading_links.length > 0) {
+        document.getElementById('referencesWidget').style.display = 'block';
+        document.getElementById('referenceList').innerHTML = segment.further_reading_links.map(ref => 
+            `<div class="reference-item" onclick="window.open('${ref.url}', '_blank')">
+                ${ref.title} →
+            </div>`
+        ).join('');
+    } else {
+        document.getElementById('referencesWidget').style.display = 'none';
+    }
+    
+    // Load notes
+    const notes = localStorage.getItem(`notes_${currentLesson}_${currentSegmentIndex}`);
+    document.getElementById('notesInput').value = notes || '';
+}
+
+// Navigation
+function navigateSegment(direction) {
+    const newIndex = direction === 'next' ? currentSegmentIndex + 1 : currentSegmentIndex - 1;
+    
+    if (newIndex >= 0 && newIndex < currentSegments.length) {
+        // Mark current as completed when moving forward
+        if (direction === 'next') {
+            markSegmentCompleted(currentSegments[currentSegmentIndex].id);
+        }
+        
+        displaySegment(newIndex);
     }
 }
 
-// Start Visualizer Animation
-function startVisualizer() {
-    const bars = document.querySelectorAll('.audio-bar');
-    bars.forEach((bar, index) => {
-        bar.style.animation = `audioWave ${0.5 + Math.random() * 1}s ease-in-out infinite`;
-        bar.style.animationDelay = `${index * 0.05}s`;
+function updateNavigation() {
+    document.getElementById('prevBtn').disabled = currentSegmentIndex === 0;
+    document.getElementById('nextBtn').disabled = currentSegmentIndex === currentSegments.length - 1;
+}
+
+// Progress tracking
+function updateSegmentDots() {
+    const container = document.getElementById('segmentDots');
+    
+    // Show max 10 dots around current
+    const start = Math.max(0, currentSegmentIndex - 4);
+    const end = Math.min(currentSegments.length, start + 10);
+    
+    container.innerHTML = currentSegments.slice(start, end).map((segment, i) => {
+        const actualIndex = start + i;
+        return `<div class="segment-dot ${actualIndex === currentSegmentIndex ? 'active' : ''} 
+                     ${completedSegments.has(segment.id) ? 'completed' : ''}"
+                     onclick="displaySegment(${actualIndex})"
+                     title="Segment ${actualIndex + 1}"></div>`;
+    }).join('');
+}
+
+function markSegmentCompleted(segmentId) {
+    completedSegments.add(segmentId);
+    updateProgress();
+    updateSegmentDots();
+    updateTimeline();
+    
+    // Save to backend
+    fetch(`${API_URL}/progress/${currentUser}/course/${currentCourse}/segment/${segmentId}`, {
+        method: 'POST'
     });
 }
 
-// Stop Visualizer Animation
-function stopVisualizer() {
-    const bars = document.querySelectorAll('.audio-bar');
-    bars.forEach(bar => {
-        bar.style.animation = 'none';
-        bar.style.height = '10px';
-    });
-}
-
-// Update Progress Stats
 function updateProgress() {
-    const stats = JSON.parse(localStorage.getItem('learningStats') || '{}');
+    const total = currentSegments.length;
+    const completed = currentSegments.filter(s => completedSegments.has(s.id)).length;
+    const progress = total > 0 ? Math.round((completed / total) * 100) : 0;
     
-    document.getElementById('lessonsCompleted').textContent = stats.lessonsCompleted || 0;
-    document.getElementById('wordsLearned').textContent = stats.wordsLearned || 0;
-    document.getElementById('minutesListened').textContent = stats.minutesListened || 0;
+    // Update progress displays
+    document.getElementById('progressBadge').textContent = progress + '%';
+    document.getElementById('progressText').textContent = progress + '%';
     
     // Update progress ring
-    const progress = Math.min(((stats.lessonsCompleted || 0) / 10) * 100, 100);
-    updateProgressRing(progress);
+    const circumference = 2 * Math.PI * 25;
+    const offset = circumference - (progress / 100) * circumference;
+    document.querySelector('.progress-fill').style.strokeDashoffset = offset;
     
     // Update streak
-    updateStreak();
+    const streak = Math.floor(completedSegments.size / 5);
+    document.getElementById('streak').textContent = streak;
 }
 
-// Update Progress Ring
-function updateProgressRing(percent) {
-    const ring = document.getElementById('progressRing');
-    const circumference = 2 * Math.PI * 90;
-    const offset = circumference - (percent / 100) * circumference;
-    ring.style.strokeDashoffset = offset;
-    
-    document.querySelector('.progress-text .stat-value').textContent = `${Math.round(percent)}%`;
-}
-
-// Increment Stat
-function incrementStat(statName, value = 1) {
-    const stats = JSON.parse(localStorage.getItem('learningStats') || '{}');
-    stats[statName] = (stats[statName] || 0) + value;
-    localStorage.setItem('learningStats', JSON.stringify(stats));
-    updateProgress();
-}
-
-// Update Streak
-function updateStreak() {
-    const lastAccess = localStorage.getItem('lastAccess');
-    const today = new Date().toDateString();
-    
-    let streak = parseInt(localStorage.getItem('streak') || '0');
-    
-    if (lastAccess !== today) {
-        const yesterday = new Date();
-        yesterday.setDate(yesterday.getDate() - 1);
+async function loadUserProgress() {
+    try {
+        const response = await fetch(`${API_URL}/progress/${currentUser}/course/${currentCourse}`);
+        const data = await response.json();
         
-        if (lastAccess === yesterday.toDateString()) {
-            streak++;
-        } else {
-            streak = 1;
-        }
-        
-        localStorage.setItem('streak', streak);
-        localStorage.setItem('lastAccess', today);
-    }
-    
-    document.getElementById('streak').textContent = `🔥 ${streak} day streak`;
-}
-
-// Show New Topic Modal (placeholder)
-function showNewTopicModal() {
-    const topic = prompt('What would you like to learn about?');
-    if (topic) {
-        document.getElementById('textInput').value = topic;
-        generateLesson();
+        completedSegments = new Set(data.completed_segments || []);
+        updateProgress();
+        updateSegmentDots();
+        updateTimeline();
+    } catch (error) {
+        console.error('Error loading progress:', error);
     }
 }
 
-// Audio player events
-document.getElementById('audioPlayer').addEventListener('ended', () => {
-    document.getElementById('playIcon').textContent = '▶️';
-    isPlaying = false;
-    stopVisualizer();
-});
+// Timeline
+function updateTimeline() {
+    const track = document.getElementById('timelineTrack');
+    track.innerHTML = currentSegments.map((segment, i) => `
+        <div class="timeline-segment ${i === currentSegmentIndex ? 'active' : ''} 
+             ${completedSegments.has(segment.id) ? 'completed' : ''}"
+             onclick="displaySegment(${i})">
+            ${segment.title || `Segment ${i + 1}`}
+        </div>
+    `).join('');
+    
+    // Scroll to active segment
+    const activeSegment = track.querySelector('.active');
+    if (activeSegment) {
+        activeSegment.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+    }
+}
+
+// Audio controls
+function toggleAudio() {
+    const btn = document.getElementById('playBtn');
+    
+    if (audioPlayer.paused) {
+        audioPlayer.play();
+        btn.textContent = '⏸';
+    } else {
+        audioPlayer.pause();
+        btn.textContent = '▶';
+    }
+}
+
+function updateAudioProgress() {
+    if (audioPlayer.duration) {
+        const progress = (audioPlayer.currentTime / audioPlayer.duration) * 100;
+        document.getElementById('audioFill').style.width = progress + '%';
+        document.getElementById('audioTime').textContent = formatTime(audioPlayer.currentTime);
+    }
+}
+
+function onAudioEnded() {
+    document.getElementById('playBtn').textContent = '▶';
+    
+    // Auto-advance after 1 second
+    if (currentSegmentIndex < currentSegments.length - 1) {
+        setTimeout(() => navigateSegment('next'), 1000);
+    }
+}
+
+function cycleSpeed() {
+    const speeds = [0.75, 1, 1.25, 1.5, 2];
+    const currentIndex = speeds.indexOf(playbackSpeed);
+    playbackSpeed = speeds[(currentIndex + 1) % speeds.length];
+    
+    audioPlayer.playbackRate = playbackSpeed;
+    document.getElementById('speedBtn').textContent = playbackSpeed + 'x';
+}
+
+// Notes
+function saveNotes() {
+    const notes = document.getElementById('notesInput').value;
+    localStorage.setItem(`notes_${currentLesson}_${currentSegmentIndex}`, notes);
+}
+
+// Utilities
+function formatTime(seconds) {
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+}
+
+function updateBreadcrumb(items) {
+    const breadcrumb = document.getElementById('breadcrumb');
+    breadcrumb.innerHTML = items.map((item, i) => 
+        `<span>${item}</span>${i < items.length - 1 ? ' › ' : ''}`
+    ).join('');
+}
+
+function searchConcept(concept) {
+    console.log('Searching for concept:', concept);
+    // Implement concept search
+}
+
+function copyCode() {
+    const code = document.getElementById('codeContent').textContent;
+    navigator.clipboard.writeText(code);
+    
+    // Show feedback
+    const btn = event.target;
+    const originalText = btn.textContent;
+    btn.textContent = 'Copied!';
+    setTimeout(() => {
+        btn.textContent = originalText;
+    }, 2000);
+}
+
+// Create mode
+async function loadContentTree() {
+    try {
+        const response = await fetch(`${API_URL}/courses`);
+        const courses = await response.json();
+        
+        const tree = document.getElementById('treeContent');
+        tree.innerHTML = courses.map(course => `
+            <div class="tree-item">
+                <span>📚 ${course.title}</span>
+            </div>
+        `).join('');
+    } catch (error) {
+        console.error('Error loading content tree:', error);
+    }
+}
+
+function showNewDialog() {
+    // Implement create dialog
+}
+
+function switchTab(tab) {
+    // Implement tab switching
+}
+
+function generateAllAudio() {
+    // Implement batch audio generation
+}
+
+// Floating tools
+function toggleSearch() {
+    // Implement search
+}
+
+function toggleBookmarks() {
+    // Implement bookmarks
+}
+
+function toggleHelp() {
+    // Implement help
+}
