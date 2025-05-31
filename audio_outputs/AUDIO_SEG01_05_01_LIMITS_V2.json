@@ -1,15 +1,12 @@
 {
-  "audioId": "AUDIO_SEG01_05_01_LIMITS_V2",
+  "segmentId": "SEGMENT_01_05_01_TRAD_LIMITS_RECAP_V2",
+  "segmentType": "problem_recap",
+  "title": "The Partition Ceiling Problem",
   "text": "We've seen how traditional consumer groups hit a hard ceiling: you can't have more consumers than partitions. This creates the 'idle consumer' problem and limits elastic scaling.",
-  "generatedAt": "2025-05-31T23:35:20.865985",
-  "metadata": {
-    "segmentId": "SEGMENT_01_05_01_TRAD_LIMITS_RECAP_V2",
-    "lessonId": "LESSON_01_KAFKA_FUNDAMENTALS_V2",
-    "episodeId": "EPISODE_01_05_SHARE_GROUPS_INTRO_V2",
-    "title": "The Partition Ceiling Problem"
-  },
-  "model": "Tacotron2-DDC",
-  "quality": "high",
-  "device": "cpu",
-  "speaker": null
+  "audioId": "AUDIO_SEG01_05_01_LIMITS_V2",
+  "generatedAt": "2025-06-01T02:32:55.894081",
+  "audioFile": "AUDIO_SEG01_05_01_LIMITS_V2.mp3",
+  "voice": "en-US-GuyNeural",
+  "audioGenerated": true,
+  "voiceType": "adult_professional"
 }

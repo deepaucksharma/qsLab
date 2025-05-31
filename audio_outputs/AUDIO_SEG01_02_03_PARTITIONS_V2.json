@@ -1,15 +1,12 @@
 {
-  "audioId": "AUDIO_SEG01_02_03_PARTITIONS_V2",
+  "segmentId": "SEGMENT_01_02_03_PARTITIONS_INTRO_V2",
+  "segmentType": "scalability_concept",
+  "title": "Enter Partitions: Kafka's Secret Weapon",
   "text": "Enter partitions\u2014Kafka's secret weapon for scalability. Imagine you're running a newspaper. Instead of having one massive printing press, you have multiple smaller presses, each printing different sections simultaneously. That's partitioning.",
-  "generatedAt": "2025-05-31T23:35:06.702062",
-  "metadata": {
-    "segmentId": "SEGMENT_01_02_03_PARTITIONS_INTRO_V2",
-    "lessonId": "LESSON_01_KAFKA_FUNDAMENTALS_V2",
-    "episodeId": "EPISODE_01_02_CORE_ARCH_PART1_V2",
-    "title": "Enter Partitions: Kafka's Secret Weapon"
-  },
-  "model": "Tacotron2-DDC",
-  "quality": "high",
-  "device": "cpu",
-  "speaker": null
+  "audioId": "AUDIO_SEG01_02_03_PARTITIONS_V2",
+  "generatedAt": "2025-06-01T02:32:54.045841",
+  "audioFile": "AUDIO_SEG01_02_03_PARTITIONS_V2.mp3",
+  "voice": "en-US-GuyNeural",
+  "audioGenerated": true,
+  "voiceType": "adult_professional"
 }

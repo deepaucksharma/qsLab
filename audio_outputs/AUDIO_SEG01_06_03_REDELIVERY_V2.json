@@ -1,15 +1,12 @@
 {
-  "audioId": "AUDIO_SEG01_06_03_REDELIVERY_V2",
+  "segmentId": "SEGMENT_01_06_03_REDELIVERY_COUNT_V2",
+  "segmentType": "new_metric_deep_dive",
+  "title": "Metric Deep Dive: redelivery_count",
   "text": "The 'redelivery_count' metric tracks how many times messages have been redelivered after timeout or explicit release. High values indicate poison pills or processing failures. Unlike traditional Kafka, Share Groups track this per-message history.",
-  "generatedAt": "2025-05-31T23:35:54.519015",
-  "metadata": {
-    "segmentId": "SEGMENT_01_06_03_REDELIVERY_COUNT_V2",
-    "lessonId": "LESSON_01_KAFKA_FUNDAMENTALS_V2",
-    "episodeId": "EPISODE_01_06_SHARE_GROUP_METRICS_NEW_V2",
-    "title": "Metric Deep Dive: redelivery_count"
-  },
-  "model": "Tacotron2-DDC",
-  "quality": "high",
-  "device": "cpu",
-  "speaker": null
+  "audioId": "AUDIO_SEG01_06_03_REDELIVERY_V2",
+  "generatedAt": "2025-06-01T02:33:04.673801",
+  "audioFile": "AUDIO_SEG01_06_03_REDELIVERY_V2.mp3",
+  "voice": "en-US-ChristopherNeural",
+  "audioGenerated": true,
+  "voiceType": "adult_professional"
 }

@@ -1,15 +1,12 @@
 {
-  "audioId": "AUDIO_SEG02_03_02_CONFIG_V2",
+  "segmentId": "SEGMENT_02_03_02_CONFIGURING_MICROMETER_KAFKA_V2",
+  "segmentType": "practical_configuration",
+  "title": "Configuring Micrometer for Kafka Metrics",
   "text": "Here's the power move: Micrometer can automatically bind to Kafka's JMX metrics AND let you add custom meters for Share Group specifics. Let me show you a Spring Boot configuration that captures both traditional and Share Group metrics.",
-  "generatedAt": "2025-05-31T23:36:47.294623",
-  "metadata": {
-    "segmentId": "SEGMENT_02_03_02_CONFIGURING_MICROMETER_KAFKA_V2",
-    "lessonId": "LESSON_02_JMX_AND_METRIC_COLLECTION_V2",
-    "episodeId": "EPISODE_02_03_MICROMETER_VS_JMXEXPORTER_V2",
-    "title": "Configuring Micrometer for Kafka Metrics"
-  },
-  "model": "Tacotron2-DDC",
-  "quality": "high",
-  "device": "cpu",
-  "speaker": null
+  "audioId": "AUDIO_SEG02_03_02_CONFIG_V2",
+  "generatedAt": "2025-06-01T02:33:15.147345",
+  "audioFile": "AUDIO_SEG02_03_02_CONFIG_V2.mp3",
+  "voice": "en-US-GuyNeural",
+  "audioGenerated": true,
+  "voiceType": "adult_professional"
 }

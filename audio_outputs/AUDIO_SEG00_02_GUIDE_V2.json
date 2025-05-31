@@ -1,15 +1,12 @@
 {
-  "audioId": "AUDIO_SEG00_02_GUIDE_V2",
+  "segmentId": "SEGMENT_00_02_YOUR_GUIDE_V2",
+  "segmentType": "instructor_introduction",
+  "title": "Your Guide and Journey Overview",
   "text": "I'm your guide through this journey, and together we'll explore everything from Kafka's fundamental concepts to the exciting new Share Groups feature that's now available in Kafka 4.0 as an early access preview.",
-  "generatedAt": "2025-05-31T23:34:11.641114",
-  "metadata": {
-    "segmentId": "SEGMENT_00_02_YOUR_GUIDE_V2",
-    "lessonId": "LESSON_00_INTRODUCTION_V2",
-    "episodeId": "EPISODE_00_01_COURSE_OVERVIEW_V2",
-    "title": "Your Guide and Journey Overview"
-  },
-  "model": "Tacotron2-DDC",
-  "quality": "high",
-  "device": "cpu",
-  "speaker": null
+  "audioId": "AUDIO_SEG00_02_GUIDE_V2",
+  "generatedAt": "2025-06-01T02:32:48.480288",
+  "audioFile": "AUDIO_SEG00_02_GUIDE_V2.mp3",
+  "voice": "en-US-AriaNeural",
+  "audioGenerated": true,
+  "voiceType": "adult_professional"
 }

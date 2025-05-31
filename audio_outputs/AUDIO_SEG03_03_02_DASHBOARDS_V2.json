@@ -1,15 +1,12 @@
 {
-  "audioId": "AUDIO_SEG03_03_02_DASHBOARDS_V2",
+  "segmentId": "SEGMENT_03_03_02_CUSTOM_DASHBOARDS_V2",
+  "segmentType": "advanced_customization",
+  "title": "Building Share Group Dashboards",
   "text": "The real power comes from custom dashboards that combine traditional Kafka metrics with Share Group insights. Let me show you a dashboard that saved our team during a production incident by revealing the zero lag fallacy in real-time.",
-  "generatedAt": "2025-05-31T23:37:48.078407",
-  "metadata": {
-    "segmentId": "SEGMENT_03_03_02_CUSTOM_DASHBOARDS_V2",
-    "lessonId": "LESSON_03_NEWRELIC_INTEGRATION_V2",
-    "episodeId": "EPISODE_03_03_QUEUES_STREAMS_UI_V2",
-    "title": "Building Share Group Dashboards"
-  },
-  "model": "Tacotron2-DDC",
-  "quality": "high",
-  "device": "cpu",
-  "speaker": null
+  "audioId": "AUDIO_SEG03_03_02_DASHBOARDS_V2",
+  "generatedAt": "2025-06-01T02:33:26.228858",
+  "audioFile": "AUDIO_SEG03_03_02_DASHBOARDS_V2.mp3",
+  "voice": "en-US-GuyNeural",
+  "audioGenerated": true,
+  "voiceType": "adult_professional"
 }

@@ -15,9 +15,9 @@ def check_python_version():
     version = sys.version_info
     print(f"Python version: {version.major}.{version.minor}.{version.micro}")
     
-    if version.major != 3 or version.minor < 9 or version.minor > 11:
-        print("⚠️  Warning: TTS requires Python 3.9-3.11 for full functionality")
-        print("   The app will run but audio generation may not work")
+    if version.major != 3 or version.minor < 8:
+        print("⚠️  Warning: This application requires Python 3.8 or higher")
+        return False
     
     return True
 
@@ -27,17 +27,12 @@ def check_dependencies():
         'flask',
         'flask-cors',
         'flask-sqlalchemy',
-        'sqlalchemy'
-    ]
-    
-    optional_packages = [
-        'TTS',  # For text-to-speech
-        'torch',  # For TTS model
-        'torchaudio'  # For TTS audio processing
+        'sqlalchemy',
+        'numpy',  # For adaptive learning
+        'requests'  # For API calls
     ]
     
     missing_required = []
-    missing_optional = []
     
     for package in required_packages:
         try:
@@ -45,24 +40,11 @@ def check_dependencies():
         except ImportError:
             missing_required.append(package)
     
-    for package in optional_packages:
-        try:
-            __import__(package)
-        except ImportError:
-            missing_optional.append(package)
-    
     if missing_required:
         print("\n📦 Installing required packages...")
         for package in missing_required:
             print(f"   Installing {package}...")
             subprocess.check_call([sys.executable, '-m', 'pip', 'install', package])
-    
-    if missing_optional:
-        print("\n📦 Optional packages for TTS (text-to-speech) are missing:")
-        for package in missing_optional:
-            print(f"   - {package}")
-        print("\n   The app will run without audio generation.")
-        print("   To enable TTS, install: pip install TTS torch torchaudio")
     
     return True
 

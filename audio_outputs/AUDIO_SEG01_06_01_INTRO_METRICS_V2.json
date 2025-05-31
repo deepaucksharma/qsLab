@@ -1,15 +1,12 @@
 {
-  "audioId": "AUDIO_SEG01_06_01_INTRO_METRICS_V2",
+  "segmentId": "SEGMENT_01_06_01_INTRO_SG_METRICS_V2",
+  "segmentType": "metrics_overview",
+  "title": "Why Traditional Metrics Don't Work",
   "text": "With Share Groups, traditional consumer lag becomes meaningless. A Share Group might show zero lag while hundreds of messages sit unacknowledged. We need entirely new metrics to understand queue health.",
-  "generatedAt": "2025-05-31T23:35:41.437468",
-  "metadata": {
-    "segmentId": "SEGMENT_01_06_01_INTRO_SG_METRICS_V2",
-    "lessonId": "LESSON_01_KAFKA_FUNDAMENTALS_V2",
-    "episodeId": "EPISODE_01_06_SHARE_GROUP_METRICS_NEW_V2",
-    "title": "Why Traditional Metrics Don't Work"
-  },
-  "model": "Tacotron2-DDC",
-  "quality": "high",
-  "device": "cpu",
-  "speaker": null
+  "audioId": "AUDIO_SEG01_06_01_INTRO_METRICS_V2",
+  "generatedAt": "2025-06-01T02:33:00.349923",
+  "audioFile": "AUDIO_SEG01_06_01_INTRO_METRICS_V2.mp3",
+  "voice": "en-US-GuyNeural",
+  "audioGenerated": true,
+  "voiceType": "adult_professional"
 }

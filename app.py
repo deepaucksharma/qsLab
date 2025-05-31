@@ -1,9 +1,10 @@
 """
 Enhanced Flask Backend for Neural Learn Course Platform
 Supports complex course hierarchy and interactive learning features
+Audio generation removed - uses pre-generated audio files only
 """
 
-from flask import Flask, request, jsonify, send_file, send_from_directory
+from flask import Flask, request, jsonify, send_file, send_from_directory, render_template
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.exceptions import NotFound
@@ -11,9 +12,6 @@ import os
 import uuid
 import json
 from datetime import datetime
-import threading
-import queue
-import time
 from pathlib import Path
 
 # Import enhanced models
@@ -35,10 +33,6 @@ app.config['SECRET_KEY'] = 'dev-secret-key-change-in-production'
 # Initialize database
 db.init_app(app)
 
-# Audio generation queue (keeping existing TTS functionality)
-audio_queue = queue.Queue()
-audio_status = {}
-
 # Directories
 AUDIO_DIR = Path("audio_outputs")
 VISUAL_DIR = Path("visual_assets")
@@ -47,67 +41,6 @@ LEARNING_CONTENT_DIR = Path("learning_content")
 # Ensure directories exist
 for dir_path in [AUDIO_DIR, VISUAL_DIR, LEARNING_CONTENT_DIR]:
     dir_path.mkdir(exist_ok=True)
-
-# TTS functionality with PyTorch 2.7 compatibility fixes
-TTS_AVAILABLE = False
-tts = None
-tts_models = {}
-device = "cpu"
-
-# Voice presets for different segment types
-VOICE_PRESETS = {
-    'instructor_male': {'name': 'Professional Instructor (Male)', 'speed': 1.0},
-    'instructor_female': {'name': 'Professional Instructor (Female)', 'speed': 1.0},
-    'enthusiastic': {'name': 'Enthusiastic Teacher', 'speed': 1.1},
-    'calm_explainer': {'name': 'Calm Explainer', 'speed': 0.95}
-}
-
-def initialize_tts():
-    """Initialize TTS with PyTorch 2.7 compatibility fixes"""
-    global TTS_AVAILABLE, tts, tts_models, device
-    try:
-        import warnings
-        warnings.filterwarnings("ignore", message="You are using `torch.load` with `weights_only=False`")
-        
-        import torch
-        import torch.serialization
-        torch.serialization.add_safe_globals(['TTS.tts.configs.xtts_config.XttsConfig'])
-        
-        from TTS.api import TTS
-        
-        # Monkey patch torch.load for XTTS compatibility
-        original_load = torch.load
-        def patched_load(f, *args, **kwargs):
-            kwargs['weights_only'] = False
-            return original_load(f, *args, **kwargs)
-        torch.load = patched_load
-        
-        device = "cuda" if torch.cuda.is_available() else "cpu"
-        print(f"Using device: {device}")
-        
-        # Try to load XTTS v2
-        try:
-            tts = TTS("tts_models/multilingual/multi-dataset/xtts_v2").to(device)
-            tts_models['xtts_v2'] = tts
-            TTS_AVAILABLE = True
-            print("✓ XTTS v2 loaded successfully")
-        except Exception as e:
-            print(f"Failed to load XTTS v2: {e}")
-            # Fallback to Tacotron2
-            try:
-                tts = TTS("tts_models/en/ljspeech/tacotron2-DDC").to(device)
-                tts_models['tacotron2'] = tts
-                TTS_AVAILABLE = True
-                print("✓ Tacotron2-DDC loaded as fallback")
-            except Exception as e2:
-                print(f"Failed to load Tacotron2: {e2}")
-        
-    except Exception as e:
-        print(f"TTS not available: {e}")
-        TTS_AVAILABLE = False
-
-# Initialize TTS on startup
-initialize_tts()
 
 # Health Check API
 
@@ -123,19 +56,12 @@ def health_check():
         except Exception as e:
             db_status = f"unhealthy: {str(e)}"
         
-        # Check TTS status
-        tts_status = "healthy" if TTS_AVAILABLE else "unavailable"
-        tts_model = None
-        if TTS_AVAILABLE and tts_models:
-            tts_model = list(tts_models.keys())[0] if tts_models else None
-        
-        # Check audio queue status
-        queue_size = audio_queue.qsize()
-        active_tasks = len([s for s in audio_status.values() if s.get('status') == 'processing'])
+        # Check audio files
+        audio_files = list(AUDIO_DIR.glob('*.mp3')) + list(AUDIO_DIR.glob('*.wav'))
         
         # Check directory access
         directories_ok = all([
-            AUDIO_DIR.exists() and os.access(AUDIO_DIR, os.W_OK),
+            AUDIO_DIR.exists() and os.access(AUDIO_DIR, os.R_OK),
             VISUAL_DIR.exists() and os.access(VISUAL_DIR, os.W_OK),
             LEARNING_CONTENT_DIR.exists() and os.access(LEARNING_CONTENT_DIR, os.R_OK)
         ])
@@ -149,19 +75,14 @@ def health_check():
                     'status': db_status,
                     'type': 'sqlite'
                 },
-                'tts': {
-                    'status': tts_status,
-                    'model': tts_model,
-                    'device': device if TTS_AVAILABLE else None
-                },
-                'audio_processing': {
-                    'queue_size': queue_size,
-                    'active_tasks': active_tasks,
-                    'total_processed': len(audio_status)
+                'audio': {
+                    'status': 'static',
+                    'mode': 'pre-generated',
+                    'audio_files': len(audio_files)
                 },
                 'storage': {
                     'directories_accessible': directories_ok,
-                    'audio_files': len(list(AUDIO_DIR.glob('*.wav'))) if AUDIO_DIR.exists() else 0
+                    'audio_files': len(audio_files)
                 }
             }
         }
@@ -331,19 +252,10 @@ def get_episode(episode_id):
     """Get episode with all segments"""
     episode = Episode.query.get_or_404(episode_id)
     
-    return jsonify({
-        'id': episode.id,
-        'lessonId': episode.lesson_id,
-        'title': episode.title,
-        'order': episode.order,
-        'estimatedDuration': episode.estimated_duration,
-        'learningObjectives': episode.learning_objectives,
-        'prerequisite': episode.prerequisite,
-        'checkpointId': episode.checkpoint_id,
-        'summaryReelAssetId': episode.summary_reel_asset_id,
-        'completionCriteria': episode.completion_criteria,
-        'badgeOnCompletion': episode.badge_on_completion,
-        'segments': [{
+    # Check audio availability for each segment
+    segments_data = []
+    for segment in episode.segments:
+        segment_data = {
             'id': segment.id,
             'order': segment.order,
             'segmentType': segment.segment_type,
@@ -358,7 +270,36 @@ def get_episode(episode_id):
             'keywords': segment.keywords,
             'pointsAwarded': segment.points_awarded,
             'analytics': segment.analytics
-        } for segment in episode.segments]
+        }
+        
+        # Check if audio exists
+        mp3_path = AUDIO_DIR / f"AUDIO_{segment.id}.mp3"
+        wav_path = AUDIO_DIR / f"AUDIO_{segment.id}.wav"
+        
+        if mp3_path.exists():
+            segment_data['audioUrl'] = f'/audio/AUDIO_{segment.id}.mp3'
+            segment_data['audioAvailable'] = True
+        elif wav_path.exists():
+            segment_data['audioUrl'] = f'/audio/AUDIO_{segment.id}.wav'
+            segment_data['audioAvailable'] = True
+        else:
+            segment_data['audioAvailable'] = False
+        
+        segments_data.append(segment_data)
+    
+    return jsonify({
+        'id': episode.id,
+        'lessonId': episode.lesson_id,
+        'title': episode.title,
+        'order': episode.order,
+        'estimatedDuration': episode.estimated_duration,
+        'learningObjectives': episode.learning_objectives,
+        'prerequisite': episode.prerequisite,
+        'checkpointId': episode.checkpoint_id,
+        'summaryReelAssetId': episode.summary_reel_asset_id,
+        'completionCriteria': episode.completion_criteria,
+        'badgeOnCompletion': episode.badge_on_completion,
+        'segments': segments_data
     })
 
 @app.route('/api/episodes/<episode_id>/checkpoint', methods=['POST'])
@@ -449,7 +390,7 @@ def get_segment(segment_id):
     """Get segment details"""
     segment = Segment.query.get_or_404(segment_id)
     
-    return jsonify({
+    segment_data = {
         'id': segment.id,
         'episodeId': segment.episode_id,
         'order': segment.order,
@@ -465,7 +406,22 @@ def get_segment(segment_id):
         'keywords': segment.keywords,
         'pointsAwarded': segment.points_awarded,
         'analytics': segment.analytics
-    })
+    }
+    
+    # Check if audio exists
+    mp3_path = AUDIO_DIR / f"AUDIO_{segment.id}.mp3"
+    wav_path = AUDIO_DIR / f"AUDIO_{segment.id}.wav"
+    
+    if mp3_path.exists():
+        segment_data['audioUrl'] = f'/audio/AUDIO_{segment.id}.mp3'
+        segment_data['audioAvailable'] = True
+    elif wav_path.exists():
+        segment_data['audioUrl'] = f'/audio/AUDIO_{segment.id}.wav'
+        segment_data['audioAvailable'] = True
+    else:
+        segment_data['audioAvailable'] = False
+    
+    return jsonify(segment_data)
 
 @app.route('/api/segments/<segment_id>/complete', methods=['POST'])
 def complete_segment(segment_id):
@@ -720,62 +676,67 @@ def get_user_certificates(user_id):
         'publicUrl': cert.public_url
     } for cert in certificates])
 
-# Media Management APIs (Enhanced)
-
-@app.route('/api/generate-segment-audio', methods=['POST'])
-def generate_segment_audio():
-    """Generate audio for a segment"""
-    if not TTS_AVAILABLE:
-        return jsonify({'error': 'TTS not available'}), 503
+# Audio API - Simplified for pre-generated files
+@app.route('/api/segment-audio/<segment_id>', methods=['GET'])
+def get_segment_audio(segment_id):
+    """Get pre-generated audio for a segment"""
+    # Check for MP3 first
+    mp3_path = AUDIO_DIR / f"AUDIO_{segment_id}.mp3"
+    if mp3_path.exists():
+        return jsonify({
+            'available': True,
+            'url': f'/audio/AUDIO_{segment_id}.mp3',
+            'format': 'mp3'
+        })
     
-    data = request.json
-    segment_id = data.get('segmentId')
-    text = data.get('text')
-    voice = data.get('voice', 'default')
-    language = data.get('language', 'en')
+    # Check for WAV
+    wav_path = AUDIO_DIR / f"AUDIO_{segment_id}.wav"
+    if wav_path.exists():
+        return jsonify({
+            'available': True,
+            'url': f'/audio/AUDIO_{segment_id}.wav',
+            'format': 'wav'
+        })
     
-    if not segment_id or not text:
-        return jsonify({'error': 'Segment ID and text required'}), 400
-    
-    task_id = str(uuid.uuid4())
-    
-    # Add to queue
-    audio_queue.put({
-        'task_id': task_id,
-        'segment_id': segment_id,
-        'text': text,
-        'voice': voice,
-        'language': language
-    })
-    
-    audio_status[task_id] = {
-        'status': 'queued',
-        'segment_id': segment_id
-    }
+    # Check if JSON metadata exists
+    json_path = AUDIO_DIR / f"AUDIO_{segment_id}.json"
+    if json_path.exists():
+        with open(json_path, 'r') as f:
+            metadata = json.load(f)
+        return jsonify({
+            'available': False,
+            'metadata': metadata,
+            'message': 'Audio not generated'
+        })
     
     return jsonify({
-        'taskId': task_id,
-        'status': 'queued'
+        'available': False,
+        'message': 'No audio or metadata found for this segment'
+    }), 404
+
+@app.route('/api/audio/batch-status', methods=['GET'])
+def get_audio_batch_status():
+    """Get status of all audio files"""
+    audio_files = list(AUDIO_DIR.glob('*.mp3')) + list(AUDIO_DIR.glob('*.wav'))
+    json_files = list(AUDIO_DIR.glob('AUDIO_*.json'))
+    
+    # Check for batch generation summary
+    summary_path = AUDIO_DIR / 'batch_generation_summary.json'
+    summary = None
+    if summary_path.exists():
+        with open(summary_path, 'r') as f:
+            summary = json.load(f)
+    
+    return jsonify({
+        'totalAudioFiles': len(audio_files),
+        'totalMetadataFiles': len(json_files),
+        'audioFormats': {
+            'mp3': len(list(AUDIO_DIR.glob('*.mp3'))),
+            'wav': len(list(AUDIO_DIR.glob('*.wav')))
+        },
+        'lastGeneration': summary.get('generatedAt') if summary else None,
+        'generationSummary': summary
     })
-
-@app.route('/api/audio-status/<task_id>', methods=['GET'])
-def get_audio_status(task_id):
-    """Check status of audio generation task"""
-    if task_id not in audio_status:
-        return jsonify({'error': 'Task not found'}), 404
-    
-    status_info = audio_status[task_id].copy()
-    
-    # Add additional info if completed
-    if status_info['status'] == 'completed' and 'audio_url' in status_info:
-        # Get file size if available
-        audio_filename = status_info['audio_url'].split('/')[-1]
-        audio_path = AUDIO_DIR / audio_filename
-        if audio_path.exists():
-            status_info['fileSize'] = audio_path.stat().st_size
-    
-    return jsonify(status_info)
-
 
 @app.route('/api/code-examples/highlight', methods=['POST'])
 def highlight_code():
@@ -842,111 +803,6 @@ def init_course_data():
         db.session.rollback()
         return jsonify({'error': str(e)}), 500
 
-# Audio worker thread (keeping existing implementation)
-def audio_worker():
-    """Background worker for audio generation"""
-    while True:
-        try:
-            task = audio_queue.get(timeout=1)
-            task_id = task['task_id']
-            
-            audio_status[task_id]['status'] = 'processing'
-            
-            # Generate audio with voice customization
-            audio_path = AUDIO_DIR / f"{task['segment_id']}_{task_id}.wav"
-            voice_preset = task.get('voice', 'instructor_male')
-            language = task.get('language', 'en')
-            
-            if TTS_AVAILABLE and tts:
-                try:
-                    # Check if we have XTTS v2 for multilingual support
-                    if 'xtts_v2' in tts_models:
-                        tts_models['xtts_v2'].tts_to_file(
-                            text=task['text'],
-                            language=language,
-                            file_path=str(audio_path),
-                            speed=VOICE_PRESETS.get(voice_preset, {}).get('speed', 1.0)
-                        )
-                    else:
-                        # Fallback to basic TTS
-                        tts.tts_to_file(
-                            text=task['text'],
-                            file_path=str(audio_path)
-                        )
-                except Exception as e:
-                    print(f"TTS generation failed: {e}")
-                    raise
-            
-            audio_status[task_id] = {
-                'status': 'completed',
-                'segment_id': task['segment_id'],
-                'audio_url': f'/audio/{audio_path.name}'
-            }
-            
-            # Create media asset record
-            media_asset = MediaAsset(
-                id=f"audio_{task_id}",
-                asset_type='audio',
-                file_path=str(audio_path),
-                file_url=f'/audio/{audio_path.name}',
-                source_text=task['text'],
-                generation_params={
-                    'voice': task['voice'],
-                    'language': task['language']
-                },
-                generation_task_id=task_id
-            )
-            db.session.add(media_asset)
-            db.session.commit()
-            
-        except queue.Empty:
-            continue
-        except Exception as e:
-            if 'task_id' in locals():
-                audio_status[task_id] = {
-                    'status': 'failed',
-                    'error': str(e)
-                }
-
-# Start audio worker
-if TTS_AVAILABLE:
-    audio_thread = threading.Thread(target=audio_worker, daemon=True)
-    audio_thread.start()
-
-def init_database():
-    """Initialize database tables and data"""
-    with app.app_context():
-        db.create_all()
-        
-        # Initialize interactive cue templates
-        cue_types = [
-            ('hover_to_explore', 'Hover to Explore', 'User hovers over elements to reveal information'),
-            ('drag_to_distribute', 'Drag to Distribute', 'User drags items to different locations'),
-            ('click_to_compare', 'Click to Compare', 'User clicks to see comparisons'),
-            ('simulation', 'Simulation', 'Interactive simulation'),
-            ('predict_value_change', 'Predict Value Change', 'User predicts how values will change'),
-            ('code_completion', 'Code Completion', 'User completes code snippets'),
-            ('scenario_selection', 'Scenario Selection', 'User selects from multiple scenarios'),
-            ('pause_and_reflect', 'Pause and Reflect', 'Pause for user reflection'),
-            ('important_note', 'Important Note', 'Display important information'),
-            ('interactive_explorer', 'Interactive Explorer', 'Explore interactive content'),
-            ('field_mapping_exercise', 'Field Mapping Exercise', 'Map fields between systems'),
-            ('ui_simulation', 'UI Simulation', 'Simulate UI interactions')
-        ]
-        
-        for cue_type, name, description in cue_types:
-            if not InteractiveCueTemplate.query.filter_by(cue_type=cue_type).first():
-                template = InteractiveCueTemplate(
-                    cue_type=cue_type,
-                    name=name,
-                    description=description,
-                    component_name=f"{cue_type.title().replace('_', '')}Component"
-                )
-                db.session.add(template)
-        
-        db.session.commit()
-
-
 # Interaction logging endpoint
 @app.route('/api/interactions/log', methods=['POST'])
 def log_interaction():
@@ -965,7 +821,7 @@ def log_interaction():
 # Audio file serving
 @app.route('/audio/<filename>')
 def serve_audio(filename):
-    """Serve generated audio files"""
+    """Serve pre-generated audio files"""
     try:
         return send_from_directory(AUDIO_DIR, filename)
     except FileNotFoundError:
@@ -1010,7 +866,7 @@ def generate_placeholder_svg(filename):
 @app.route('/')
 def index():
     """Serve the main application page"""
-    return send_from_directory('.', 'index.html')
+    return render_template('index.html')
 
 @app.route('/<path:path>')
 def serve_static(path):
@@ -1019,7 +875,53 @@ def serve_static(path):
         return send_from_directory('.', path)
     return jsonify({'error': 'Resource not found'}), 404
 
-# Health check endpoint is already defined above
+# LLM Visual Generation APIs
+@app.route('/api/generate-visual', methods=['POST'])
+def generate_visual():
+    """Generate visual specification for a segment using LLM logic"""
+    data = request.json
+    segment = data.get('segment')
+    
+    if not segment:
+        return jsonify({'error': 'No segment data provided'}), 400
+    
+    try:
+        # Import the visual integration module
+        import sys
+        sys.path.append('./utils')
+        from llm_visual_integration import LLMVisualIntegration
+        
+        # Create integration instance
+        visual_integration = LLMVisualIntegration()
+        
+        # Generate visual specification
+        import asyncio
+        visual_spec = asyncio.run(
+            visual_integration.generate_visual_for_segment(segment)
+        )
+        
+        # Store in cache (you could also store in database)
+        visual_id = visual_spec['visualId']
+        
+        return jsonify({
+            'success': True,
+            'visualId': visual_id,
+            'specification': visual_spec
+        })
+        
+    except Exception as e:
+        print(f"Error generating visual: {e}")
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/visual-spec/<visual_id>', methods=['GET'])
+def get_visual_spec(visual_id):
+    """Get cached visual specification"""
+    # In a real implementation, this would retrieve from cache or database
+    # For now, return a not found error
+    return jsonify({'error': 'Visual specification not found'}), 404
 
 # Analytics API Routes
 @app.route('/api/analytics/events', methods=['POST'])
@@ -1318,8 +1220,51 @@ except ImportError:
 except Exception as e:
     print(f"Error loading adaptive learning routes: {e}")
 
+def init_database():
+    """Initialize database tables and data"""
+    with app.app_context():
+        db.create_all()
+        
+        # Initialize interactive cue templates
+        cue_types = [
+            ('hover_to_explore', 'Hover to Explore', 'User hovers over elements to reveal information'),
+            ('drag_to_distribute', 'Drag to Distribute', 'User drags items to different locations'),
+            ('click_to_compare', 'Click to Compare', 'User clicks to see comparisons'),
+            ('simulation', 'Simulation', 'Interactive simulation'),
+            ('predict_value_change', 'Predict Value Change', 'User predicts how values will change'),
+            ('code_completion', 'Code Completion', 'User completes code snippets'),
+            ('scenario_selection', 'Scenario Selection', 'User selects from multiple scenarios'),
+            ('pause_and_reflect', 'Pause and Reflect', 'Pause for user reflection'),
+            ('important_note', 'Important Note', 'Display important information'),
+            ('interactive_explorer', 'Interactive Explorer', 'Explore interactive content'),
+            ('field_mapping_exercise', 'Field Mapping Exercise', 'Map fields between systems'),
+            ('ui_simulation', 'UI Simulation', 'Simulate UI interactions')
+        ]
+        
+        for cue_type, name, description in cue_types:
+            if not InteractiveCueTemplate.query.filter_by(cue_type=cue_type).first():
+                template = InteractiveCueTemplate(
+                    cue_type=cue_type,
+                    name=name,
+                    description=description,
+                    component_name=f"{cue_type.title().replace('_', '')}Component"
+                )
+                db.session.add(template)
+        
+        db.session.commit()
+
 if __name__ == '__main__':
     # Initialize database
     init_database()
+    
+    # Check for pre-generated audio
+    audio_files = list(AUDIO_DIR.glob('*.mp3')) + list(AUDIO_DIR.glob('*.wav'))
+    print(f"\n✓ Neural Learn - Static Audio Mode")
+    print(f"✓ Found {len(audio_files)} pre-generated audio files")
+    print(f"✓ Audio directory: {AUDIO_DIR}")
+    
+    if len(audio_files) == 0:
+        print("\n⚠ No audio files found!")
+        print("  Pre-generated audio files are required")
     
     app.run(debug=True, port=5000)

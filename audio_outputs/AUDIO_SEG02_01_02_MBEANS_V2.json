@@ -1,15 +1,12 @@
 {
-  "audioId": "AUDIO_SEG02_01_02_MBEANS_V2",
+  "segmentId": "SEGMENT_02_01_02_MBEANS_EXPLAINED_V2",
+  "segmentType": "concept_explanation",
+  "title": "MBeans: Your Window into Java Applications",
   "text": "At its core, JMX revolves around MBeans\u2014Managed Beans. An MBean is just a Java object that exposes attributes (metrics) and operations (actions). Each MBean has a unique ObjectName following a pattern like: kafka.server:type=BrokerTopicMetrics,name=BytesInPerSec",
-  "generatedAt": "2025-05-31T23:36:15.987522",
-  "metadata": {
-    "segmentId": "SEGMENT_02_01_02_MBEANS_EXPLAINED_V2",
-    "lessonId": "LESSON_02_JMX_AND_METRIC_COLLECTION_V2",
-    "episodeId": "EPISODE_02_01_JMX_BASICS_V2",
-    "title": "MBeans: Your Window into Java Applications"
-  },
-  "model": "Tacotron2-DDC",
-  "quality": "high",
-  "device": "cpu",
-  "speaker": null
+  "audioId": "AUDIO_SEG02_01_02_MBEANS_V2",
+  "generatedAt": "2025-06-01T02:33:09.629744",
+  "audioFile": "AUDIO_SEG02_01_02_MBEANS_V2.mp3",
+  "voice": "en-US-ChristopherNeural",
+  "audioGenerated": true,
+  "voiceType": "adult_professional"
 }

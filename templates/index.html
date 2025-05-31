@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neural Learn - Course Platform</title>
+    <meta name="theme-color" content="#ffffff">
+    
+    <!-- Minimal Design CSS Files -->
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <link rel="stylesheet" href="/static/css/segment_styles.css">
+    <link rel="stylesheet" href="/static/css/visual_assets.css">
+    
+    <!-- Icons and Code Highlighting -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" id="prism-theme">
+    
+    <!-- D3.js for Charts -->
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    
+    <!-- Minimal Design Enforcer -->
+    <script src="/static/js/apply_minimal_design.js"></script>
+</head>
+<body>
+    <!-- Skip to main content link for accessibility -->
+    <a href="#segmentContainer" class="skip-link">Skip to main content</a>
+    
+    <!-- Main Application Container -->
+    <div id="app" class="app-container">
+        
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-left">
+                <button class="menu-toggle" id="menuToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1 class="app-title">Neural Learn</h1>
+            </div>
+            
+            <!-- Breadcrumb Navigation -->
+            <nav class="breadcrumb-nav" id="breadcrumbNav">
+                <span class="breadcrumb-item">Courses</span>
+            </nav>
+            
+            <div class="header-right">
+                <!-- Points Display -->
+                <div class="points-display">
+                    <i class="fas fa-star"></i>
+                    <span id="userPoints">0</span> pts
+                </div>
+                
+                <!-- Badge Count -->
+                <div class="badge-count">
+                    <i class="fas fa-medal"></i>
+                    <span id="userBadges">0</span>
+                </div>
+                
+                <!-- User Menu -->
+                <button class="user-menu-btn" id="userMenuBtn">
+                    <i class="fas fa-user-circle"></i>
+                </button>
+            </div>
+        </header>
+        
+        <!-- Main Content Area -->
+        <div class="main-content">
+            
+            <!-- Course Sidebar Navigation -->
+            <aside class="course-sidebar" id="courseSidebar">
+                <div class="sidebar-header">
+                    <h2>Course Navigation</h2>
+                    <button class="sidebar-close" id="sidebarClose">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                
+                <div class="course-structure" id="courseStructure">
+                    <!-- Dynamic course structure -->
+                </div>
+                
+                <div class="overall-progress">
+                    <h3>Overall Progress</h3>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="overallProgress"></div>
+                    </div>
+                    <div class="progress-text" id="progressText">0% Complete</div>
+                </div>
+            </aside>
+            
+            <!-- Content Area -->
+            <div class="content-area">
+                
+                <!-- Course Selection View -->
+                <div id="courseSelectionView" class="view-container active">
+                    <div class="view-header">
+                        <h2>Available Courses</h2>
+                        <div class="view-controls">
+                            <button class="view-toggle active" data-view="grid">
+                                <i class="fas fa-th"></i>
+                            </button>
+                            <button class="view-toggle" data-view="list">
+                                <i class="fas fa-list"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="courses-grid" id="coursesGrid">
+                        <!-- Course cards dynamically populated -->
+                    </div>
+                </div>
+                
+                <!-- Episode Player View -->
+                <div id="episodePlayerView" class="view-container">
+                    <!-- Episode Header -->
+                    <div class="episode-header">
+                        <button class="back-btn" id="backToCoursesBtn">
+                            <i class="fas fa-arrow-left"></i>
+                        </button>
+                        <div class="episode-info">
+                            <h2 id="episodeTitle">Episode Title</h2>
+                            <p id="episodeDuration">Duration: 0 min</p>
+                        </div>
+                        <div class="episode-progress">
+                            <span id="episodeProgressText">0/0 segments</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Segment Container -->
+                    <div class="segment-container" id="segmentContainer">
+                        <!-- Dynamic segment content -->
+                    </div>
+                    
+                    <!-- Segment Controls -->
+                    <div class="segment-controls">
+                        <button class="control-btn" id="prevSegmentBtn" disabled>
+                            <i class="fas fa-chevron-left"></i>
+                            Previous
+                        </button>
+                        
+                        <div class="audio-controls">
+                            <button class="audio-btn" id="playPauseBtn">
+                                <i class="fas fa-play"></i>
+                            </button>
+                            <div class="audio-progress">
+                                <div class="audio-progress-bar" id="audioProgressBar">
+                                    <div class="audio-progress-fill" id="audioProgressFill"></div>
+                                </div>
+                                <div class="audio-time">
+                                    <span id="audioCurrentTime">0:00</span> / <span id="audioDuration">0:00</span>
+                                </div>
+                            </div>
+                            <button class="audio-speed-btn" id="audioSpeedBtn">1x</button>
+                        </div>
+                        
+                        <button class="control-btn" id="nextSegmentBtn">
+                            Next
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Analytics Dashboard View -->
+                <div id="analyticsDashboard" class="view-container">
+                    <!-- Analytics content -->
+                </div>
+                
+                <!-- Interactive Overlays -->
+                <div id="interactiveOverlay" class="interactive-overlay hidden">
+                    <!-- Dynamic interactive content -->
+                </div>
+                
+                <!-- Checkpoint Modal -->
+                <div id="checkpointModal" class="modal hidden">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h2>Episode Checkpoint</h2>
+                            <button class="modal-close" id="checkpointClose">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <div class="modal-body" id="checkpointContent">
+                            <!-- Dynamic checkpoint content -->
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-secondary" id="skipCheckpointBtn">Skip</button>
+                            <button class="btn btn-primary" id="submitCheckpointBtn">Submit</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Badge Earned Modal -->
+                <div id="badgeModal" class="modal hidden">
+                    <div class="modal-content badge-modal">
+                        <div class="badge-celebration">
+                            <i class="fas fa-medal badge-icon"></i>
+                            <h2>Badge Earned!</h2>
+                            <h3 id="badgeName">Badge Name</h3>
+                            <p id="badgeDescription">Badge description</p>
+                            <button class="btn btn-primary" id="closeBadgeModal">Continue</button>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay hidden">
+        <div class="loading-spinner"></div>
+        <p id="loadingText">Loading...</p>
+    </div>
+    
+    <!-- Toast Container -->
+    <div id="toastContainer" class="toast-container"></div>
+    
+    <!-- Core Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-java.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-yaml.min.js"></script>
+    
+    <!-- Application Scripts -->
+    <script src="/static/js/script.js"></script>
+    <script src="/static/js/segment_renderers.js"></script>
+    <script src="/static/js/interactive_cues.js"></script>
+    <script src="/static/js/visual_assets.js"></script>
+    <script src="/static/js/adaptive_learning.js"></script>
+    <script src="/static/js/analytics_client.js"></script>
+    
+    <!-- LLM Visual Renderer -->
+    <script src="/static/js/llm_visual_renderer.js"></script>
+    
+    <!-- Initialize Application -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('Neural Learn - Minimal Design Edition');
+            // Application initialization handled by script.js
+        });
+    </script>
+</body>
+</html>

@@ -57,7 +57,7 @@ Track 2 has been successfully implemented, expanding interactive capabilities:
 - **Interactive Elements**: 20 different interaction types (Track 2 ✅)
 - **Progress Tracking**: Points, badges, and completion tracking
 - **Visual Assets**: Lazy-loaded images and diagrams with zoom/pan
-- **Audio Generation**: Text-to-speech for all content
+- **Audio Support**: Pre-generated audio files for all content
 - **Interaction Analytics**: Comprehensive tracking and analysis (Track 2 ✅)
 
 ### Segment Types Implemented
@@ -146,7 +146,7 @@ qslab/
 │   └── placeholders/     # SVG placeholder images
 ├── learning_content/      # Course data
 │   └── analyticsSummary.json
-├── audio_outputs/         # Generated audio files
+├── audio_outputs/         # Pre-generated audio files
 └── neural_learn_v2.db     # SQLite database
 ```
 
@@ -203,16 +203,11 @@ The application uses SQLAlchemy with the following main models:
 ## 🚦 Requirements
 
 ### Python Dependencies
-- Python 3.9-3.11 (for TTS support)
+- Python 3.9+
 - Flask 3.0.0
 - Flask-CORS
 - Flask-SQLAlchemy
 - SQLAlchemy
-
-### Optional (for TTS)
-- TTS 0.22.0
-- PyTorch 2.0+
-- torchaudio
 
 ### Frontend
 - Modern browser with ES6 support
@@ -254,8 +249,8 @@ python migrate_to_v2.py
 ```
 
 ### Audio Not Working
-- Check Python version (3.9-3.11 required)
-- Install TTS dependencies
+- Install edge-tts: `pip install edge-tts`
+- Edge TTS requires internet connection
 - App works without audio in fallback mode
 
 ### Progress Not Saving

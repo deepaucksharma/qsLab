@@ -1,15 +1,12 @@
 {
-  "audioId": "AUDIO_SEG02_01_01_JMX_INTRO_V2",
+  "segmentId": "SEGMENT_02_01_01_WHAT_IS_JMX_V2",
+  "segmentType": "technical_introduction",
+  "title": "What is JMX and Why Should You Care?",
   "text": "If Kafka is a high-performance race car, JMX is the diagnostic port that lets you plug in and see what's happening under the hood. JMX\u2014Java Management Extensions\u2014is the standard way for Java applications to expose their internal state without special protocols.",
-  "generatedAt": "2025-05-31T23:36:07.029722",
-  "metadata": {
-    "segmentId": "SEGMENT_02_01_01_WHAT_IS_JMX_V2",
-    "lessonId": "LESSON_02_JMX_AND_METRIC_COLLECTION_V2",
-    "episodeId": "EPISODE_02_01_JMX_BASICS_V2",
-    "title": "What is JMX and Why Should You Care?"
-  },
-  "model": "Tacotron2-DDC",
-  "quality": "high",
-  "device": "cpu",
-  "speaker": null
+  "audioId": "AUDIO_SEG02_01_01_JMX_INTRO_V2",
+  "generatedAt": "2025-06-01T02:33:07.111581",
+  "audioFile": "AUDIO_SEG02_01_01_JMX_INTRO_V2.mp3",
+  "voice": "en-US-GuyNeural",
+  "audioGenerated": true,
+  "voiceType": "adult_professional"
 }

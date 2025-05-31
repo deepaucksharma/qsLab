@@ -1,0 +1,255 @@
+{
+  "visualType": "animated-diagram",
+  "visualId": "visual-welcome-journey-v2",
+  "title": "Welcome to Your Kafka Monitoring Journey",
+  "canvas": {
+    "width": 1920,
+    "height": 1080,
+    "background": {
+      "type": "gradient",
+      "gradient": {
+        "type": "linear",
+        "angle": 180,
+        "stops": [
+          {"offset": 0, "color": "#f8f9fa"},
+          {"offset": 100, "color": "#e8f0fe"}
+        ]
+      }
+    }
+  },
+  "components": [
+    {
+      "type": "particle-system",
+      "id": "background-particles",
+      "properties": {
+        "particleCount": 30,
+        "particleSize": {"min": 20, "max": 60},
+        "particleOpacity": {"min": 0.05, "max": 0.15},
+        "particleColors": ["#1a73e8", "#dadce0"],
+        "movementType": "float-up",
+        "speed": 0.5,
+        "respawnAtBottom": true
+      }
+    },
+    {
+      "type": "text",
+      "id": "main-title",
+      "content": "Welcome to Your Kafka Monitoring Journey",
+      "position": {"x": 960, "y": 200},
+      "style": {
+        "fontSize": 48,
+        "fontWeight": 300,
+        "color": "#202124",
+        "textAlign": "center"
+      }
+    },
+    {
+      "type": "image",
+      "id": "newrelic-logo",
+      "src": "newrelic-logo.svg",
+      "position": {"x": 1752, "y": 48},
+      "properties": {
+        "width": 120,
+        "opacity": 0.9
+      }
+    },
+    {
+      "type": "journey-map",
+      "id": "course-journey",
+      "position": {"x": 960, "y": 450},
+      "nodes": [
+        {
+          "id": "fundamentals",
+          "label": "Kafka Fundamentals",
+          "icon": "streaming-data",
+          "position": {"x": -300, "y": 0},
+          "color": "#1a73e8"
+        },
+        {
+          "id": "monitoring",
+          "label": "Monitoring & Metrics",
+          "icon": "dashboard",
+          "position": {"x": 0, "y": 0},
+          "color": "#34a853"
+        },
+        {
+          "id": "share-groups",
+          "label": "Share Groups",
+          "icon": "network",
+          "position": {"x": 300, "y": 0},
+          "color": "#ea4335"
+        }
+      ],
+      "connections": [
+        {"from": "fundamentals", "to": "monitoring"},
+        {"from": "monitoring", "to": "share-groups"}
+      ]
+    },
+    {
+      "type": "depth-layers",
+      "id": "deep-dive-visual",
+      "position": {"x": 960, "y": 700},
+      "layers": [
+        {"depth": 0, "label": "Surface", "color": "#e8f0fe", "opacity": 0.3},
+        {"depth": 1, "label": "", "color": "#c5d9f7", "opacity": 0.4},
+        {"depth": 2, "label": "", "color": "#8ab4f8", "opacity": 0.5},
+        {"depth": 3, "label": "", "color": "#4285f4", "opacity": 0.6},
+        {"depth": 4, "label": "Deep Understanding", "color": "#1a73e8", "opacity": 0.8}
+      ]
+    },
+    {
+      "type": "text",
+      "id": "welcome-message",
+      "content": "Grab your favorite beverage ☕",
+      "position": {"x": 960, "y": 850},
+      "style": {
+        "fontSize": 20,
+        "fontWeight": 400,
+        "color": "#5f6368",
+        "textAlign": "center"
+      },
+      "properties": {
+        "typewriter": true,
+        "typewriterSpeed": 50
+      }
+    },
+    {
+      "type": "button",
+      "id": "begin-journey-cta",
+      "label": "Begin Your Journey",
+      "position": {"x": 960, "y": 950},
+      "style": {
+        "backgroundColor": "#1a73e8",
+        "color": "#ffffff",
+        "padding": "16px 32px",
+        "borderRadius": 8,
+        "fontSize": 16,
+        "fontWeight": 500
+      },
+      "interactions": {
+        "hover": {
+          "scale": 1.05,
+          "shadow": "0 8px 16px rgba(26, 115, 232, 0.3)"
+        },
+        "click": {
+          "ripple": true,
+          "action": "nextSegment"
+        }
+      }
+    }
+  ],
+  "animations": [
+    {
+      "trigger": "onLoad",
+      "sequence": [
+        {
+          "action": "fadeIn",
+          "target": "background-particles",
+          "duration": 1000,
+          "delay": 0
+        },
+        {
+          "action": "slideInUp",
+          "target": "main-title",
+          "duration": 1000,
+          "delay": 1000,
+          "easing": "ease-out"
+        },
+        {
+          "action": "fadeIn",
+          "target": "newrelic-logo",
+          "duration": 1000,
+          "delay": 2000
+        },
+        {
+          "action": "springIn",
+          "target": "course-journey",
+          "duration": 2000,
+          "delay": 2000,
+          "stagger": 200
+        },
+        {
+          "action": "drawConnections",
+          "target": "course-journey",
+          "duration": 2000,
+          "delay": 3000
+        },
+        {
+          "action": "layerReveal",
+          "target": "deep-dive-visual",
+          "duration": 2000,
+          "delay": 4000,
+          "direction": "bottom-to-top"
+        },
+        {
+          "action": "typewriter",
+          "target": "welcome-message",
+          "duration": 2000,
+          "delay": 5000
+        },
+        {
+          "action": "fadeIn",
+          "target": "begin-journey-cta",
+          "duration": 500,
+          "delay": 6000,
+          "scale": {"from": 0.8, "to": 1}
+        }
+      ]
+    },
+    {
+      "trigger": "continuous",
+      "animations": [
+        {
+          "target": "course-journey",
+          "action": "pulse",
+          "duration": 2000,
+          "repeat": "infinite",
+          "scale": {"min": 1, "max": 1.05}
+        },
+        {
+          "target": "background-particles",
+          "action": "float",
+          "continuous": true
+        }
+      ]
+    }
+  ],
+  "interactions": [
+    {
+      "type": "hover",
+      "target": "course-journey.nodes",
+      "action": "showTooltip",
+      "content": {
+        "fundamentals": "Learn the core concepts of Apache Kafka",
+        "monitoring": "Master JMX and modern metric collection",
+        "share-groups": "Explore Kafka 4.0's revolutionary Share Groups"
+      }
+    },
+    {
+      "type": "parallax",
+      "target": "background-particles",
+      "sensitivity": 0.1
+    },
+    {
+      "type": "hover",
+      "target": "deep-dive-visual.layers",
+      "action": "highlight",
+      "showDepthIndicator": true
+    }
+  ],
+  "accessibility": {
+    "ariaLabel": "Welcome to the Kafka Monitoring course. This visual shows your learning journey through three main pillars: Kafka Fundamentals, Monitoring & Metrics, and Share Groups.",
+    "reduceMotion": {
+      "disableAnimations": ["float", "pulse", "parallax"],
+      "instantTransitions": true
+    },
+    "keyboardNavigation": {
+      "tabOrder": ["main-title", "course-journey", "begin-journey-cta"],
+      "focusIndicator": {
+        "style": "outline",
+        "color": "#1a73e8",
+        "width": 2
+      }
+    }
+  }
+}
