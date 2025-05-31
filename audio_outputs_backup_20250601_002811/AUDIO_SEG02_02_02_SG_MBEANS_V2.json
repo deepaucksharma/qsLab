@@ -1,0 +1,15 @@
+{
+  "audioId": "AUDIO_SEG02_02_02_SG_MBEANS_V2",
+  "text": "Share Group metrics follow this pattern: kafka.server:type=share-group-metrics,group={groupId},topic={topic},partition={partition}. Each combination tracks unacknowledged messages, age metrics, and redelivery counts for that specific scope.",
+  "generatedAt": "2025-05-31T23:36:31.228475",
+  "metadata": {
+    "segmentId": "SEGMENT_02_02_02_SHARE_GROUP_MBEANS_V2",
+    "lessonId": "LESSON_02_JMX_AND_METRIC_COLLECTION_V2",
+    "episodeId": "EPISODE_02_02_KAFKA_JMX_METRICS_V2",
+    "title": "Finding Share Group MBeans"
+  },
+  "model": "Tacotron2-DDC",
+  "quality": "high",
+  "device": "cpu",
+  "speaker": null
+}

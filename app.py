@@ -48,19 +48,132 @@ LEARNING_CONTENT_DIR = Path("learning_content")
 for dir_path in [AUDIO_DIR, VISUAL_DIR, LEARNING_CONTENT_DIR]:
     dir_path.mkdir(exist_ok=True)
 
-# TTS functionality (keeping existing implementation)
-try:
-    import torch
-    from TTS.api import TTS
-    
-    device = "cuda" if torch.cuda.is_available() else "cpu"
-    print(f"Using device: {device}")
-    
-    tts = TTS("tts_models/multilingual/multi-dataset/xtts_v2").to(device)
-    TTS_AVAILABLE = True
-except Exception as e:
-    print(f"TTS not available: {e}")
-    TTS_AVAILABLE = False
+# TTS functionality with PyTorch 2.7 compatibility fixes
+TTS_AVAILABLE = False
+tts = None
+tts_models = {}
+device = "cpu"
+
+# Voice presets for different segment types
+VOICE_PRESETS = {
+    'instructor_male': {'name': 'Professional Instructor (Male)', 'speed': 1.0},
+    'instructor_female': {'name': 'Professional Instructor (Female)', 'speed': 1.0},
+    'enthusiastic': {'name': 'Enthusiastic Teacher', 'speed': 1.1},
+    'calm_explainer': {'name': 'Calm Explainer', 'speed': 0.95}
+}
+
+def initialize_tts():
+    """Initialize TTS with PyTorch 2.7 compatibility fixes"""
+    global TTS_AVAILABLE, tts, tts_models, device
+    try:
+        import warnings
+        warnings.filterwarnings("ignore", message="You are using `torch.load` with `weights_only=False`")
+        
+        import torch
+        import torch.serialization
+        torch.serialization.add_safe_globals(['TTS.tts.configs.xtts_config.XttsConfig'])
+        
+        from TTS.api import TTS
+        
+        # Monkey patch torch.load for XTTS compatibility
+        original_load = torch.load
+        def patched_load(f, *args, **kwargs):
+            kwargs['weights_only'] = False
+            return original_load(f, *args, **kwargs)
+        torch.load = patched_load
+        
+        device = "cuda" if torch.cuda.is_available() else "cpu"
+        print(f"Using device: {device}")
+        
+        # Try to load XTTS v2
+        try:
+            tts = TTS("tts_models/multilingual/multi-dataset/xtts_v2").to(device)
+            tts_models['xtts_v2'] = tts
+            TTS_AVAILABLE = True
+            print("✓ XTTS v2 loaded successfully")
+        except Exception as e:
+            print(f"Failed to load XTTS v2: {e}")
+            # Fallback to Tacotron2
+            try:
+                tts = TTS("tts_models/en/ljspeech/tacotron2-DDC").to(device)
+                tts_models['tacotron2'] = tts
+                TTS_AVAILABLE = True
+                print("✓ Tacotron2-DDC loaded as fallback")
+            except Exception as e2:
+                print(f"Failed to load Tacotron2: {e2}")
+        
+    except Exception as e:
+        print(f"TTS not available: {e}")
+        TTS_AVAILABLE = False
+
+# Initialize TTS on startup
+initialize_tts()
+
+# Health Check API
+
+@app.route('/api/health', methods=['GET'])
+def health_check():
+    """Health check endpoint to verify service status"""
+    try:
+        # Check database connectivity
+        db_status = "healthy"
+        try:
+            # Simple query to test database connection
+            User.query.first()
+        except Exception as e:
+            db_status = f"unhealthy: {str(e)}"
+        
+        # Check TTS status
+        tts_status = "healthy" if TTS_AVAILABLE else "unavailable"
+        tts_model = None
+        if TTS_AVAILABLE and tts_models:
+            tts_model = list(tts_models.keys())[0] if tts_models else None
+        
+        # Check audio queue status
+        queue_size = audio_queue.qsize()
+        active_tasks = len([s for s in audio_status.values() if s.get('status') == 'processing'])
+        
+        # Check directory access
+        directories_ok = all([
+            AUDIO_DIR.exists() and os.access(AUDIO_DIR, os.W_OK),
+            VISUAL_DIR.exists() and os.access(VISUAL_DIR, os.W_OK),
+            LEARNING_CONTENT_DIR.exists() and os.access(LEARNING_CONTENT_DIR, os.R_OK)
+        ])
+        
+        health_info = {
+            'status': 'healthy' if db_status == 'healthy' and directories_ok else 'degraded',
+            'timestamp': datetime.utcnow().isoformat(),
+            'version': '2.0.0',
+            'services': {
+                'database': {
+                    'status': db_status,
+                    'type': 'sqlite'
+                },
+                'tts': {
+                    'status': tts_status,
+                    'model': tts_model,
+                    'device': device if TTS_AVAILABLE else None
+                },
+                'audio_processing': {
+                    'queue_size': queue_size,
+                    'active_tasks': active_tasks,
+                    'total_processed': len(audio_status)
+                },
+                'storage': {
+                    'directories_accessible': directories_ok,
+                    'audio_files': len(list(AUDIO_DIR.glob('*.wav'))) if AUDIO_DIR.exists() else 0
+                }
+            }
+        }
+        
+        return jsonify(health_info), 200 if health_info['status'] == 'healthy' else 503
+        
+    except Exception as e:
+        return jsonify({
+            'status': 'error',
+            'error': str(e),
+            'timestamp': datetime.utcnow().isoformat()
+        }), 500
 
 # Course Management APIs
 
@@ -645,6 +758,24 @@ def generate_segment_audio():
         'status': 'queued'
     })
 
+@app.route('/api/audio-status/<task_id>', methods=['GET'])
+def get_audio_status(task_id):
+    """Check status of audio generation task"""
+    if task_id not in audio_status:
+        return jsonify({'error': 'Task not found'}), 404
+    
+    status_info = audio_status[task_id].copy()
+    
+    # Add additional info if completed
+    if status_info['status'] == 'completed' and 'audio_url' in status_info:
+        # Get file size if available
+        audio_filename = status_info['audio_url'].split('/')[-1]
+        audio_path = AUDIO_DIR / audio_filename
+        if audio_path.exists():
+            status_info['fileSize'] = audio_path.stat().st_size
+    
+    return jsonify(status_info)
+
 
 @app.route('/api/code-examples/highlight', methods=['POST'])
 def highlight_code():
@@ -721,16 +852,30 @@ def audio_worker():
             
             audio_status[task_id]['status'] = 'processing'
             
-            # Generate audio
+            # Generate audio with voice customization
             audio_path = AUDIO_DIR / f"{task['segment_id']}_{task_id}.wav"
+            voice_preset = task.get('voice', 'instructor_male')
+            language = task.get('language', 'en')
             
-            if TTS_AVAILABLE:
-                tts.tts_to_file(
-                    text=task['text'],
-                    speaker_wav=None,
-                    language=task['language'],
-                    file_path=str(audio_path)
-                )
+            if TTS_AVAILABLE and tts:
+                try:
+                    # Check if we have XTTS v2 for multilingual support
+                    if 'xtts_v2' in tts_models:
+                        tts_models['xtts_v2'].tts_to_file(
+                            text=task['text'],
+                            language=language,
+                            file_path=str(audio_path),
+                            speed=VOICE_PRESETS.get(voice_preset, {}).get('speed', 1.0)
+                        )
+                    else:
+                        # Fallback to basic TTS
+                        tts.tts_to_file(
+                            text=task['text'],
+                            file_path=str(audio_path)
+                        )
+                except Exception as e:
+                    print(f"TTS generation failed: {e}")
+                    raise
             
             audio_status[task_id] = {
                 'status': 'completed',
@@ -860,6 +1005,298 @@ def generate_placeholder_svg(filename):
         Placeholder Image
     </text>
 </svg>'''
+
+# Serve frontend
+@app.route('/')
+def index():
+    """Serve the main application page"""
+    return send_from_directory('.', 'index.html')
+
+@app.route('/<path:path>')
+def serve_static(path):
+    """Serve static files (JS, CSS, etc.)"""
+    if path.endswith(('.js', '.css', '.html', '.json')):
+        return send_from_directory('.', path)
+    return jsonify({'error': 'Resource not found'}), 404
+
+# Health check endpoint is already defined above
+
+# Analytics API Routes
+@app.route('/api/analytics/events', methods=['POST'])
+def track_analytics_events():
+    """Receive and process analytics events from frontend"""
+    data = request.json
+    events = data.get('events', [])
+    session_id = data.get('sessionId')
+    
+    try:
+        # Process each event
+        for event in events:
+            # Create analytics event record
+            analytics_event = AnalyticsEvent(
+                id=event.get('id', str(uuid.uuid4())),
+                user_id=event.get('userId'),
+                session_id=session_id,
+                event_type=event.get('eventType'),
+                event_data=event.get('data', {}),
+                timestamp=datetime.fromtimestamp(event.get('timestamp', 0) / 1000),
+                context=event.get('context', {})
+            )
+            db.session.add(analytics_event)
+        
+        db.session.commit()
+        
+        return jsonify({
+            'success': True,
+            'processed': len(events),
+            'message': f'Processed {len(events)} analytics events'
+        })
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/analytics/insights', methods=['GET'])
+def get_analytics_insights():
+    """Get analytics insights for a time range"""
+    time_range = request.args.get('range', 'week')
+    user_id = request.args.get('userId')
+    
+    try:
+        # Calculate time window
+        from datetime import timedelta
+        now = datetime.now()
+        if time_range == 'day':
+            start_time = now - timedelta(days=1)
+        elif time_range == 'week':
+            start_time = now - timedelta(weeks=1)
+        elif time_range == 'month':
+            start_time = now - timedelta(days=30)
+        else:
+            start_time = now - timedelta(weeks=1)
+        
+        # Query analytics events
+        query = AnalyticsEvent.query.filter(AnalyticsEvent.timestamp >= start_time)
+        if user_id:
+            query = query.filter_by(user_id=user_id)
+        
+        events = query.all()
+        
+        # Calculate insights
+        insights = calculate_insights(events)
+        
+        return jsonify({
+            'success': True,
+            'data': insights,
+            'timeRange': time_range,
+            'eventCount': len(events)
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/analytics/metrics/<metric_type>', methods=['GET'])
+def get_specific_metric(metric_type):
+    """Get a specific analytics metric"""
+    user_id = request.args.get('userId')
+    segment_id = request.args.get('segmentId')
+    course_id = request.args.get('courseId')
+    
+    try:
+        if metric_type == 'engagement':
+            metric_data = calculate_engagement_metrics(user_id, course_id)
+        elif metric_type == 'performance':
+            metric_data = calculate_performance_metrics(user_id, course_id)
+        elif metric_type == 'retention':
+            metric_data = calculate_retention_metrics(user_id)
+        elif metric_type == 'progress':
+            metric_data = calculate_progress_metrics(user_id, course_id)
+        else:
+            return jsonify({'error': 'Unknown metric type'}), 400
+        
+        return jsonify({
+            'success': True,
+            'metricType': metric_type,
+            'data': metric_data
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/api/analytics/recommendations', methods=['GET'])
+def get_learning_recommendations():
+    """Get personalized learning recommendations based on analytics"""
+    user_id = request.args.get('userId')
+    
+    if not user_id:
+        return jsonify({'error': 'User ID required'}), 400
+    
+    try:
+        recommendations = generate_recommendations(user_id)
+        
+        return jsonify({
+            'success': True,
+            'recommendations': recommendations
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+# Analytics helper functions
+def calculate_insights(events):
+    """Calculate analytics insights from events"""
+    if not events:
+        return {
+            'engagement': {'score': 0, 'trend': 'neutral'},
+            'performance': {'score': 0, 'improvement': 0},
+            'recommendations': [],
+            'trends': []
+        }
+    
+    # Group events by type
+    event_types = {}
+    for event in events:
+        event_type = event.event_type
+        if event_type not in event_types:
+            event_types[event_type] = []
+        event_types[event_type].append(event)
+    
+    # Calculate engagement score
+    total_events = len(events)
+    interaction_events = len(event_types.get('interaction_complete', []))
+    view_events = len(event_types.get('segment_view', []))
+    
+    engagement_score = min(100, (interaction_events * 2 + view_events) / max(1, total_events) * 100)
+    
+    # Calculate performance metrics
+    quiz_events = event_types.get('quiz_attempt', [])
+    avg_score = 0
+    if quiz_events:
+        scores = [e.event_data.get('score', 0) for e in quiz_events]
+        avg_score = sum(scores) / len(scores)
+    
+    # Generate basic recommendations
+    recommendations = []
+    if engagement_score < 50:
+        recommendations.append({
+            'type': 'engagement',
+            'message': 'Try completing more interactive exercises',
+            'priority': 'high'
+        })
+    if avg_score < 70 and quiz_events:
+        recommendations.append({
+            'type': 'performance',
+            'message': 'Review recent topics before proceeding',
+            'priority': 'medium'
+        })
+    
+    return {
+        'engagement': {
+            'score': engagement_score,
+            'trend': 'improving' if engagement_score > 70 else 'needs_attention'
+        },
+        'performance': {
+            'score': avg_score,
+            'improvement': 5  # Placeholder
+        },
+        'recommendations': recommendations,
+        'trends': [
+            {'name': 'Daily Activity', 'data': calculate_daily_trends(events)},
+            {'name': 'Topic Progress', 'data': calculate_topic_trends(events)}
+        ]
+    }
+
+def calculate_engagement_metrics(user_id, course_id=None):
+    """Calculate engagement metrics for a user"""
+    # Placeholder implementation
+    return {
+        'totalTime': 3600,  # seconds
+        'sessionsCount': 12,
+        'averageSessionLength': 300,
+        'interactionRate': 0.75,
+        'lastActive': datetime.now().isoformat()
+    }
+
+def calculate_performance_metrics(user_id, course_id=None):
+    """Calculate performance metrics for a user"""
+    # Placeholder implementation
+    return {
+        'averageScore': 85,
+        'improvementRate': 0.12,
+        'strengthAreas': ['Problem Solving', 'Code Analysis'],
+        'weaknessAreas': ['Memory Management'],
+        'recommendedDifficulty': 'intermediate'
+    }
+
+def calculate_retention_metrics(user_id):
+    """Calculate retention metrics for a user"""
+    # Placeholder implementation
+    return {
+        'retentionRate': 0.78,
+        'streakDays': 5,
+        'longestStreak': 12,
+        'returnRate': 0.85
+    }
+
+def calculate_progress_metrics(user_id, course_id=None):
+    """Calculate progress metrics for a user"""
+    # Placeholder implementation
+    return {
+        'completionRate': 0.65,
+        'currentLesson': 3,
+        'totalLessons': 8,
+        'estimatedTimeToComplete': 240  # minutes
+    }
+
+def generate_recommendations(user_id):
+    """Generate personalized recommendations for a user"""
+    # Placeholder implementation
+    return [
+        {
+            'type': 'next_lesson',
+            'title': 'Advanced Data Structures',
+            'reason': 'Based on your progress in basic structures',
+            'confidence': 0.85
+        },
+        {
+            'type': 'review',
+            'title': 'Review: Memory Management',
+            'reason': 'Lower performance detected in recent quiz',
+            'confidence': 0.72
+        },
+        {
+            'type': 'practice',
+            'title': 'Interactive Exercise: Binary Trees',
+            'reason': 'Reinforce recent learning',
+            'confidence': 0.68
+        }
+    ]
+
+def calculate_daily_trends(events):
+    """Calculate daily activity trends"""
+    # Placeholder - would group events by day
+    return [
+        {'date': '2024-01-01', 'value': 45},
+        {'date': '2024-01-02', 'value': 52},
+        {'date': '2024-01-03', 'value': 38}
+    ]
+
+def calculate_topic_trends(events):
+    """Calculate topic progress trends"""
+    # Placeholder - would analyze topic completion
+    return [
+        {'topic': 'Introduction', 'progress': 100},
+        {'topic': 'Fundamentals', 'progress': 75},
+        {'topic': 'Advanced', 'progress': 30}
+    ]
 
 # Error handlers
 @app.errorhandler(404)

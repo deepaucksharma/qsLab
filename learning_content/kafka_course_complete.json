@@ -1,0 +1,109 @@
+{
+  "course": {
+    "id": "kafka-monitoring-share-groups-v2",
+    "title": "Kafka Monitoring & Share Groups: The Complete Guide",
+    "description": "Master Kafka monitoring from fundamentals to the revolutionary Share Groups feature in Kafka 4.0+",
+    "totalEstimatedDuration": "12 hours",
+    "level": "intermediate",
+    "prerequisites": ["Basic understanding of distributed systems", "Familiarity with message queues"],
+    "learningObjectives": [
+      "Understand Kafka's architecture and core concepts",
+      "Master consumer groups and the new Share Groups feature",
+      "Learn JMX and Micrometer monitoring approaches",
+      "Integrate Kafka with NewRelic using QueueSample v2",
+      "Build production-ready monitoring dashboards"
+    ],
+    "instructor": {
+      "name": "Alex Rodriguez",
+      "bio": "Principal Engineer with 10+ years of Kafka experience at scale",
+      "avatar": "/static/instructors/alex-rodriguez.png"
+    },
+    "completionRequirements": {
+      "minSegmentsCompleted": 0.8,
+      "minCheckpointScore": 0.7,
+      "requiredCheckpoints": [
+        "checkpoint-kafka-fundamentals",
+        "checkpoint-share-groups",
+        "checkpoint-monitoring-strategy",
+        "checkpoint-newrelic-integration"
+      ]
+    },
+    "certificateId": "cert-kafka-monitoring-expert",
+    "badges": [
+      {
+        "id": "kafka-basics-master",
+        "name": "Kafka Basics Master",
+        "criteria": "Complete Lesson 1 with 80%+ score"
+      },
+      {
+        "id": "share-groups-pioneer",
+        "name": "Share Groups Pioneer",
+        "criteria": "Complete Share Groups episodes"
+      },
+      {
+        "id": "monitoring-guru",
+        "name": "Monitoring Guru",
+        "criteria": "Complete all monitoring lessons"
+      },
+      {
+        "id": "kafka-expert",
+        "name": "Kafka Monitoring Expert",
+        "criteria": "Complete entire course with 85%+ score"
+      }
+    ]
+  },
+  "lessons": [
+    {
+      "id": "LESSON_01_KAFKA_FUNDAMENTALS_V2",
+      "title": "Kafka Fundamentals & Share Groups",
+      "order": 1,
+      "totalEstimatedDuration": "3 hours",
+      "learningObjectives": [
+        "Understand Kafka's architecture and components",
+        "Master topics, partitions, and consumer groups",
+        "Learn the revolutionary Share Groups feature",
+        "Explore Share Group metrics and monitoring"
+      ],
+      "episodes": []
+    },
+    {
+      "id": "LESSON_02_JMX_AND_METRIC_COLLECTION_V2",
+      "title": "Monitoring with JMX and Micrometer",
+      "order": 2,
+      "totalEstimatedDuration": "3 hours",
+      "learningObjectives": [
+        "Understand JMX fundamentals",
+        "Master Kafka JMX metrics",
+        "Learn Micrometer as a modern alternative",
+        "Build effective monitoring strategies"
+      ],
+      "episodes": []
+    },
+    {
+      "id": "LESSON_03_NEWRELIC_INTEGRATION_V2",
+      "title": "NewRelic Integration & QueueSample v2",
+      "order": 3,
+      "totalEstimatedDuration": "3 hours",
+      "learningObjectives": [
+        "Understand QueueSample v2 schema",
+        "Build custom OHI integrations",
+        "Master the Queues & Streams UI",
+        "Create production-ready dashboards"
+      ],
+      "episodes": []
+    },
+    {
+      "id": "LESSON_04_ADVANCED_MONITORING_V2",
+      "title": "Advanced Monitoring & Best Practices",
+      "order": 4,
+      "totalEstimatedDuration": "3 hours",
+      "learningObjectives": [
+        "Implement alerting strategies",
+        "Optimize for scale",
+        "Troubleshoot common issues",
+        "Build monitoring culture"
+      ],
+      "episodes": []
+    }
+  ]
+}

@@ -428,6 +428,7 @@ class EpisodePlayer {
     async loadSegment(index) {
         if (index < 0 || index >= this.segments.length) return;
         
+        const startTime = Date.now();
         this.currentSegmentIndex = index;
         AppState.currentSegmentIndex = index;
         const segment = this.segments[index];
@@ -446,6 +447,18 @@ class EpisodePlayer {
         
         // Update navigation
         this.updateNavigation();
+        
+        // Track segment view in analytics
+        if (window.analytics) {
+            window.analytics.trackSegmentView(segment.id, 0);
+            window.analytics.trackEvent('segment_load', {
+                segmentId: segment.id,
+                segmentType: segment.segmentType,
+                episodeId: AppState.currentEpisode?.id,
+                courseId: AppState.currentCourse?.id,
+                loadTime: Date.now() - startTime
+            });
+        }
         
         // Log segment view
         eventBus.emit('segment:viewed', { segment });
@@ -490,9 +503,29 @@ class EpisodePlayer {
                     showToast(`+${result.pointsEarned} points earned!`, 'success');
                 }
                 
+                // Track segment completion in analytics
+                if (window.analytics) {
+                    window.analytics.trackEvent('segment_complete', {
+                        segmentId: segment.id,
+                        segmentType: segment.segmentType,
+                        episodeId: AppState.currentEpisode?.id,
+                        courseId: AppState.currentCourse?.id,
+                        pointsEarned: result.pointsEarned,
+                        totalPoints: result.totalPoints
+                    });
+                }
+                
                 // Check if episode completed
                 if (result.episodeCompleted) {
                     eventBus.emit('episode:completed', { episodeId: AppState.currentEpisode.id });
+                    
+                    // Track episode completion
+                    if (window.analytics) {
+                        window.analytics.trackEvent('episode_complete', {
+                            episodeId: AppState.currentEpisode.id,
+                            courseId: AppState.currentCourse?.id
+                        });
+                    }
                 }
             }
         } catch (error) {

@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#ffffff">
+    <title>Track 4 Features Demo - Neural Learn</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="track4_styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .demo-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        .demo-section {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 32px;
+            margin-bottom: 32px;
+        }
+        .demo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-top: 24px;
+        }
+        .demo-card {
+            background: var(--surface-bg);
+            padding: 24px;
+            border-radius: 12px;
+            transition: transform 0.3s ease;
+        }
+        .demo-card:hover {
+            transform: translateY(-4px);
+        }
+        .feature-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            background: var(--primary-color);
+            color: white;
+            border-radius: 20px;
+            font-size: 12px;
+            margin-left: 8px;
+        }
+        .test-button {
+            padding: 10px 20px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 4px;
+            transition: all 0.2s;
+        }
+        .test-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        .code-demo {
+            background: var(--code-bg);
+            padding: 16px;
+            border-radius: 8px;
+            margin-top: 16px;
+            font-family: monospace;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="animated-bg"></div>
+    
+    <div class="demo-container">
+        <div class="demo-section">
+            <h1>Track 4: Platform Polish Demo 
+                <span class="feature-badge">COMPLETED</span>
+            </h1>
+            <p>Experience all the new features implemented in Track 4. Press <kbd>?</kbd> anytime to see keyboard shortcuts!</p>
+        </div>
+
+        <!-- Dark Mode Demo -->
+        <div class="demo-section">
+            <h2><i class="fas fa-moon"></i> Dark Mode</h2>
+            <p>Toggle between light, dark, and auto themes. The system respects your OS preferences.</p>
+            <div style="margin-top: 16px;">
+                <button class="test-button" onclick="window.darkModeManager.setTheme('light')">
+                    <i class="fas fa-sun"></i> Light Mode
+                </button>
+                <button class="test-button" onclick="window.darkModeManager.setTheme('dark')">
+                    <i class="fas fa-moon"></i> Dark Mode
+                </button>
+                <button class="test-button" onclick="window.darkModeManager.setTheme('auto')">
+                    <i class="fas fa-adjust"></i> Auto Mode
+                </button>
+            </div>
+            <div class="code-demo">
+                // API Usage<br>
+                window.darkModeManager.toggle();<br>
+                window.darkModeManager.isDark(); // returns boolean<br>
+                window.darkModeManager.getActiveTheme(); // 'light' or 'dark'
+            </div>
+        </div>
+
+        <!-- Performance Demo -->
+        <div class="demo-section">
+            <h2><i class="fas fa-rocket"></i> Performance Optimizations</h2>
+            <p>Intelligent asset loading, DOM batching, and memory management.</p>
+            
+            <div class="demo-grid">
+                <div class="demo-card">
+                    <h3>Asset Performance</h3>
+                    <button class="test-button" onclick="showPerformanceMetrics()">
+                        <i class="fas fa-chart-line"></i> Show Metrics
+                    </button>
+                    <div id="perfMetrics" style="margin-top: 16px;"></div>
+                </div>
+                
+                <div class="demo-card">
+                    <h3>Skeleton Loaders</h3>
+                    <button class="test-button" onclick="demoSkeletonLoader()">
+                        <i class="fas fa-spinner"></i> Demo Loading
+                    </button>
+                    <div id="skeletonDemo" style="margin-top: 16px;"></div>
+                </div>
+                
+                <div class="demo-card">
+                    <h3>DOM Optimization</h3>
+                    <button class="test-button" onclick="demoBatchUpdate()">
+                        <i class="fas fa-sync"></i> Batch Update
+                    </button>
+                    <div id="batchDemo" style="margin-top: 16px;">Watch console for timing</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Demo -->
+        <div class="demo-section">
+            <h2><i class="fas fa-compass"></i> Enhanced Navigation</h2>
+            <p>Improved navigation with search, minimap, and progress tracking.</p>
+            
+            <div class="demo-grid">
+                <div class="demo-card">
+                    <h3>Keyboard Shortcuts</h3>
+                    <p>Press these keys to test:</p>
+                    <ul>
+                        <li><kbd>?</kbd> - Show all shortcuts</li>
+                        <li><kbd>/</kbd> - Focus search</li>
+                        <li><kbd>D</kbd> - Toggle dark mode</li>
+                        <li><kbd>M</kbd> - Toggle minimap</li>
+                    </ul>
+                </div>
+                
+                <div class="demo-card">
+                    <h3>Toast Notifications</h3>
+                    <button class="test-button" onclick="showToast('Success message!', 'success')">
+                        <i class="fas fa-check"></i> Success
+                    </button>
+                    <button class="test-button" onclick="showToast('Info message!', 'info')">
+                        <i class="fas fa-info"></i> Info
+                    </button>
+                    <button class="test-button" onclick="showToast('Error message!', 'error')">
+                        <i class="fas fa-times"></i> Error
+                    </button>
+                </div>
+                
+                <div class="demo-card">
+                    <h3>Progress Tracking</h3>
+                    <button class="test-button" onclick="demoProgress()">
+                        <i class="fas fa-tasks"></i> Demo Progress
+                    </button>
+                    <div id="progressDemo" style="margin-top: 16px;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Accessibility Demo -->
+        <div class="demo-section">
+            <h2><i class="fas fa-universal-access"></i> Accessibility Features</h2>
+            <p>Full keyboard navigation, ARIA support, and screen reader compatibility.</p>
+            
+            <div class="demo-grid">
+                <div class="demo-card">
+                    <h3>Focus Management</h3>
+                    <p>Tab through elements to see focus indicators</p>
+                    <button class="test-button">Button 1</button>
+                    <button class="test-button">Button 2</button>
+                    <input type="text" placeholder="Test input" style="margin: 4px; padding: 8px;">
+                </div>
+                
+                <div class="demo-card">
+                    <h3>ARIA Labels</h3>
+                    <button class="test-button" aria-label="Play audio content">
+                        <i class="fas fa-play"></i>
+                    </button>
+                    <button class="test-button" aria-label="Pause audio content">
+                        <i class="fas fa-pause"></i>
+                    </button>
+                    <p>Screen readers will announce proper labels</p>
+                </div>
+                
+                <div class="demo-card">
+                    <h3>Skip Links</h3>
+                    <p>Press Tab at page start to reveal skip link</p>
+                    <p>Reduced motion is automatically respected</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Feature Flags -->
+        <div class="demo-section">
+            <h2><i class="fas fa-flag"></i> Feature Flags Status</h2>
+            <div id="featureFlags" class="code-demo"></div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="feature_flags.js"></script>
+    <script src="performance_optimizations.js"></script>
+    <script src="performance_enhanced_script.js"></script>
+    <script src="dark_mode.js"></script>
+    <script src="keyboard_shortcuts.js"></script>
+    
+    <script>
+        // Demo functions
+        function showPerformanceMetrics() {
+            const metrics = window.getAssetPerformance();
+            document.getElementById('perfMetrics').innerHTML = `
+                <div class="code-demo">
+                    Average Load Time: ${metrics.averageLoadTime}<br>
+                    Cache Hit Rate: ${metrics.cacheHitRate}<br>
+                    Total Loads: ${metrics.totalLoads}<br>
+                    Cache Size: ${metrics.cacheSize}<br>
+                    Audio Buffers: ${metrics.audioBuffers}
+                </div>
+            `;
+        }
+        
+        function demoSkeletonLoader() {
+            const demo = document.getElementById('skeletonDemo');
+            window.loadingManager.showSkeleton(demo, 'courseCard', 1);
+            setTimeout(() => {
+                window.loadingManager.hideSkeleton(demo);
+                demo.innerHTML = '<div class="demo-card">Content loaded!</div>';
+            }, 2000);
+        }
+        
+        function demoBatchUpdate() {
+            console.time('Batch Update');
+            window.domOptimizer.batchUpdate('demo', () => {
+                for (let i = 0; i < 100; i++) {
+                    document.getElementById('batchDemo').textContent = `Update ${i}`;
+                }
+            });
+            console.timeEnd('Batch Update');
+            showToast('Batch update complete! Check console.', 'success');
+        }
+        
+        function demoProgress() {
+            const demo = document.getElementById('progressDemo');
+            demo.innerHTML = `
+                <div style="background: var(--surface-bg); padding: 16px; border-radius: 8px;">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <div class="course-progress-ring" style="width: 60px; height: 60px;">
+                            <svg width="60" height="60">
+                                <circle cx="30" cy="30" r="25" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="5"/>
+                                <circle cx="30" cy="30" r="25" fill="none" stroke="var(--primary-color)" stroke-width="5" 
+                                    stroke-dasharray="157" stroke-dashoffset="78.5" 
+                                    transform="rotate(-90 30 30)"/>
+                            </svg>
+                            <span class="progress-percentage" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">50%</span>
+                        </div>
+                        <div>
+                            <div>Course Progress</div>
+                            <div style="color: var(--text-secondary); font-size: 14px;">5/10 lessons complete</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Show feature flags
+        document.getElementById('featureFlags').innerHTML = `
+            Track 4 Feature Flags:<br><br>
+            DARK_MODE: ${FEATURES.DARK_MODE ? '✅ Enabled' : '❌ Disabled'}<br>
+            PERFORMANCE_MODE: ${FEATURES.PERFORMANCE_MODE ? '✅ Enabled' : '❌ Disabled'}<br>
+            KEYBOARD_NAV: ${FEATURES.KEYBOARD_NAV ? '✅ Enabled' : '❌ Disabled'}<br>
+            SKELETON_LOADERS: ${FEATURES.SKELETON_LOADERS ? '✅ Enabled' : '❌ Disabled'}<br>
+            ENHANCED_NAVIGATION: ${FEATURES.ENHANCED_NAVIGATION ? '✅ Enabled' : '❌ Disabled'}<br>
+            ACCESSIBILITY: ${FEATURES.ACCESSIBILITY ? '✅ Enabled' : '❌ Disabled'}<br>
+            OFFLINE_SUPPORT: ${FEATURES.OFFLINE_SUPPORT ? '✅ Enabled' : '❌ Disabled'}
+        `;
+        
+        // Show welcome message
+        setTimeout(() => {
+            showToast('Welcome to Track 4 Demo! Press ? for shortcuts.', 'info');
+        }, 1000);
+    </script>
+</body>
+</html>

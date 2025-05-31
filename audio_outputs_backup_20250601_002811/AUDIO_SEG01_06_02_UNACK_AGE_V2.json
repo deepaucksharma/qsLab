@@ -1,0 +1,15 @@
+{
+  "audioId": "AUDIO_SEG01_06_02_UNACK_AGE_V2",
+  "text": "A crucial metric introduced with Share Groups is 'unacknowledged_age_ms'. This tracks the age of the oldest message that has been delivered to a consumer but not yet acknowledged. Think of it as the 'time-in-waiting' for your longest pending task.",
+  "generatedAt": "2025-05-31T23:35:48.531518",
+  "metadata": {
+    "segmentId": "SEGMENT_01_06_02_UNACK_AGE_MS_V2",
+    "lessonId": "LESSON_01_KAFKA_FUNDAMENTALS_V2",
+    "episodeId": "EPISODE_01_06_SHARE_GROUP_METRICS_NEW_V2",
+    "title": "Metric Deep Dive: unacknowledged_age_ms"
+  },
+  "model": "Tacotron2-DDC",
+  "quality": "high",
+  "device": "cpu",
+  "speaker": null
+}

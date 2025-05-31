@@ -1,0 +1,79 @@
+{
+  "generatedAt": "2025-06-01T00:29:57.599190",
+  "totalSegments": 29,
+  "successfullyGenerated": 29,
+  "failedCount": 0,
+  "generator": "Google TTS",
+  "voiceConfigs": {
+    "course_opening": {
+      "lang": "en",
+      "tld": "com",
+      "slow": false
+    },
+    "instructor_introduction": {
+      "lang": "en",
+      "tld": "co.uk",
+      "slow": false
+    },
+    "episode_opening": {
+      "lang": "en",
+      "tld": "com",
+      "slow": false
+    },
+    "technical_introduction": {
+      "lang": "en",
+      "tld": "com",
+      "slow": false
+    },
+    "code_walkthrough": {
+      "lang": "en",
+      "tld": "com",
+      "slow": true
+    },
+    "architecture_design": {
+      "lang": "en",
+      "tld": "com",
+      "slow": false
+    },
+    "practical_example": {
+      "lang": "en",
+      "tld": "com",
+      "slow": false
+    },
+    "practical_configuration": {
+      "lang": "en",
+      "tld": "com",
+      "slow": false
+    },
+    "concept_explanation": {
+      "lang": "en",
+      "tld": "co.uk",
+      "slow": false
+    },
+    "historical_context": {
+      "lang": "en",
+      "tld": "co.uk",
+      "slow": false
+    },
+    "origin_story": {
+      "lang": "en",
+      "tld": "co.uk",
+      "slow": false
+    },
+    "problem_recap": {
+      "lang": "en",
+      "tld": "com",
+      "slow": false
+    },
+    "paradigm_shift": {
+      "lang": "en",
+      "tld": "com",
+      "slow": false
+    },
+    "default": {
+      "lang": "en",
+      "tld": "com",
+      "slow": false
+    }
+  }
+}

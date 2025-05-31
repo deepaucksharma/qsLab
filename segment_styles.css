@@ -1,9 +1,24 @@
-/* Segment Type Specific Styles for Neural Learn Course Platform */
+/* Consolidated Segment Styles for Neural Learn Course Platform */
+/* Combines original segment_styles.css with rendering improvements */
 
 /* === Segment Base Styles === */
 .segment {
-    margin-bottom: var(--spacing-xl);
+    position: relative;
+    padding: var(--spacing-xl);
+    margin-bottom: var(--spacing-2xl, var(--spacing-xl));
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-xl, var(--radius-lg));
+    transition: all var(--transition-base);
     animation: segmentFadeIn 0.5s ease;
+}
+
+.segment:hover {
+    transform: translateY(-2px);
+    box-shadow: 
+        0 10px 40px rgba(102, 126, 234, 0.1),
+        0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 @keyframes segmentFadeIn {
@@ -17,16 +32,42 @@
     }
 }
 
+/* Segment Progress Indicator */
+.segment-progress {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-xl, var(--radius-lg)) var(--radius-xl, var(--radius-lg)) 0 0;
+    overflow: hidden;
+}
+
+.segment-progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+    width: 0%;
+    transition: width 0.5s ease;
+}
+
 .segment-header {
     margin-bottom: var(--spacing-lg);
 }
 
+/* Enhanced Segment Type Badge */
 .segment-type-badge {
+    position: relative;
     display: inline-flex;
     align-items: center;
     gap: var(--spacing-xs);
     padding: var(--spacing-xs) var(--spacing-md);
-    background: linear-gradient(135deg, rgba(102, 126, 234, 0.2), rgba(118, 75, 162, 0.2));
+    background: linear-gradient(135deg, 
+        rgba(102, 126, 234, 0.2) 0%, 
+        rgba(118, 75, 162, 0.2) 50%,
+        rgba(240, 147, 251, 0.2) 100%);
+    background-size: 200% 200%;
+    animation: badgeGradientShift 3s ease infinite;
     border: 1px solid rgba(102, 126, 234, 0.3);
     border-radius: var(--radius-full);
     font-size: 0.75rem;
@@ -34,6 +75,36 @@
     text-transform: uppercase;
     letter-spacing: 0.05em;
     margin-bottom: var(--spacing-md);
+    overflow: hidden;
+}
+
+@keyframes badgeGradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* Enhanced Text Content */
+.segment-text-content {
+    font-size: 1.125rem;
+    line-height: 1.8;
+    color: var(--text-primary);
+    margin: var(--spacing-lg) 0;
+}
+
+.segment-text-content.large {
+    font-size: 1.25rem;
+    line-height: 1.9;
+}
+
+.segment-text-content .highlight {
+    position: relative;
+    background: linear-gradient(135deg, 
+        rgba(102, 126, 234, 0.2),
+        rgba(240, 147, 251, 0.2));
+    padding: 2px 8px;
+    border-radius: var(--radius-sm);
+    font-weight: 500;
 }
 
 .learning-objectives {
@@ -92,10 +163,18 @@
     margin-top: var(--spacing-md);
 }
 
-/* === Opening & Introduction Segments === */
+/* === Opening & Introduction Segments - Enhanced === */
 
 .course-opening-segment {
+    min-height: 400px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
     text-align: center;
+    background: 
+        radial-gradient(circle at 20% 80%, rgba(102, 126, 234, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(240, 147, 251, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 40% 40%, rgba(118, 75, 162, 0.1) 0%, transparent 50%);
 }
 
 .course-opening-segment .welcome-animation {
@@ -113,12 +192,19 @@
 }
 
 .course-opening-segment .welcome-message {
-    font-size: 1.5rem;
+    font-size: 2rem;
+    font-weight: 700;
     background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    margin-top: var(--spacing-md);
+    margin-bottom: var(--spacing-xl);
+    animation: titlePulse 2s ease infinite;
+}
+
+@keyframes titlePulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.95; transform: scale(1.02); }
 }
 
 .instructor-intro-segment .instructor-profile {
@@ -150,14 +236,60 @@
     border-radius: var(--radius-lg);
 }
 
-/* === Explanation & Context Segments === */
+/* === Historical Context - Enhanced Timeline === */
 
-.concept-explanation-segment .concept-visual {
-    float: left;
-    margin-right: var(--spacing-lg);
-    margin-bottom: var(--spacing-md);
+.historical-context-segment .timeline {
+    position: relative;
+    padding-left: var(--spacing-2xl, 3rem);
 }
 
+.historical-context-segment .timeline::before {
+    content: '';
+    position: absolute;
+    left: 10px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom, 
+        transparent,
+        var(--primary-color) 20%,
+        var(--primary-color) 80%,
+        transparent);
+}
+
+.timeline-item {
+    position: relative;
+    padding: var(--spacing-md) 0;
+    opacity: 0;
+    animation: timelineItemAppear 0.5s ease forwards;
+}
+
+.timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -30px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 12px;
+    height: 12px;
+    background: var(--primary-color);
+    border: 3px solid var(--bg-dark);
+    border-radius: 50%;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.3);
+}
+
+@keyframes timelineItemAppear {
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+}
+
+/* Legacy timeline styles */
 .historical-context-segment .timeline-container {
     display: flex;
     align-items: start;
@@ -180,6 +312,368 @@
     flex-shrink: 0;
 }
 
+/* === Code Walkthrough - Enhanced === */
+
+.code-walkthrough-segment {
+    background: var(--bg-darker, var(--bg-dark));
+}
+
+.code-block-enhanced {
+    position: relative;
+    background: #1e1e1e;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    margin: var(--spacing-lg) 0;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.code-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--spacing-md) var(--spacing-lg);
+    background: rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.code-language {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.code-actions {
+    display: flex;
+    gap: var(--spacing-sm);
+}
+
+.code-copy-btn, .copy-code-btn {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    border-radius: var(--radius-sm);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    font-size: 0.813rem;
+}
+
+.code-copy-btn:hover, .copy-code-btn:hover {
+    background: var(--primary-color);
+    color: white;
+}
+
+.code-content {
+    padding: var(--spacing-lg);
+    overflow-x: auto;
+}
+
+/* Line highlighting */
+.code-line {
+    transition: all var(--transition-base);
+    padding: 2px 0;
+}
+
+.code-line.highlight-active {
+    background: rgba(102, 126, 234, 0.2);
+    box-shadow: inset 3px 0 0 var(--primary-color);
+}
+
+/* Legacy code block styles */
+.code-block-container {
+    background: var(--bg-dark);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    margin: var(--spacing-md) 0;
+}
+
+.code-block {
+    padding: var(--spacing-md);
+    overflow-x: auto;
+    font-family: 'Fira Code', 'Consolas', monospace;
+    font-size: 0.875rem;
+    line-height: 1.6;
+}
+
+.code-block code {
+    background: none;
+    padding: 0;
+}
+
+/* === Metric Deep Dive - Enhanced === */
+
+.metric-deep-dive-segment .metric-card {
+    background: linear-gradient(135deg, 
+        rgba(102, 126, 234, 0.1) 0%,
+        rgba(240, 147, 251, 0.1) 100%);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-xl);
+    text-align: center;
+    transition: all var(--transition-base);
+}
+
+.metric-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(102, 126, 234, 0.2);
+}
+
+.metric-value {
+    font-size: 3rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin: var(--spacing-md) 0;
+}
+
+.metric-label {
+    font-size: 1.125rem;
+    color: var(--text-secondary);
+    margin-bottom: var(--spacing-sm);
+}
+
+.metric-change {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-xs) var(--spacing-md);
+    background: rgba(72, 187, 120, 0.2);
+    color: var(--success-color);
+    border-radius: var(--radius-full);
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.metric-change.negative {
+    background: rgba(252, 129, 129, 0.2);
+    color: var(--danger-color);
+}
+
+/* Legacy metric styles */
+.metric-deep-dive-segment .metric-visualization,
+.new-metric-deep-dive-segment .metric-info {
+    text-align: center;
+    padding: var(--spacing-xl);
+    background: var(--glass-bg);
+    border-radius: var(--radius-lg);
+    margin-bottom: var(--spacing-lg);
+}
+
+.metrics-overview-segment .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+}
+
+.metrics-overview-segment .metric-card {
+    padding: var(--spacing-lg);
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-md);
+    text-align: center;
+    transition: all var(--transition-fast);
+}
+
+.metrics-overview-segment .metric-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.metrics-overview-segment .metric-card i {
+    font-size: 2rem;
+    color: var(--primary-color);
+    margin-bottom: var(--spacing-sm);
+    display: block;
+}
+
+/* === Feature Introduction - Enhanced Card Style === */
+
+.feature-introduction-segment .feature-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--spacing-lg);
+    margin: var(--spacing-xl) 0;
+}
+
+.feature-card {
+    position: relative;
+    padding: var(--spacing-xl);
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    text-align: center;
+    transition: all var(--transition-base);
+    cursor: pointer;
+}
+
+.feature-card::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+    border-radius: var(--radius-lg);
+    opacity: 0;
+    transition: opacity var(--transition-base);
+    z-index: -1;
+}
+
+.feature-card:hover::before {
+    opacity: 0.3;
+}
+
+.feature-card:hover {
+    transform: translateY(-4px);
+    border-color: transparent;
+}
+
+.feature-icon {
+    width: 60px;
+    height: 60px;
+    margin: 0 auto var(--spacing-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    border-radius: var(--radius-full);
+    font-size: 1.5rem;
+    color: white;
+}
+
+/* Legacy feature styles */
+.feature-intro-segment .feature-highlight,
+.new-feature-highlight-segment .feature-banner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-lg);
+    background: linear-gradient(135deg, rgba(240, 147, 251, 0.1), rgba(102, 126, 234, 0.1));
+    border-radius: var(--radius-lg);
+    margin-bottom: var(--spacing-lg);
+}
+
+/* === Animated Visual Elements === */
+
+.animated-diagram {
+    position: relative;
+    margin: var(--spacing-xl) 0;
+}
+
+.diagram-element {
+    opacity: 0;
+    animation: diagramElementAppear 0.5s ease forwards;
+}
+
+@keyframes diagramElementAppear {
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+    from {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+}
+
+.connection-line {
+    stroke: var(--primary-color);
+    stroke-width: 2;
+    fill: none;
+    stroke-dasharray: 1000;
+    stroke-dashoffset: 1000;
+    animation: drawLine 1s ease forwards;
+}
+
+@keyframes drawLine {
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+
+/* === Enhanced Audio Player === */
+
+.enhanced-audio-player {
+    background: linear-gradient(135deg, 
+        rgba(102, 126, 234, 0.1),
+        rgba(118, 75, 162, 0.1));
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-lg);
+    margin: var(--spacing-lg) 0;
+}
+
+.audio-waveform {
+    height: 60px;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    margin: var(--spacing-md) 0;
+}
+
+.waveform-bar {
+    flex: 1;
+    background: var(--primary-color);
+    opacity: 0.3;
+    border-radius: var(--radius-sm);
+    transition: all var(--transition-fast);
+}
+
+.waveform-bar.active {
+    opacity: 1;
+    background: linear-gradient(to top, var(--primary-color), var(--accent-color));
+}
+
+/* === Visual Gallery Enhancement === */
+
+.visual-gallery-enhanced {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: var(--spacing-md);
+    margin: var(--spacing-xl) 0;
+}
+
+.gallery-item {
+    position: relative;
+    aspect-ratio: 16/9;
+    overflow: hidden;
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    transition: all var(--transition-base);
+}
+
+.gallery-item:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+.gallery-item::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, 
+        transparent 60%,
+        rgba(0, 0, 0, 0.7));
+    opacity: 0;
+    transition: opacity var(--transition-base);
+}
+
+.gallery-item:hover::after {
+    opacity: 1;
+}
+
+/* === Other Segment Types === */
+
+/* Concept explanation */
+.concept-explanation-segment .concept-visual {
+    float: left;
+    margin-right: var(--spacing-lg);
+    margin-bottom: var(--spacing-md);
+}
+
+/* Origin story */
 .origin-story-segment .story-container {
     padding: var(--spacing-lg);
     background: linear-gradient(135deg, rgba(102, 126, 234, 0.05), rgba(240, 147, 251, 0.05));
@@ -194,6 +688,7 @@
     opacity: 0.1;
 }
 
+/* Problem recap */
 .problem-recap-segment .problem-highlight {
     display: flex;
     align-items: center;
@@ -208,6 +703,7 @@
     color: var(--danger-color);
 }
 
+/* Paradigm shift */
 .paradigm-shift-segment .shift-visualization {
     display: flex;
     align-items: center;
@@ -245,77 +741,11 @@
     50% { transform: scale(1.1); }
 }
 
-/* === Technical & Code Segments === */
-
+/* Technical & Architecture segments */
 .technical-intro-segment .tech-diagram {
     text-align: center;
     padding: var(--spacing-xl);
     margin-bottom: var(--spacing-lg);
-}
-
-.code-walkthrough-segment .walkthrough-intro {
-    margin-bottom: var(--spacing-lg);
-}
-
-.code-block-container {
-    background: var(--bg-dark);
-    border: 1px solid var(--glass-border);
-    border-radius: var(--radius-md);
-    overflow: hidden;
-    margin: var(--spacing-md) 0;
-}
-
-.code-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: var(--spacing-sm) var(--spacing-md);
-    background: var(--glass-bg);
-    border-bottom: 1px solid var(--glass-border);
-}
-
-.code-language {
-    font-size: 0.875rem;
-    color: var(--text-secondary);
-    font-weight: 500;
-}
-
-.copy-code-btn {
-    background: none;
-    border: none;
-    color: var(--text-secondary);
-    cursor: pointer;
-    padding: var(--spacing-xs) var(--spacing-sm);
-    border-radius: var(--radius-sm);
-    transition: all var(--transition-fast);
-    font-size: 0.813rem;
-}
-
-.copy-code-btn:hover {
-    background: var(--glass-bg);
-    color: var(--text-primary);
-}
-
-.code-block {
-    padding: var(--spacing-md);
-    overflow-x: auto;
-    font-family: 'Fira Code', 'Consolas', monospace;
-    font-size: 0.875rem;
-    line-height: 1.6;
-}
-
-.code-block code {
-    background: none;
-    padding: 0;
-}
-
-.typing-indicator {
-    padding: var(--spacing-sm) var(--spacing-md);
-    background: var(--glass-bg);
-    border-top: 1px solid var(--glass-border);
-    font-size: 0.75rem;
-    color: var(--text-muted);
-    text-align: center;
 }
 
 .architecture-design-segment .architecture-diagram {
@@ -334,25 +764,7 @@
     margin-bottom: var(--spacing-lg);
 }
 
-/* === Metric & Data Segments === */
-
-.metric-deep-dive-segment .metric-visualization,
-.new-metric-deep-dive-segment .metric-info {
-    text-align: center;
-    padding: var(--spacing-xl);
-    background: var(--glass-bg);
-    border-radius: var(--radius-lg);
-    margin-bottom: var(--spacing-lg);
-}
-
-.metric-placeholder {
-    margin-top: var(--spacing-md);
-    padding: var(--spacing-lg);
-    border: 2px dashed var(--glass-border);
-    border-radius: var(--radius-md);
-    color: var(--text-muted);
-}
-
+/* New metric deep dive */
 .new-metric-deep-dive-segment .new-metric-badge {
     position: absolute;
     top: var(--spacing-md);
@@ -370,54 +782,14 @@
     letter-spacing: 0.05em;
 }
 
-.metrics-overview-segment .metrics-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: var(--spacing-md);
-    margin-bottom: var(--spacing-lg);
-}
-
-.metrics-overview-segment .metric-card {
-    padding: var(--spacing-lg);
-    background: var(--glass-bg);
-    border: 1px solid var(--glass-border);
-    border-radius: var(--radius-md);
-    text-align: center;
-    transition: all var(--transition-fast);
-}
-
-.metrics-overview-segment .metric-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.metrics-overview-segment .metric-card i {
-    font-size: 2rem;
-    color: var(--primary-color);
-    margin-bottom: var(--spacing-sm);
-    display: block;
-}
-
+/* Metric taxonomy */
 .metric-taxonomy-segment .taxonomy-tree {
     text-align: center;
     padding: var(--spacing-xl);
     margin-bottom: var(--spacing-lg);
 }
 
-/* === Feature & Concept Segments === */
-
-.feature-intro-segment .feature-highlight,
-.new-feature-highlight-segment .feature-banner {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--spacing-md);
-    padding: var(--spacing-lg);
-    background: linear-gradient(135deg, rgba(240, 147, 251, 0.1), rgba(102, 126, 234, 0.1));
-    border-radius: var(--radius-lg);
-    margin-bottom: var(--spacing-lg);
-}
-
+/* New feature discovery */
 .new-feature-discovery-segment .discovery-prompt {
     display: flex;
     align-items: center;
@@ -428,6 +800,7 @@
     margin-bottom: var(--spacing-lg);
 }
 
+/* Concept segments */
 .concept-intro-segment .concept-icon,
 .scalability-concept-segment .scalability-visual,
 .immutability-concept-segment .immutable-visual {
@@ -435,8 +808,7 @@
     margin-bottom: var(--spacing-lg);
 }
 
-/* === Comparison & Decision Segments === */
-
+/* Comparison segments */
 .tech-comparison-segment .comparison-header,
 .decision-framework-segment .framework-header {
     display: flex;
@@ -448,8 +820,7 @@
     margin-bottom: var(--spacing-lg);
 }
 
-/* === UI & Schema Segments === */
-
+/* UI segments */
 .ui-walkthrough-segment .ui-preview,
 .schema-intro-segment .schema-icon {
     text-align: center;
@@ -466,6 +837,7 @@
     margin-bottom: var(--spacing-lg);
 }
 
+/* Dashboard example */
 .dashboard-example {
     padding: var(--spacing-lg);
     background: var(--glass-bg);
@@ -981,7 +1353,7 @@
 /* Pause and Reflect */
 .pause-reflect-container {
     text-align: center;
-    padding: var(--spacing-2xl);
+    padding: var(--spacing-2xl, 3rem);
 }
 
 .reflection-icon {
@@ -1277,8 +1649,49 @@
     color: var(--warning-color);
 }
 
-/* Responsive adjustments */
+/* Typing indicator for code examples */
+.typing-indicator {
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: var(--glass-bg);
+    border-top: 1px solid var(--glass-border);
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    text-align: center;
+}
+
+/* Metric placeholder */
+.metric-placeholder {
+    margin-top: var(--spacing-md);
+    padding: var(--spacing-lg);
+    border: 2px dashed var(--glass-border);
+    border-radius: var(--radius-md);
+    color: var(--text-muted);
+}
+
+/* === Responsive Improvements === */
+
 @media (max-width: 768px) {
+    .segment {
+        padding: var(--spacing-lg);
+        margin-bottom: var(--spacing-xl);
+    }
+    
+    .segment-text-content {
+        font-size: 1rem;
+    }
+    
+    .course-opening-segment .welcome-message {
+        font-size: 1.5rem;
+    }
+    
+    .metric-value {
+        font-size: 2rem;
+    }
+    
+    .feature-cards {
+        grid-template-columns: 1fr;
+    }
+    
     .drag-distribute-container {
         flex-direction: column;
     }
@@ -1301,7 +1714,17 @@
     }
 }
 
-/* Accessibility */
+/* === Performance Optimizations === */
+
+/* Use will-change for frequently animated elements */
+.segment:hover,
+.feature-card:hover,
+.gallery-item:hover {
+    will-change: transform;
+}
+
+/* === Accessibility === */
+
 .interactive-cue:focus-within {
     outline: 2px solid var(--primary-color);
     outline-offset: 2px;
@@ -1323,5 +1746,14 @@ button:focus,
     .code-block {
         background: black;
         color: white;
+    }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
     }
 }

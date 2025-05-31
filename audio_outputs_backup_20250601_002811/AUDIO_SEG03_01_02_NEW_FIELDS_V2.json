@@ -1,0 +1,15 @@
+{
+  "audioId": "AUDIO_SEG03_01_02_NEW_FIELDS_V2",
+  "text": "The January 2025 QueueSample v2 update brings two critical fields for Share Groups. The 'shareGroupId' explicitly identifies which Share Group generated this sample. The 'processingMode' field distinguishes between 'share_group', 'consumer_group', or other queue types.",
+  "generatedAt": "2025-05-31T23:37:12.479232",
+  "metadata": {
+    "segmentId": "SEGMENT_03_01_02_V2_NEW_FIELDS_V2",
+    "lessonId": "LESSON_03_NEWRELIC_INTEGRATION_V2",
+    "episodeId": "EPISODE_03_01_QUEUESAMPLE_V2_SCHEMA_V2",
+    "title": "New in v2: shareGroupId & processingMode"
+  },
+  "model": "Tacotron2-DDC",
+  "quality": "high",
+  "device": "cpu",
+  "speaker": null
+}

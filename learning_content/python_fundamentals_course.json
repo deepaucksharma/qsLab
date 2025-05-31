@@ -1,0 +1,630 @@
+{
+  "course": {
+    "id": "python-fundamentals-v1",
+    "title": "Python Fundamentals: From Zero to Hero",
+    "description": "Master Python programming from the ground up with interactive exercises and real-world examples",
+    "totalEstimatedDuration": "8 hours",
+    "level": "beginner",
+    "prerequisites": [],
+    "learningObjectives": [
+      "Understand Python syntax and basic programming concepts",
+      "Work with variables, data types, and operators",
+      "Master control flow with conditionals and loops",
+      "Create and use functions effectively",
+      "Handle errors and exceptions gracefully"
+    ],
+    "instructor": {
+      "name": "Dr. Sarah Chen",
+      "bio": "Senior Software Engineer with 15+ years of Python experience",
+      "avatar": "/static/instructors/sarah-chen.png"
+    },
+    "completionRequirements": {
+      "minSegmentsCompleted": 0.8,
+      "minCheckpointScore": 0.7,
+      "requiredCheckpoints": ["python-basics-checkpoint", "functions-checkpoint", "final-project"]
+    },
+    "certificateId": "cert-python-fundamentals",
+    "badges": [
+      {
+        "id": "python-starter",
+        "name": "Python Starter",
+        "criteria": "Complete first lesson"
+      },
+      {
+        "id": "function-master",
+        "name": "Function Master",
+        "criteria": "Complete functions lesson with 90%+ score"
+      },
+      {
+        "id": "python-hero",
+        "name": "Python Hero",
+        "criteria": "Complete entire course"
+      }
+    ]
+  },
+  "lessons": [
+    {
+      "id": "lesson-1-getting-started",
+      "title": "Getting Started with Python",
+      "order": 1,
+      "totalEstimatedDuration": "90 minutes",
+      "learningObjectives": [
+        "Set up Python development environment",
+        "Write and run your first Python program",
+        "Understand Python syntax basics",
+        "Use the Python interactive shell"
+      ],
+      "episodes": [
+        {
+          "id": "episode-1-1-welcome",
+          "title": "Welcome to Python Programming",
+          "order": 1,
+          "estimatedDuration": "15 minutes",
+          "learningObjectives": [
+            "Understand what Python is and why it's popular",
+            "Learn about Python's applications",
+            "Get motivated for the learning journey"
+          ],
+          "segments": [
+            {
+              "id": "seg-1-1-1",
+              "order": 1,
+              "segmentType": "course_opening",
+              "title": "Welcome to Your Python Journey",
+              "textContent": "Welcome to Python Fundamentals! You're about to embark on an exciting journey into one of the world's most popular and versatile programming languages. Whether you're completely new to programming or coming from another language, this course will give you a solid foundation in Python.",
+              "estimatedDuration": "2 minutes",
+              "pointsAwarded": 10,
+              "keywords": ["python", "programming", "welcome"],
+              "mediaRefs": {
+                "audioId": "audio-welcome-python",
+                "visualIds": ["visual-python-logo", "visual-course-roadmap"]
+              }
+            },
+            {
+              "id": "seg-1-1-2",
+              "order": 2,
+              "segmentType": "instructor_introduction",
+              "title": "Meet Your Instructor",
+              "textContent": "Hi! I'm Dr. Sarah Chen, and I'll be your guide throughout this Python journey. I've been programming in Python for over 15 years, using it for everything from web development to data science and automation. I'm excited to share my passion for Python with you!",
+              "estimatedDuration": "2 minutes",
+              "pointsAwarded": 5,
+              "keywords": ["instructor", "introduction"],
+              "mediaRefs": {
+                "audioId": "audio-instructor-intro",
+                "visualIds": ["visual-instructor-photo"]
+              },
+              "interactiveCue": {
+                "type": "hover_to_explore",
+                "config": {
+                  "hotspots": [
+                    {
+                      "id": "experience",
+                      "label": "15+ Years Experience",
+                      "content": "From startups to Fortune 500 companies"
+                    },
+                    {
+                      "id": "projects",
+                      "label": "100+ Projects",
+                      "content": "Web apps, data pipelines, ML models, and more"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "id": "seg-1-1-3",
+              "order": 3,
+              "segmentType": "origin_story",
+              "title": "The Story of Python",
+              "textContent": "Python was created by Guido van Rossum in 1991. Named after Monty Python's Flying Circus, it was designed to be readable, simple, and fun to use. Today, Python powers everything from Instagram to NASA's space missions.",
+              "estimatedDuration": "3 minutes",
+              "pointsAwarded": 10,
+              "keywords": ["history", "Guido van Rossum", "origin"],
+              "mediaRefs": {
+                "audioId": "audio-python-history",
+                "visualIds": ["visual-python-timeline", "visual-guido-photo"]
+              },
+              "interactiveCue": {
+                "type": "interactive_explorer",
+                "config": {
+                  "timeline": {
+                    "1991": "Python 0.9.0 released",
+                    "2000": "Python 2.0 with list comprehensions",
+                    "2008": "Python 3.0 - the future of Python",
+                    "2020": "Python 2 End of Life",
+                    "2024": "Python in AI/ML revolution"
+                  }
+                }
+              }
+            },
+            {
+              "id": "seg-1-1-4",
+              "order": 4,
+              "segmentType": "concept_explanation",
+              "title": "Why Python? Understanding Its Power",
+              "textContent": "Python's philosophy emphasizes code readability and simplicity. Its 'batteries included' approach means you get a rich standard library out of the box. Python is used in web development, data science, AI, automation, and much more.",
+              "estimatedDuration": "4 minutes",
+              "pointsAwarded": 15,
+              "keywords": ["philosophy", "applications", "versatility"],
+              "mediaRefs": {
+                "audioId": "audio-why-python",
+                "visualIds": ["visual-python-applications", "visual-zen-of-python"]
+              },
+              "interactiveCue": {
+                "type": "click_to_compare",
+                "config": {
+                  "comparisons": [
+                    {
+                      "label": "Python vs Java",
+                      "pythonCode": "print('Hello, World!')",
+                      "otherCode": "public class Main {\n    public static void main(String[] args) {\n        System.out.println(\"Hello, World!\");\n    }\n}"
+                    },
+                    {
+                      "label": "Python vs JavaScript",
+                      "pythonCode": "numbers = [1, 2, 3, 4, 5]\nsquares = [n**2 for n in numbers]",
+                      "otherCode": "const numbers = [1, 2, 3, 4, 5];\nconst squares = numbers.map(n => n**2);"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "id": "seg-1-1-5",
+              "order": 5,
+              "segmentType": "knowledge_check",
+              "title": "Quick Check: Python Basics",
+              "textContent": "Let's make sure you've absorbed the key concepts about Python before we move on to setting up your environment.",
+              "estimatedDuration": "2 minutes",
+              "pointsAwarded": 20,
+              "keywords": ["quiz", "assessment"],
+              "interactiveCue": {
+                "type": "scenario_selection",
+                "config": {
+                  "question": "Which of these best describes Python?",
+                  "scenarios": [
+                    {
+                      "id": "a",
+                      "text": "A low-level language for system programming",
+                      "correct": false,
+                      "feedback": "Python is actually a high-level language that abstracts away low-level details"
+                    },
+                    {
+                      "id": "b",
+                      "text": "A high-level, interpreted language emphasizing readability",
+                      "correct": true,
+                      "feedback": "Exactly! Python prioritizes human readability and simplicity"
+                    },
+                    {
+                      "id": "c",
+                      "text": "A language only used for web development",
+                      "correct": false,
+                      "feedback": "Python is versatile - used in web dev, data science, AI, automation, and more"
+                    }
+                  ]
+                }
+              }
+            }
+          ],
+          "checkpoint": {
+            "id": "checkpoint-1-1",
+            "title": "Python Introduction Quiz",
+            "questions": [
+              {
+                "type": "multiple_choice",
+                "question": "Who created Python?",
+                "options": ["Guido van Rossum", "Dennis Ritchie", "Brendan Eich", "James Gosling"],
+                "correctAnswer": "Guido van Rossum",
+                "points": 10
+              },
+              {
+                "type": "true_false",
+                "question": "Python was named after a snake.",
+                "correctAnswer": false,
+                "explanation": "Python was named after Monty Python's Flying Circus",
+                "points": 10
+              }
+            ],
+            "passingScore": 0.7
+          }
+        },
+        {
+          "id": "episode-1-2-setup",
+          "title": "Setting Up Your Python Environment",
+          "order": 2,
+          "estimatedDuration": "30 minutes",
+          "learningObjectives": [
+            "Install Python on your system",
+            "Set up a code editor",
+            "Run Python programs",
+            "Use the Python REPL"
+          ],
+          "prerequisite": {
+            "episodeIds": ["episode-1-1-welcome"]
+          },
+          "segments": [
+            {
+              "id": "seg-1-2-1",
+              "order": 1,
+              "segmentType": "episode_opening",
+              "title": "Let's Set Up Python!",
+              "textContent": "Now that you understand what Python is, let's get it running on your computer. We'll walk through installation step by step, set up a code editor, and write our first program together.",
+              "estimatedDuration": "2 minutes",
+              "pointsAwarded": 5,
+              "keywords": ["setup", "installation"],
+              "mediaRefs": {
+                "audioId": "audio-setup-intro"
+              }
+            },
+            {
+              "id": "seg-1-2-2",
+              "order": 2,
+              "segmentType": "practical_configuration",
+              "title": "Installing Python",
+              "textContent": "Let's install Python on your system. The process varies slightly depending on your operating system, but don't worry - we'll cover all the major platforms.",
+              "estimatedDuration": "10 minutes",
+              "pointsAwarded": 25,
+              "keywords": ["install", "download", "setup"],
+              "mediaRefs": {
+                "audioId": "audio-install-python",
+                "visualIds": ["visual-python-download", "visual-install-steps"]
+              },
+              "interactiveCue": {
+                "type": "ui_simulation",
+                "config": {
+                  "simulation": "python_installer",
+                  "steps": [
+                    {
+                      "instruction": "Click on 'Download Python 3.12'",
+                      "targetElement": "download-button",
+                      "highlight": true
+                    },
+                    {
+                      "instruction": "Check 'Add Python to PATH'",
+                      "targetElement": "path-checkbox",
+                      "critical": true
+                    },
+                    {
+                      "instruction": "Click 'Install Now'",
+                      "targetElement": "install-button"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "id": "seg-1-2-3",
+              "order": 3,
+              "segmentType": "code_walkthrough",
+              "title": "Your First Python Program",
+              "textContent": "Let's write the traditional 'Hello, World!' program. This simple program is a rite of passage for every programmer learning a new language.",
+              "estimatedDuration": "5 minutes",
+              "pointsAwarded": 30,
+              "keywords": ["hello world", "first program"],
+              "codeExample": {
+                "language": "python",
+                "code": "# My first Python program\nprint('Hello, World!')\n\n# Let's make it more personal\nname = input('What is your name? ')\nprint(f'Hello, {name}! Welcome to Python!')",
+                "filename": "hello.py"
+              },
+              "interactiveCue": {
+                "type": "code_completion",
+                "config": {
+                  "template": "# Complete the code to greet the user\nname = input('Enter your name: ')\nprint(___)",
+                  "solution": "f'Hello, {name}!'",
+                  "hints": [
+                    "Use an f-string for formatting",
+                    "Remember to include the variable name in curly braces"
+                  ]
+                }
+              }
+            },
+            {
+              "id": "seg-1-2-4",
+              "order": 4,
+              "segmentType": "practical_example",
+              "title": "Using the Python REPL",
+              "textContent": "The Python REPL (Read-Eval-Print Loop) is an interactive environment where you can experiment with Python code instantly. It's perfect for learning and testing small code snippets.",
+              "estimatedDuration": "8 minutes",
+              "pointsAwarded": 20,
+              "keywords": ["REPL", "interactive", "shell"],
+              "mediaRefs": {
+                "audioId": "audio-python-repl",
+                "visualIds": ["visual-repl-demo"]
+              },
+              "codeExample": {
+                "language": "python",
+                "code": ">>> 2 + 2\n4\n>>> print('Python is fun!')\nPython is fun!\n>>> name = 'Alice'\n>>> f'Hello, {name}!'\n'Hello, Alice!'"
+              },
+              "interactiveCue": {
+                "type": "simulation",
+                "config": {
+                  "simulationType": "python_repl",
+                  "exercises": [
+                    "Calculate 15 * 4",
+                    "Create a variable called 'age' with your age",
+                    "Print a message using the age variable"
+                  ]
+                }
+              }
+            },
+            {
+              "id": "seg-1-2-5",
+              "order": 5,
+              "segmentType": "pause_and_reflect",
+              "title": "Reflection: Your Setup Experience",
+              "textContent": "Take a moment to reflect on what you've just accomplished. You've installed Python, written your first program, and explored the REPL. How do you feel about your progress?",
+              "estimatedDuration": "2 minutes",
+              "pointsAwarded": 10,
+              "keywords": ["reflection", "progress"],
+              "interactiveCue": {
+                "type": "pause_and_reflect",
+                "config": {
+                  "duration": 60,
+                  "prompts": [
+                    "What was the easiest part of the setup?",
+                    "What challenged you the most?",
+                    "What are you most excited to learn next?"
+                  ]
+                }
+              }
+            }
+          ],
+          "badgeOnCompletion": "environment-setup-pro"
+        },
+        {
+          "id": "episode-1-3-syntax-basics",
+          "title": "Python Syntax Fundamentals",
+          "order": 3,
+          "estimatedDuration": "45 minutes",
+          "learningObjectives": [
+            "Understand Python's indentation rules",
+            "Write comments and documentation",
+            "Use basic Python statements",
+            "Follow Python naming conventions"
+          ],
+          "segments": [
+            {
+              "id": "seg-1-3-1",
+              "order": 1,
+              "segmentType": "technical_introduction",
+              "title": "Python's Unique Syntax",
+              "textContent": "Python's syntax is designed to be clean and readable. Unlike many languages that use braces {}, Python uses indentation to define code blocks. This enforces good coding style and makes Python code naturally organized.",
+              "estimatedDuration": "5 minutes",
+              "pointsAwarded": 15,
+              "keywords": ["syntax", "indentation", "readability"],
+              "mediaRefs": {
+                "audioId": "audio-python-syntax",
+                "visualIds": ["visual-indentation-comparison"]
+              },
+              "interactiveCue": {
+                "type": "click_to_compare",
+                "config": {
+                  "title": "Indentation Matters!",
+                  "comparisons": [
+                    {
+                      "label": "Correct Indentation",
+                      "code": "if temperature > 30:\n    print('It is hot!')\n    print('Stay hydrated!')",
+                      "valid": true
+                    },
+                    {
+                      "label": "Incorrect Indentation",
+                      "code": "if temperature > 30:\nprint('It is hot!')\n    print('Stay hydrated!')",
+                      "valid": false,
+                      "error": "IndentationError: expected an indented block"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "id": "seg-1-3-2",
+              "order": 2,
+              "segmentType": "code_walkthrough",
+              "title": "Comments and Documentation",
+              "textContent": "Good code tells you HOW; good comments tell you WHY. Python supports single-line comments with # and multi-line strings for documentation.",
+              "estimatedDuration": "8 minutes",
+              "pointsAwarded": 20,
+              "keywords": ["comments", "documentation", "docstrings"],
+              "codeExample": {
+                "language": "python",
+                "code": "# This is a single-line comment\n\n# Calculate the area of a circle\nradius = 5\narea = 3.14159 * radius ** 2  # Using pi approximation\n\n\"\"\"\nThis is a multi-line comment.\nIt can span multiple lines and is often used\nfor function documentation (docstrings).\n\"\"\"\n\ndef calculate_area(radius):\n    \"\"\"Calculate the area of a circle.\n    \n    Args:\n        radius (float): The radius of the circle\n        \n    Returns:\n        float: The area of the circle\n    \"\"\"\n    return 3.14159 * radius ** 2"
+              },
+              "interactiveCue": {
+                "type": "code_completion",
+                "config": {
+                  "template": "# Add appropriate comments to this code\n___ Calculate tax on a purchase\nprice = 100\ntax_rate = 0.08\ntax = price * tax_rate  ___\ntotal = price + tax",
+                  "solution": ["#", "# 8% tax rate"],
+                  "hints": ["Start comments with #", "Explain what the tax rate represents"]
+                }
+              }
+            },
+            {
+              "id": "seg-1-3-3",
+              "order": 3,
+              "segmentType": "concept_explanation",
+              "title": "Python Naming Conventions",
+              "textContent": "Python follows specific naming conventions that make code more readable. Variables use snake_case, classes use PascalCase, and constants use UPPER_SNAKE_CASE.",
+              "estimatedDuration": "10 minutes",
+              "pointsAwarded": 25,
+              "keywords": ["naming", "conventions", "PEP8"],
+              "mediaRefs": {
+                "audioId": "audio-naming-conventions",
+                "visualIds": ["visual-naming-examples"]
+              },
+              "interactiveCue": {
+                "type": "drag_to_distribute",
+                "config": {
+                  "instruction": "Drag each name to its correct category",
+                  "items": [
+                    {"id": "1", "text": "user_name"},
+                    {"id": "2", "text": "CalculateTax"},
+                    {"id": "3", "text": "MAX_ATTEMPTS"},
+                    {"id": "4", "text": "get_user_input"},
+                    {"id": "5", "text": "UserProfile"},
+                    {"id": "6", "text": "PI"}
+                  ],
+                  "categories": [
+                    {"id": "variables", "label": "Variables", "correctItems": ["1"]},
+                    {"id": "functions", "label": "Functions", "correctItems": ["4"]},
+                    {"id": "classes", "label": "Classes", "correctItems": ["2", "5"]},
+                    {"id": "constants", "label": "Constants", "correctItems": ["3", "6"]}
+                  ]
+                }
+              }
+            },
+            {
+              "id": "seg-1-3-4",
+              "order": 4,
+              "segmentType": "important_note",
+              "title": "The Zen of Python",
+              "textContent": "Python has a built-in 'Easter egg' that displays the guiding principles of Python's design. Type 'import this' in the Python REPL to see it!",
+              "estimatedDuration": "5 minutes",
+              "pointsAwarded": 15,
+              "keywords": ["zen", "philosophy", "PEP20"],
+              "codeExample": {
+                "language": "python",
+                "code": ">>> import this\nThe Zen of Python, by Tim Peters\n\nBeautiful is better than ugly.\nExplicit is better than implicit.\nSimple is better than complex.\nComplex is better than complicated.\nFlat is better than nested.\nSparse is better than dense.\nReadability counts.\n..."
+              },
+              "interactiveCue": {
+                "type": "important_note",
+                "config": {
+                  "emphasis": "high",
+                  "icon": "lightbulb",
+                  "takeaways": [
+                    "Readability is a core Python value",
+                    "There should be one obvious way to do things",
+                    "Simple solutions are preferred over clever ones"
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "lesson-2-variables-datatypes",
+      "title": "Variables and Data Types",
+      "order": 2,
+      "totalEstimatedDuration": "2 hours",
+      "learningObjectives": [
+        "Understand variables and assignment",
+        "Master Python's built-in data types",
+        "Perform type conversions",
+        "Work with strings effectively"
+      ],
+      "episodes": [
+        {
+          "id": "episode-2-1-variables",
+          "title": "Understanding Variables",
+          "order": 1,
+          "estimatedDuration": "30 minutes",
+          "learningObjectives": [
+            "Create and use variables",
+            "Understand variable naming rules",
+            "Learn about variable scope",
+            "Use multiple assignment"
+          ],
+          "segments": [
+            {
+              "id": "seg-2-1-1",
+              "order": 1,
+              "segmentType": "concept_introduction",
+              "title": "What Are Variables?",
+              "textContent": "Variables are containers for storing data values. In Python, you don't need to declare variables before using them, and Python automatically determines the type based on the value you assign.",
+              "estimatedDuration": "5 minutes",
+              "pointsAwarded": 15,
+              "keywords": ["variables", "assignment", "dynamic typing"],
+              "mediaRefs": {
+                "audioId": "audio-variables-intro",
+                "visualIds": ["visual-variable-container"]
+              },
+              "interactiveCue": {
+                "type": "hover_to_explore",
+                "config": {
+                  "hotspots": [
+                    {
+                      "id": "name",
+                      "label": "Variable Name",
+                      "content": "A label that refers to the value"
+                    },
+                    {
+                      "id": "value",
+                      "label": "Variable Value",
+                      "content": "The actual data stored in memory"
+                    },
+                    {
+                      "id": "type",
+                      "label": "Variable Type",
+                      "content": "Python determines this automatically"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "id": "seg-2-1-2",
+              "order": 2,
+              "segmentType": "code_walkthrough",
+              "title": "Creating and Using Variables",
+              "textContent": "Let's explore how to create variables, assign values, and use them in Python. Remember, Python uses dynamic typing, so variables can change types.",
+              "estimatedDuration": "10 minutes",
+              "pointsAwarded": 25,
+              "keywords": ["assignment", "dynamic typing"],
+              "codeExample": {
+                "language": "python",
+                "code": "# Creating variables\nname = \"Alice\"          # String\nage = 25               # Integer\nheight = 5.6          # Float\nis_student = True     # Boolean\n\n# Using variables\nprint(f\"{name} is {age} years old\")\n\n# Variables can change type\nage = \"twenty-five\"   # Now it's a string!\n\n# Multiple assignment\nx, y, z = 1, 2, 3\na = b = c = 0        # All get the same value"
+              },
+              "interactiveCue": {
+                "type": "predict_value_change",
+                "config": {
+                  "code": "score = 100\nscore = score + 50\nscore = score / 2",
+                  "checkpoints": [
+                    {"line": 1, "question": "What is score after line 1?"},
+                    {"line": 2, "question": "What is score after line 2?"},
+                    {"line": 3, "question": "What is score after line 3?"}
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "lesson-3-control-flow",
+      "title": "Control Flow: Making Decisions",
+      "order": 3,
+      "totalEstimatedDuration": "2 hours",
+      "learningObjectives": [
+        "Master if/elif/else statements",
+        "Use comparison and logical operators",
+        "Create while and for loops",
+        "Control loop execution with break and continue"
+      ]
+    },
+    {
+      "id": "lesson-4-functions",
+      "title": "Functions: Reusable Code Blocks",
+      "order": 4,
+      "totalEstimatedDuration": "2.5 hours",
+      "learningObjectives": [
+        "Define and call functions",
+        "Work with parameters and return values",
+        "Understand scope and global variables",
+        "Use *args and **kwargs"
+      ]
+    },
+    {
+      "id": "lesson-5-error-handling",
+      "title": "Error Handling and Debugging",
+      "order": 5,
+      "totalEstimatedDuration": "1.5 hours",
+      "learningObjectives": [
+        "Understand common Python errors",
+        "Use try/except blocks",
+        "Raise custom exceptions",
+        "Debug code effectively"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+#!/bin/bash
+echo "🤖 Instructions for launching Claude in all tracks:"
+echo ""
+echo "Open 4 terminal tabs/windows and run:"
+echo ""
+echo "Tab 1: cd ../qslab-track1-content && claude code"
+echo "Tab 2: cd ../qslab-track2-interactive && claude code"
+echo "Tab 3: cd ../qslab-track3-analytics && claude code"
+echo "Tab 4: cd ../qslab-track4-polish && claude code"
+echo ""
+echo "Give each Claude instance a specific task from UNIFIED_IMPLEMENTATION_PLAN.md"

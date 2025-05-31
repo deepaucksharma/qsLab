@@ -1,0 +1,1944 @@
+{
+  "course": {
+    "id": "kafka-monitoring-share-groups-v2",
+    "title": "Kafka Monitoring & Share Groups: The Complete Guide",
+    "description": "Master Kafka monitoring from fundamentals to the revolutionary Share Groups feature in Kafka 4.0+",
+    "totalEstimatedDuration": "12 hours",
+    "level": "intermediate",
+    "prerequisites": [
+      "Basic understanding of distributed systems",
+      "Familiarity with message queues"
+    ],
+    "learningObjectives": [
+      "Understand Kafka's architecture and core concepts",
+      "Master consumer groups and the new Share Groups feature",
+      "Learn JMX and Micrometer monitoring approaches",
+      "Integrate Kafka with NewRelic using QueueSample v2",
+      "Build production-ready monitoring dashboards"
+    ],
+    "instructor": {
+      "name": "Alex Rodriguez",
+      "bio": "Principal Engineer with 10+ years of Kafka experience at scale",
+      "avatar": "/static/instructors/alex-rodriguez.png"
+    },
+    "completionRequirements": {
+      "minSegmentsCompleted": 0.8,
+      "minCheckpointScore": 0.7,
+      "requiredCheckpoints": [
+        "checkpoint-kafka-fundamentals",
+        "checkpoint-share-groups",
+        "checkpoint-monitoring-strategy",
+        "checkpoint-newrelic-integration"
+      ]
+    },
+    "certificateId": "cert-kafka-monitoring-expert",
+    "badges": [
+      {
+        "id": "kafka-basics-master",
+        "name": "Kafka Basics Master",
+        "criteria": "Complete Lesson 1 with 80%+ score"
+      },
+      {
+        "id": "share-groups-pioneer",
+        "name": "Share Groups Pioneer",
+        "criteria": "Complete Share Groups episodes"
+      },
+      {
+        "id": "monitoring-guru",
+        "name": "Monitoring Guru",
+        "criteria": "Complete all monitoring lessons"
+      },
+      {
+        "id": "kafka-expert",
+        "name": "Kafka Monitoring Expert",
+        "criteria": "Complete entire course with 85%+ score"
+      }
+    ]
+  },
+  "lessons": [
+    {
+      "id": "LESSON_00_INTRODUCTION_V2",
+      "title": "Course Introduction & Setup",
+      "order": 1,
+      "totalEstimatedDuration": "10 minutes",
+      "learningObjectives": [
+        "Understand the course structure and micro-learning approach",
+        "Identify the three main pillars of the course",
+        "Set expectations for hands-on learning with Kafka 4.0+ Share Groups"
+      ],
+      "episodes": [
+        {
+          "id": "EPISODE_00_01_COURSE_OVERVIEW_V2",
+          "title": "Welcome to Your Kafka Monitoring Journey",
+          "order": 1,
+          "estimatedDuration": "5 minutes",
+          "learningObjectives": [
+            "Recognize the importance of understanding 'why' behind metrics",
+            "Identify Share Groups as a key innovation in Kafka 4.0+"
+          ],
+          "prerequisite": null,
+          "segments": [
+            {
+              "id": "SEGMENT_00_01_WELCOME_V2",
+              "order": 1,
+              "segmentType": "course_opening",
+              "title": "Welcome and Setting the Scene",
+              "learningObjectives": [
+                "Feel welcomed and prepared for the learning journey"
+              ],
+              "textContent": "Welcome, New Relic engineers! Grab your favorite beverage and settle in for the next few hours as we embark on a deep dive into the world of Kafka monitoring.",
+              "estimatedDuration": "10s",
+              "mediaRefs": {
+                "audioId": "AUDIO_SEG00_01_WELCOME_V2",
+                "visualIds": [
+                  "VISUAL_INTRO_01_01_TITLE_V2"
+                ]
+              },
+              "interactiveCue": null,
+              "codeExample": null,
+              "keywords": [
+                "Welcome",
+                "Kafka Monitoring",
+                "New Relic"
+              ],
+              "pointsAwarded": 10,
+              "analytics": {
+                "xapi_enabled": true
+              }
+            },
+            {
+              "id": "SEGMENT_00_02_YOUR_GUIDE_V2",
+              "order": 2,
+              "segmentType": "instructor_introduction",
+              "title": "Your Guide and Journey Overview",
+              "learningObjectives": [
+                "Recognize the main topics covered in the course",
+                "Understand the role of Kafka 4.0 Share Groups as a key focus area"
+              ],
+              "textContent": "I'm your guide through this journey, and together we'll explore everything from Kafka's fundamental concepts to the exciting new Share Groups feature that's now available in Kafka 4.0 as an early access preview.",
+              "estimatedDuration": "45s",
+              "mediaRefs": {
+                "audioId": "AUDIO_SEG00_02_GUIDE_V2",
+                "visualIds": [
+                  "VISUAL_JOURNEY_MAP_V2"
+                ]
+              },
+              "interactiveCue": {
+                "cueType": "pause_and_reflect",
+                "promptText": "Before we show the full journey, can you recall the three main pillars of this course?",
+                "triggerAtSeconds": 20,
+                "revealDelay": 5
+              },
+              "codeExample": null,
+              "keywords": [
+                "Journey",
+                "Share Groups",
+                "Kafka 4.0",
+                "Early Access"
+              ],
+              "pointsAwarded": 10,
+              "analytics": {
+                "xapiEnabled": true,
+                "trackTimeSpent": true,
+                "interactionsToTrack": [
+                  "interactiveCue_response",
+                  "visual_hover_VISUAL_JOURNEY_MAP_V2"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "LESSON_01_KAFKA_FUNDAMENTALS_V2",
+      "title": "Chapter 1: Kafka Fundamentals & The Rise of Share Groups",
+      "order": 2,
+      "totalEstimatedDuration": "70-90 minutes",
+      "learningObjectives": [
+        "Articulate the core problems Kafka was designed to solve",
+        "Describe the key components of Kafka architecture",
+        "Explain the limitations of traditional consumer groups that led to Share Groups",
+        "Define Kafka 4.0+ Share Groups and their key semantic differences"
+      ],
+      "episodes": [
+        {
+          "id": "EPISODE_01_01_WHY_KAFKA_V2",
+          "title": "Episode 1: Why Kafka Exists - The Genesis",
+          "order": 1,
+          "estimatedDuration": "7 minutes",
+          "learningObjectives": [
+            "Describe the data integration challenges at LinkedIn circa 2010",
+            "Explain how Kafka emerged as a solution to handle massive real-time data streams"
+          ],
+          "prerequisite": null,
+          "segments": [
+            {
+              "id": "SEGMENT_01_01_01_LINKEDIN_2010_V2",
+              "order": 1,
+              "segmentType": "historical_context",
+              "title": "The LinkedIn Data Crisis of 2010",
+              "learningObjectives": [
+                "Visualize the complexity of point-to-point data integrations",
+                "Understand the maintenance nightmare of traditional approaches"
+              ],
+              "textContent": "Picture this: It's 2010 at LinkedIn. The engineering team is drowning in point-to-point data pipelines. Every new data integration looks like adding another strand to an already tangled ball of yarn. Sound familiar?",
+              "estimatedDuration": "30s",
+              "mediaRefs": {
+                "audioId": "AUDIO_SEG01_01_01_LINKEDIN_V2",
+                "visualIds": [
+                  "VISUAL_01_01_01_TIMELINE_V2",
+                  "VISUAL_01_01_02_TANGLED_NETWORK_V2"
+                ]
+              },
+              "interactiveCue": {
+                "cueType": "hover_to_explore",
+                "promptText": "Hover over each connection to see the maintenance burden",
+                "targetVisualId": "VISUAL_01_01_02_TANGLED_NETWORK_V2",
+                "triggerAtSeconds": 15
+              },
+              "codeExample": null,
+              "keywords": [
+                "LinkedIn",
+                "2010",
+                "Point-to-point",
+                "Data Pipeline"
+              ],
+              "pointsAwarded": 10,
+              "analytics": {
+                "xapi_enabled": true
+              }
+            },
+            {
+              "id": "SEGMENT_01_01_02_BIRTH_OF_KAFKA_V2",
+              "order": 2,
+              "segmentType": "origin_story",
+              "title": "The Birth of Apache Kafka",
+              "learningObjectives": [
+                "Identify the fundamental problems Kafka was designed to solve"
+              ],
+              "textContent": "This is the world that gave birth to Apache Kafka. Kafka emerged to solve a fundamental problem: how do you handle massive streams of real-time data in a way that's scalable, fault-tolerant, and doesn't create a maintenance nightmare?",
+              "estimatedDuration": "35s",
+              "mediaRefs": {
+                "audioId": "AUDIO_SEG01_01_02_BIRTH_V2",
+                "visualIds": [
+                  "VISUAL_01_01_03_PROBLEM_SOLUTION_V2"
+                ]
+              },
+              "interactiveCue": null,
+              "codeExample": null,
+              "keywords": [
+                "Apache Kafka",
+                "Problem",
+                "Solution",
+                "Real-time Data"
+              ],
+              "pointsAwarded": 10,
+              "analytics": {
+                "xapi_enabled": true
+              }
+            },
+            {
+              "id": "SEGMENT_01_01_03_NOT_JUST_QUEUE_V2",
+              "order": 3,
+              "segmentType": "paradigm_shift",
+              "title": "Not Just Another Message Queue",
+              "learningObjectives": [
+                "Distinguish Kafka's approach from traditional message queues"
+              ],
+              "textContent": "The answer wasn't to build a better message queue\u2014it was to reimagine messaging as a distributed, append-only log.",
+              "estimatedDuration": "25s",
+              "mediaRefs": {
+                "audioId": "AUDIO_SEG01_01_03_NOT_QUEUE_V2",
+                "visualIds": [
+                  "VISUAL_01_01_04_QUEUE_VS_LOG_V2"
+                ]
+              },
+              "interactiveCue": {
+                "cueType": "click_to_compare",
+                "promptText": "Click to see messages disappear in a queue vs persist in Kafka",
+                "targetVisualId": "VISUAL_01_01_04_QUEUE_VS_LOG_V2",
+                "triggerAtSeconds": 10
+              },
+              "codeExample": null,
+              "keywords": [
+                "Message Queue",
+                "Distributed Log",
+                "Append-only"
+              ],
+              "pointsAwarded": 10,
+              "analytics": {
+                "xapi_enabled": true
+              }
+            },
+            {
+              "id": "SEGMENT_01_01_04_KAFKA_VS_TRADITIONAL",
+              "order": 4,
+              "segmentType": "technology_comparison",
+              "title": "Kafka vs Traditional Message Queues",
+              "learningObjectives": [
+                "Understand key differences between Kafka and traditional MQ systems",
+                "Learn when to choose Kafka over alternatives",
+                "Recognize Kafka's unique strengths"
+              ],
+              "textContent": "Unlike traditional message queues that delete messages after consumption, Kafka persists messages for a configured time. This fundamental difference enables replay, multiple consumers, and event sourcing patterns that are impossible with traditional queues.",
+              "estimatedDuration": "4 minutes",
+              "mediaRefs": {
+                "audioId": "AUDIO_SEG01_01_04_COMPARISON",
+                "visualIds": [
+                  "VISUAL_KAFKA_VS_MQ_COMPARISON",
+                  "VISUAL_USE_CASE_MATRIX"
+                ]
+              },
+              "interactiveCue": {
+                "cueType": "click_to_compare",
+                "config": {
+                  "title": "Message Queue Approaches",
+                  "comparisons": [
+                    {
+                      "label": "Traditional MQ (RabbitMQ)",
+                      "features": {
+                        "persistence": "Messages deleted after consumption",
+                        "consumers": "Typically one consumer per message",
+                        "ordering": "FIFO within queue",
+                        "replay": "Not possible",
+                        "throughput": "10K-100K msgs/sec"
+                      }
+                    },
+                    {
+                      "label": "Apache Kafka",
+                      "features": {
+                        "persistence": "Configurable retention (time/size)",
+                        "consumers": "Multiple independent consumers",
+                        "ordering": "Per-partition ordering",
+                        "replay": "Full replay capability",
+                        "throughput": "1M+ msgs/sec"
+                      }
+                    }
+                  ]
+                }
+              },
+              "codeExample": null,
+              "keywords": [
+                "comparison",
+                "message queue",
+                "architecture"
+              ],
+              "pointsAwarded": 20,
+              "analytics": {
+                "xapi_enabled": true
+              }
+            },
+            {
+              "id": "SEGMENT_01_01_05_REAL_WORLD_USE_CASES",
+              "order": 5,
+              "segmentType": "practical_example",
+              "title": "Kafka in Action: Real-World Use Cases",
+              "learningObjectives": [
+                "See how major companies use Kafka",
+                "Understand different Kafka patterns",
+                "Connect theory to practice"
+              ],
+              "textContent": "Let's look at how companies like Netflix, Uber, and LinkedIn use Kafka. Netflix processes 8 million events per second for real-time recommendations. Uber uses Kafka to track every trip in real-time across their global fleet.",
+              "estimatedDuration": "5 minutes",
+              "mediaRefs": {
+                "audioId": "AUDIO_SEG01_01_05_USE_CASES",
+                "visualIds": [
+                  "VISUAL_NETFLIX_ARCHITECTURE",
+                  "VISUAL_UBER_DATA_FLOW",
+                  "VISUAL_USE_CASE_PATTERNS"
+                ]
+              },
+              "interactiveCue": {
+                "cueType": "interactive_explorer",
+                "config": {
+                  "title": "Explore Real-World Kafka Deployments",
+                  "hotspots": {
+                    "netflix": {
+                      "label": "Netflix",
+                      "details": {
+                        "scale": "8M events/sec",
+                        "useCase": "Real-time recommendations, viewing analytics",
+                        "clusters": "50+ Kafka clusters",
+                        "challenge": "Multi-region replication"
+                      }
+                    },
+                    "uber": {
+                      "label": "Uber",
+                      "details": {
+                        "scale": "Trillion+ messages/day",
+                        "useCase": "Trip tracking, surge pricing, driver dispatch",
+                        "architecture": "uReplicator for geo-distribution",
+                        "challenge": "Low-latency global updates"
+                      }
+                    },
+                    "linkedin": {
+                      "label": "LinkedIn",
+                      "details": {
+                        "scale": "7 trillion messages/day",
+                        "useCase": "Activity streams, metrics, logging",
+                        "history": "Birthplace of Kafka",
+                        "challenge": "Multi-tenant isolation"
+                      }
+                    }
+                  }
+                }
+              },
+              "codeExample": null,
+              "keywords": [
+                "use cases",
+                "real world",
+                "scale"
+              ],
+              "pointsAwarded": 25,
+              "analytics": {
+                "xapi_enabled": true
+              }
+            }
+          ],
+          "badgeOnCompletion": "BADGE_KAFKA_FUNDAMENTALS_EP1_V2"
+        },
+        {
+          "id": "EPISODE_01_02_CORE_ARCH_PART1_V2",
+          "title": "Episode 2: Kafka's Core - Topics, Partitions, Offsets",
+          "order": 2,
+          "estimatedDuration": "8 minutes",
+          "learningObjectives": [
+            "Define Kafka Topics and their role as data stream categories",
+            "Explain Partitions as the unit of parallelism and scalability",
+            "Describe Offsets as immutable pointers to messages"
+          ],
+          "prerequisite": null,
+          "segments": [
+            {
+              "id": "SEGMENT_01_02_01_TOPICS_INTRO_V2",
+              "order": 1,
+              "segmentType": "concept_introduction",
+              "title": "Topics: The Books in Kafka's Library",
+              "learningObjectives": [
+                "Understand topics as logical categories of data streams"
+              ],
+              "textContent": "Let's start with topics. If Kafka is a library, topics are the individual books. Each topic represents a distinct stream of data\u2014maybe 'user-clicks,' 'payment-transactions,' or 'sensor-readings.'",
+              "estimatedDuration": "30s",
+              "mediaRefs": {
+                "audioId": "AUDIO_SEG01_02_01_TOPICS_V2",
+                "visualIds": [
+                  "VISUAL_01_02_01_LIBRARY_METAPHOR_V2"
+                ]
+              },
+              "interactiveCue": null,
+              "codeExample": null,
+              "keywords": [
+                "Topics",
+                "Library Metaphor",
+                "Data Streams"
+              ],
+              "pointsAwarded": 10,
+              "analytics": {
+                "xapi_enabled": true
+              }
+            },
+            {
+              "id": "SEGMENT_01_02_03_PARTITIONS_INTRO_V2",
+              "order": 2,
+              "segmentType": "scalability_concept",
+              "title": "Enter Partitions: Kafka's Secret Weapon",
+              "learningObjectives": [
+                "Explain how partitions enable parallel processing"
+              ],
+              "textContent": "Enter partitions\u2014Kafka's secret weapon for scalability. Imagine you're running a newspaper. Instead of having one massive printing press, you have multiple smaller presses, each printing different sections simultaneously. That's partitioning.",
+              "estimatedDuration": "40s",
+              "mediaRefs": {
+                "audioId": "AUDIO_SEG01_02_03_PARTITIONS_V2",
+                "visualIds": [
+                  "VISUAL_01_02_03_NEWSPAPER_ANALOGY_V2"
+                ]
+              },
+              "interactiveCue": {
+                "cueType": "drag_to_distribute",
+                "promptText": "Drag articles to different printing presses to see parallelization",
+                "targetVisualId": "VISUAL_01_02_03_NEWSPAPER_ANALOGY_V2",
+                "triggerAtSeconds": 20
+              },
+              "codeExample": null,
+              "keywords": [
+                "Partitions",
+                "Scalability",
+                "Parallel Processing"
+              ],
+              "pointsAwarded": 10,
+              "analytics": {
+                "xapi_enabled": true
+              }
+            },
+            {
+              "id": "SEGMENT_01_02_05_OFFSET_CONCEPT_V2",
+              "order": 3,
+              "segmentType": "immutability_concept",
+              "title": "Offsets: Permanent Addresses for Messages",
+              "learningObjectives": [
+                "Understand offsets as immutable message identifiers"
+              ],
+              "textContent": "Here's where it gets interesting. Each partition is an ordered, immutable sequence of messages. When a message arrives, it gets an offset\u2014think of it as a permanent street address. Partition 0, Offset 42 will always refer to the same message, forever.",
+              "estimatedDuration": "45s",
+              "mediaRefs": {
+                "audioId": "AUDIO_SEG01_02_05_OFFSETS_V2",
+                "visualIds": [
+                  "VISUAL_01_02_05_OFFSET_ADDRESSING_V2"
+                ]
+              },
+              "interactiveCue": null,
+              "codeExample": null,
+              "keywords": [
+                "Offset",
+                "Permanent Address",
+                "Immutable"
+              ],
+              "pointsAwarded": 10,
+              "analytics": {
+                "xapi_enabled": true
+              }
+            }
+          ]
+        },
+        {
+          "id": "EPISODE_01_05_SHARE_GROUPS_INTRO_V2",
+          "title": "Episode 5: Introducing Kafka 4.0+ Share Groups",
+          "order": 5,
+          "estimatedDuration": "8 minutes",
+          "learningObjectives": [
+            "Identify the limitations of traditional consumer groups",
+            "Define Share Groups and their 'queue-like' semantics",
+            "Explain the concept of cooperative consumption"
+          ],
+          "prerequisite": {
+            "episodeIds": [
+              "EPISODE_01_03_CONSUMER_GROUPS_V2",
+              "EPISODE_01_04_CG_LIMITATIONS_V2"
+            ],
+            "skipOption": {
+              "quizId": "QUIZ_CONSUMER_GROUP_PROFICIENCY_V2",
+              "passingScore": 80
+            }
+          },
+          "segments": [
+            {
+              "id": "SEGMENT_01_05_01_TRAD_LIMITS_RECAP_V2",
+              "order": 1,
+              "segmentType": "problem_recap",
+              "title": "The Partition Ceiling Problem",
+              "learningObjectives": [
+                "Recall the strict consumer-to-partition coupling limitation"
+              ],
+              "textContent": "We've seen how traditional consumer groups hit a hard ceiling: you can't have more consumers than partitions. This creates the 'idle consumer' problem and limits elastic scaling.",
+              "estimatedDuration": "30s",
+              "mediaRefs": {
+                "audioId": "AUDIO_SEG01_05_01_LIMITS_V2",
+                "visualIds": [
+                  "VISUAL_01_05_01_IDLE_CONSUMER_V2"
+                ]
+              },
+              "interactiveCue": null,
+              "codeExample": null,
+              "keywords": [
+                "Partition Ceiling",
+                "Idle Consumer",
+                "Scaling Limitation"
+              ],
+              "pointsAwarded": 10,
+              "analytics": {
+                "xapi_enabled": true
+              }
+            },
+            {
+              "id": "SEGMENT_01_05_02_ENTER_SHARE_GROUPS_KIP932_V2",
+              "order": 2,
+              "segmentType": "feature_introduction",
+              "title": "Enter Share Groups (KIP-932)",
+              "learningObjectives": [
+                "Understand Share Groups as Kafka's answer to queue-like consumption"
+              ],
+              "textContent": "February 2025 marked a watershed moment for Kafka with Share Groups (KIP-932) in early access. After two years of development, Kafka finally addresses use cases it's historically struggled with\u2014true queue semantics within the Kafka ecosystem.",
+              "estimatedDuration": "45s",
+              "mediaRefs": {
+                "audioId": "AUDIO_SEG01_05_02_KIP932_V2",
+                "visualIds": [
+                  "VISUAL_01_05_02_KIP932_TIMELINE_V2"
+                ]
+              },
+              "interactiveCue": {
+                "cueType": "important_note",
+                "promptText": "\u26a0\ufe0f Remember: Share Groups are EARLY ACCESS in Kafka 4.0. Not for production yet!",
+                "triggerAtSeconds": 30,
+                "displayDuration": 10
+              },
+              "codeExample": null,
+              "keywords": [
+                "Share Groups",
+                "KIP-932",
+                "Early Access",
+                "Queue Semantics"
+              ],
+              "pointsAwarded": 10,
+              "analytics": {
+                "xapi_enabled": true
+              }
+            },
+            {
+              "id": "SEGMENT_01_05_03_COOPERATIVE_CONSUMPTION_V2",
+              "order": 3,
+              "segmentType": "concept_explanation",
+              "title": "Cooperative Consumption Explained",
+              "learningObjectives": [
+                "Explain how multiple consumers can work on the same partition"
+              ],
+              "textContent": "The magic of Share Groups is cooperative consumption. Multiple consumers can now work on messages from the same partition simultaneously. It's like having multiple chefs at the same cooking station, each grabbing orders as they're ready.",
+              "estimatedDuration": "50s",
+              "mediaRefs": {
+                "audioId": "AUDIO_SEG01_05_03_COOPERATIVE_V2",
+                "visualIds": [
+                  "VISUAL_01_05_03_KITCHEN_ANALOGY_V2"
+                ]
+              },
+              "interactiveCue": {
+                "cueType": "simulation",
+                "promptText": "Add more chefs and watch the order processing speed!",
+                "targetVisualId": "VISUAL_01_05_03_KITCHEN_ANALOGY_V2",
+                "triggerAtSeconds": 25
+              },
+              "codeExample": null,
+              "keywords": [
+                "Cooperative Consumption",
+                "Parallel Processing",
+                "Share Groups"
+              ],
+              "pointsAwarded": 10,
+              "analytics": {
+                "xapi_enabled": true
+              }
+            }
+          ]
+        },
+        {
+          "id": "EPISODE_01_06_SHARE_GROUP_METRICS_NEW_V2",
+          "title": "Episode 6: Critical Share Group Metrics for 2025",
+          "order": 6,
+          "estimatedDuration": "7 minutes",
+          "learningObjectives": [
+            "Identify and define unacknowledged_age_ms for Share Groups",
+            "Identify and define redelivery_count for Share Groups",
+            "Identify and define max_lock_duration_ms for Share Groups"
+          ],
+          "prerequisite": null,
+          "segments": [
+            {
+              "id": "SEGMENT_01_06_01_INTRO_SG_METRICS_V2",
+              "order": 1,
+              "segmentType": "metrics_overview",
+              "title": "Why Traditional Metrics Don't Work",
+              "learningObjectives": [
+                "Understand why offset lag is misleading for Share Groups"
+              ],
+              "textContent": "With Share Groups, traditional consumer lag becomes meaningless. A Share Group might show zero lag while hundreds of messages sit unacknowledged. We need entirely new metrics to understand queue health.",
+              "estimatedDuration": "35s",
+              "mediaRefs": {
+                "audioId": "AUDIO_SEG01_06_01_INTRO_METRICS_V2",
+                "visualIds": [
+                  "VISUAL_01_06_01_ZERO_LAG_FALLACY_V2"
+                ]
+              },
+              "interactiveCue": null,
+              "codeExample": null,
+              "keywords": [
+                "Zero Lag Fallacy",
+                "Share Group Metrics",
+                "Queue Health"
+              ],
+              "pointsAwarded": 10,
+              "analytics": {
+                "xapi_enabled": true
+              }
+            },
+            {
+              "id": "SEGMENT_01_06_02_UNACK_AGE_MS_V2",
+              "order": 2,
+              "segmentType": "new_metric_deep_dive",
+              "title": "Metric Deep Dive: unacknowledged_age_ms",
+              "learningObjectives": [
+                "Define unacknowledged_age_ms in the context of Share Groups",
+                "Explain why this metric is critical for understanding queue-like lag"
+              ],
+              "textContent": "A crucial metric introduced with Share Groups is 'unacknowledged_age_ms'. This tracks the age of the oldest message that has been delivered to a consumer but not yet acknowledged. Think of it as the 'time-in-waiting' for your longest pending task.",
+              "estimatedDuration": "60s",
+              "mediaRefs": {
+                "audioId": "AUDIO_SEG01_06_02_UNACK_AGE_V2",
+                "visualIds": [
+                  "VISUAL_METRIC_UNACK_AGE_GRAPH_V2",
+                  "VISUAL_COMPARISON_OFFSETLAG_VS_UNACKAGE_V2"
+                ]
+              },
+              "interactiveCue": {
+                "cueType": "predict_value_change",
+                "promptText": "If a consumer processing a message suddenly hangs indefinitely, what happens to unacknowledged_age_ms?",
+                "options": [
+                  "Caps at timeout",
+                  "Resets to zero",
+                  "Grows continuously",
+                  "Stays constant"
+                ],
+                "correctAnswer": 2,
+                "triggerAtSeconds": 45
+              },
+              "codeExample": null,
+              "keywords": [
+                "unacknowledged_age_ms",
+                "Share Group Metrics",
+                "Queue Lag"
+              ],
+              "pointsAwarded": 15,
+              "analytics": {
+                "xapiEnabled": true,
+                "trackTimeSpent": true,
+                "interactionsToTrack": [
+                  "interactiveCue_response"
+                ]
+              }
+            },
+            {
+              "id": "SEGMENT_01_06_03_REDELIVERY_COUNT_V2",
+              "order": 3,
+              "segmentType": "new_metric_deep_dive",
+              "title": "Metric Deep Dive: redelivery_count",
+              "learningObjectives": [
+                "Define redelivery_count and its implications",
+                "Identify scenarios that cause high redelivery rates"
+              ],
+              "textContent": "The 'redelivery_count' metric tracks how many times messages have been redelivered after timeout or explicit release. High values indicate poison pills or processing failures. Unlike traditional Kafka, Share Groups track this per-message history.",
+              "estimatedDuration": "55s",
+              "mediaRefs": {
+                "audioId": "AUDIO_SEG01_06_03_REDELIVERY_V2",
+                "visualIds": [
+                  "VISUAL_01_06_03_REDELIVERY_FLOW_V2"
+                ]
+              },
+              "interactiveCue": null,
+              "codeExample": null,
+              "keywords": [
+                "redelivery_count",
+                "Poison Pills",
+                "Message Failures"
+              ],
+              "pointsAwarded": 15,
+              "analytics": {
+                "xapi_enabled": true
+              }
+            },
+            {
+              "id": "SEGMENT_01_06_04_MAX_LOCK_DURATION_V2",
+              "order": 4,
+              "segmentType": "new_metric_deep_dive",
+              "title": "Metric Deep Dive: max_lock_duration_ms",
+              "learningObjectives": [
+                "Define max_lock_duration_ms and its operational impact"
+              ],
+              "textContent": "The 'max_lock_duration_ms' shows the longest time any message has been locked by a consumer. This helps identify slow processors or hung consumers before they cause redeliveries. It's your early warning system.",
+              "estimatedDuration": "50s",
+              "mediaRefs": {
+                "audioId": "AUDIO_SEG01_06_04_LOCK_DURATION_V2",
+                "visualIds": [
+                  "VISUAL_01_06_04_LOCK_TIMELINE_V2"
+                ]
+              },
+              "interactiveCue": null,
+              "codeExample": null,
+              "keywords": [
+                "max_lock_duration_ms",
+                "Consumer Health",
+                "Early Warning"
+              ],
+              "pointsAwarded": 15,
+              "analytics": {
+                "xapi_enabled": true
+              }
+            }
+          ],
+          "badgeOnCompletion": "BADGE_SHARE_GROUP_PIONEER_V2"
+        }
+      ]
+    },
+    {
+      "id": "LESSON_02_JMX_AND_METRIC_COLLECTION_V2",
+      "title": "Chapter 2: JMX Monitoring & Modern Metric Collection",
+      "order": 3,
+      "totalEstimatedDuration": "70-80 minutes",
+      "learningObjectives": [
+        "Understand JMX architecture and its role in Java application monitoring",
+        "Master Kafka's JMX metric hierarchy and Share Group MBeans",
+        "Compare JMX exporters with Micrometer for modern applications",
+        "Implement secure JMX monitoring practices"
+      ],
+      "episodes": [
+        {
+          "id": "EPISODE_02_01_JMX_BASICS_V2",
+          "title": "Episode 1: Understanding JMX - The Universal Java Monitor",
+          "order": 1,
+          "estimatedDuration": "7 minutes",
+          "learningObjectives": [
+            "Define JMX and its core components",
+            "Explain MBeans and the MBean Server architecture",
+            "Understand why JMX matters for Kafka monitoring"
+          ],
+          "prerequisite": null,
+          "segments": [
+            {
+              "id": "SEGMENT_02_01_01_WHAT_IS_JMX_V2",
+              "order": 1,
+              "segmentType": "technical_introduction",
+              "title": "What is JMX and Why Should You Care?",
+              "learningObjectives": [
+                "Understand JMX as Java's built-in monitoring standard"
+              ],
+              "textContent": "If Kafka is a high-performance race car, JMX is the diagnostic port that lets you plug in and see what's happening under the hood. JMX\u2014Java Management Extensions\u2014is the standard way for Java applications to expose their internal state without special protocols.",
+              "estimatedDuration": "40s",
+              "mediaRefs": {
+                "audioId": "AUDIO_SEG02_01_01_JMX_INTRO_V2",
+                "visualIds": [
+                  "VISUAL_02_01_01_RACECAR_DIAGNOSTIC_V2"
+                ]
+              },
+              "interactiveCue": null,
+              "codeExample": null,
+              "keywords": [
+                "JMX",
+                "Java Management Extensions",
+                "Monitoring"
+              ],
+              "pointsAwarded": 10,
+              "analytics": {
+                "xapi_enabled": true
+              }
+            },
+            {
+              "id": "SEGMENT_02_01_02_MBEANS_EXPLAINED_V2",
+              "order": 2,
+              "segmentType": "concept_explanation",
+              "title": "MBeans: Your Window into Java Applications",
+              "learningObjectives": [
+                "Define MBeans and their attributes",
+                "Understand the MBean naming hierarchy"
+              ],
+              "textContent": "At its core, JMX revolves around MBeans\u2014Managed Beans. An MBean is just a Java object that exposes attributes (metrics) and operations (actions). Each MBean has a unique ObjectName following a pattern like: kafka.server:type=BrokerTopicMetrics,name=BytesInPerSec",
+              "estimatedDuration": "50s",
+              "mediaRefs": {
+                "audioId": "AUDIO_SEG02_01_02_MBEANS_V2",
+                "visualIds": [
+                  "VISUAL_02_01_02_MBEAN_HIERARCHY_V2"
+                ]
+              },
+              "interactiveCue": {
+                "cueType": "interactive_explorer",
+                "promptText": "Click on different parts of the MBean name to understand the hierarchy",
+                "targetVisualId": "VISUAL_02_01_02_MBEAN_HIERARCHY_V2",
+                "triggerAtSeconds": 30
+              },
+              "codeExample": null,
+              "keywords": [
+                "MBeans",
+                "ObjectName",
+                "Attributes"
+              ],
+              "pointsAwarded": 10,
+              "analytics": {
+                "xapi_enabled": true
+              }
+            }
+          ]
+        },
+        {
+          "id": "EPISODE_02_02_KAFKA_JMX_METRICS_V2",
+          "title": "Episode 2: Kafka's JMX Metric Hierarchy",
+          "order": 2,
+          "estimatedDuration": "8 minutes",
+          "learningObjectives": [
+            "Navigate Kafka's JMX metric categories",
+            "Identify key broker, topic, and consumer metrics",
+            "Locate the new Share Group MBeans in Kafka 4.0+"
+          ],
+          "prerequisite": null,
+          "segments": [
+            {
+              "id": "SEGMENT_02_02_01_KAFKA_METRIC_CATEGORIES_V2",
+              "order": 1,
+              "segmentType": "metric_taxonomy",
+              "title": "Kafka's Metric Categories",
+              "learningObjectives": [
+                "Categorize Kafka metrics by their MBean domains"
+              ],
+              "textContent": "Kafka exposes hundreds of MBeans, organized logically. Broker-level metrics live under kafka.server, network metrics under kafka.network, and our new Share Group metrics? They're under kafka.server:type=share-group-metrics.",
+              "estimatedDuration": "45s",
+              "mediaRefs": {
+                "audioId": "AUDIO_SEG02_02_01_CATEGORIES_V2",
+                "visualIds": [
+                  "VISUAL_02_02_01_METRIC_TREE_V2"
+                ]
+              },
+              "interactiveCue": null,
+              "codeExample": null,
+              "keywords": [
+                "Metric Categories",
+                "MBean Domains",
+                "Share Group Metrics"
+              ],
+              "pointsAwarded": 10,
+              "analytics": {
+                "xapi_enabled": true
+              }
+            },
+            {
+              "id": "SEGMENT_02_02_02_SHARE_GROUP_MBEANS_V2",
+              "order": 2,
+              "segmentType": "new_feature_discovery",
+              "title": "Finding Share Group MBeans",
+              "learningObjectives": [
+                "Locate Share Group metrics in the JMX hierarchy",
+                "Understand the structure of Share Group MBean names"
+              ],
+              "textContent": "Share Group metrics follow this pattern: kafka.server:type=share-group-metrics,group={groupId},topic={topic},partition={partition}. Each combination tracks unacknowledged messages, age metrics, and redelivery counts for that specific scope.",
+              "estimatedDuration": "60s",
+              "mediaRefs": {
+                "audioId": "AUDIO_SEG02_02_02_SG_MBEANS_V2",
+                "visualIds": [
+                  "VISUAL_02_02_02_SG_MBEAN_PATTERN_V2"
+                ]
+              },
+              "interactiveCue": {
+                "cueType": "code_completion",
+                "promptText": "Complete the MBean name for Share Group 'payment-processors' on topic 'orders'",
+                "template": "kafka.server:type=share-group-metrics,group=___,topic=___,partition=0",
+                "correctAnswer": "payment-processors,orders",
+                "triggerAtSeconds": 40
+              },
+              "codeExample": null,
+              "keywords": [
+                "Share Group MBeans",
+                "Metric Pattern",
+                "JMX Naming"
+              ],
+              "pointsAwarded": 15,
+              "analytics": {
+                "xapi_enabled": true
+              }
+            },
+            {
+              "id": "SEGMENT_02_02_03_METRIC_HIERARCHIES",
+              "order": 3,
+              "segmentType": "metrics_overview",
+              "title": "Navigating Kafka's Metric Hierarchies",
+              "learningObjectives": [
+                "Understand Kafka's metric naming conventions",
+                "Learn to navigate metric hierarchies",
+                "Find metrics efficiently"
+              ],
+              "textContent": "Kafka metrics follow a hierarchical naming pattern: kafka.[component]:[type]=[name],name=[metric]. Understanding this pattern helps you quickly locate the metrics you need among thousands available.",
+              "estimatedDuration": "5 minutes",
+              "mediaRefs": {
+                "audioId": "AUDIO_SEG02_02_03_HIERARCHIES",
+                "visualIds": [
+                  "VISUAL_METRIC_TREE",
+                  "VISUAL_NAMING_PATTERN"
+                ]
+              },
+              "interactiveCue": {
+                "cueType": "field_mapping_exercise",
+                "config": {
+                  "title": "Match Metrics to Components",
+                  "instruction": "Connect each metric to its component",
+                  "leftSide": [
+                    {
+                      "id": "m1",
+                      "label": "record-send-rate"
+                    },
+                    {
+                      "id": "m2",
+                      "label": "fetch-latency-avg"
+                    },
+                    {
+                      "id": "m3",
+                      "label": "UnderReplicatedPartitions"
+                    },
+                    {
+                      "id": "m4",
+                      "label": "records-lag-max"
+                    }
+                  ],
+                  "rightSide": [
+                    {
+                      "id": "c1",
+                      "label": "Producer"
+                    },
+                    {
+                      "id": "c2",
+                      "label": "Consumer"
+                    },
+                    {
+                      "id": "c3",
+                      "label": "Broker"
+                    }
+                  ],
+                  "correctMappings": {
+                    "m1": "c1",
+                    "m2": "c2",
+                    "m3": "c3",
+                    "m4": "c2"
+                  }
+                }
+              },
+              "codeExample": {
+                "language": "text",
+                "code": "# Producer metrics\nkafka.producer:type=producer-metrics,client-id=producer-1\n  - record-send-rate\n  - request-latency-avg\n  - outgoing-byte-rate\n\n# Consumer metrics  \nkafka.consumer:type=consumer-metrics,client-id=consumer-1\n  - records-consumed-rate\n  - bytes-consumed-rate\n  - fetch-latency-avg\n\n# Broker metrics\nkafka.server:type=BrokerTopicMetrics,name=MessagesInPerSec\n  - Count\n  - FifteenMinuteRate\n  - FiveMinuteRate",
+                "filename": "metric_examples.txt"
+              },
+              "keywords": [
+                "metrics",
+                "hierarchy",
+                "naming"
+              ],
+              "pointsAwarded": 20,
+              "analytics": {
+                "xapi_enabled": true
+              }
+            },
+            {
+              "id": "SEGMENT_02_02_04_CRITICAL_METRICS",
+              "order": 4,
+              "segmentType": "important_note",
+              "title": "The Critical Metrics You Can't Ignore",
+              "learningObjectives": [
+                "Identify the most critical Kafka metrics",
+                "Understand why these metrics matter",
+                "Learn healthy ranges and thresholds"
+              ],
+              "textContent": "While Kafka exposes thousands of metrics, a handful are critical for health monitoring: UnderReplicatedPartitions (should be 0), OfflinePartitionsCount (must be 0), ActiveControllerCount (exactly 1 per cluster), and ISR shrink/expansion rates.",
+              "estimatedDuration": "6 minutes",
+              "mediaRefs": {
+                "audioId": "AUDIO_SEG02_02_04_CRITICAL",
+                "visualIds": [
+                  "VISUAL_CRITICAL_METRICS_DASHBOARD",
+                  "VISUAL_THRESHOLD_GUIDE"
+                ]
+              },
+              "interactiveCue": {
+                "cueType": "important_note",
+                "config": {
+                  "emphasis": "critical",
+                  "icon": "alert",
+                  "title": "Critical Metrics Checklist",
+                  "points": [
+                    {
+                      "metric": "UnderReplicatedPartitions",
+                      "healthy": "0",
+                      "action": "Non-zero indicates replication lag - investigate broker health"
+                    },
+                    {
+                      "metric": "OfflinePartitionsCount",
+                      "healthy": "0",
+                      "action": "Any offline partitions mean data unavailability - URGENT"
+                    },
+                    {
+                      "metric": "ActiveControllerCount",
+                      "healthy": "1",
+                      "action": "0 means no controller (critical), >1 means split-brain"
+                    },
+                    {
+                      "metric": "Request Handler Idle Ratio",
+                      "healthy": ">0.3",
+                      "action": "<0.3 indicates broker overload - scale or optimize"
+                    }
+                  ]
+                }
+              },
+              "codeExample": null,
+              "keywords": [
+                "critical",
+                "metrics",
+                "monitoring"
+              ],
+              "pointsAwarded": 30,
+              "analytics": {
+                "xapi_enabled": true
+              }
+            }
+          ]
+        },
+        {
+          "id": "EPISODE_02_03_MICROMETER_VS_JMXEXPORTER_V2",
+          "title": "Episode 3: Modern Metrics - Micrometer vs JMX Exporters",
+          "order": 3,
+          "estimatedDuration": "8 minutes",
+          "learningObjectives": [
+            "Compare Micrometer with raw JMX exporters for Spring-based Kafka applications",
+            "Understand when to use each approach",
+            "Configure Micrometer for Kafka Share Group metrics"
+          ],
+          "prerequisite": {
+            "knowledgeCheck": {
+              "question": "Are you familiar with Spring Boot applications?",
+              "ifNo": "Review Spring Boot basics before this episode"
+            }
+          },
+          "segments": [
+            {
+              "id": "SEGMENT_02_03_01_MICROMETER_INTRO_V2",
+              "order": 1,
+              "segmentType": "technology_comparison",
+              "title": "Enter Micrometer: Modern Metrics for Spring",
+              "learningObjectives": [
+                "Understand Micrometer as a metrics facade",
+                "Identify its advantages for Spring Boot applications"
+              ],
+              "textContent": "While JMX exporters work great for traditional Kafka deployments, modern Spring Boot applications often use Micrometer. Think of Micrometer as a universal translator\u2014it speaks to Prometheus, New Relic, DataDog, and more, all from one consistent API.",
+              "estimatedDuration": "50s",
+              "mediaRefs": {
+                "audioId": "AUDIO_SEG02_03_01_MICROMETER_V2",
+                "visualIds": [
+                  "VISUAL_02_03_01_MICROMETER_ARCH_V2"
+                ]
+              },
+              "interactiveCue": null,
+              "codeExample": null,
+              "keywords": [
+                "Micrometer",
+                "Spring Boot",
+                "Metrics Facade"
+              ],
+              "pointsAwarded": 10,
+              "analytics": {
+                "xapi_enabled": true
+              }
+            },
+            {
+              "id": "SEGMENT_02_03_02_CONFIGURING_MICROMETER_KAFKA_V2",
+              "order": 2,
+              "segmentType": "practical_configuration",
+              "title": "Configuring Micrometer for Kafka Metrics",
+              "learningObjectives": [
+                "Configure Micrometer to expose Kafka metrics",
+                "Add custom meters for Share Group metrics"
+              ],
+              "textContent": "Here's the power move: Micrometer can automatically bind to Kafka's JMX metrics AND let you add custom meters for Share Group specifics. Let me show you a Spring Boot configuration that captures both traditional and Share Group metrics.",
+              "estimatedDuration": "75s",
+              "mediaRefs": {
+                "audioId": "AUDIO_SEG02_03_02_CONFIG_V2",
+                "visualIds": [
+                  "VISUAL_02_03_02_MICROMETER_CONFIG_V2"
+                ]
+              },
+              "interactiveCue": null,
+              "codeExample": {
+                "language": "java",
+                "snippet": "@Configuration\npublic class KafkaMetricsConfig {\n    @Bean\n    public MeterBinder kafkaShareGroupMetrics() {\n        return registry -> {\n            // Custom gauge for unacknowledged_age_ms\n            Gauge.builder(\"kafka.sharegroup.unacked.age\", \n                () -> getOldestUnackedAge())\n                .tag(\"group\", \"payment-processors\")\n                .register(registry);\n        };\n    }\n}",
+                "highlightLines": [
+                  5,
+                  6,
+                  7
+                ]
+              },
+              "keywords": [
+                "Micrometer Configuration",
+                "Custom Meters",
+                "Share Group Metrics"
+              ],
+              "pointsAwarded": 15,
+              "analytics": {
+                "xapi_enabled": true
+              }
+            },
+            {
+              "id": "SEGMENT_02_03_03_CHOOSING_APPROACH_V2",
+              "order": 3,
+              "segmentType": "decision_framework",
+              "title": "Choosing Your Metrics Strategy",
+              "learningObjectives": [
+                "Decide when to use JMX exporters vs Micrometer",
+                "Understand trade-offs of each approach"
+              ],
+              "textContent": "So when should you use what? JMX exporters are perfect for broker-side metrics and legacy systems. Micrometer shines in Spring Boot applications where you're already in the Java ecosystem. The key is consistency across your monitoring stack.",
+              "estimatedDuration": "60s",
+              "mediaRefs": {
+                "audioId": "AUDIO_SEG02_03_03_CHOOSING_V2",
+                "visualIds": [
+                  "VISUAL_02_03_03_DECISION_MATRIX_V2"
+                ]
+              },
+              "interactiveCue": {
+                "cueType": "scenario_selection",
+                "promptText": "Which approach would you choose for a Spring Boot Kafka Streams application?",
+                "scenarios": [
+                  "Legacy Kafka cluster with no application changes allowed",
+                  "New Spring Boot microservice with custom Share Group logic",
+                  "Kafka Connect deployment with standard connectors"
+                ],
+                "correctAnswers": [
+                  "JMX Exporter",
+                  "Micrometer",
+                  "JMX Exporter"
+                ],
+                "triggerAtSeconds": 40
+              },
+              "codeExample": null,
+              "keywords": [
+                "Decision Framework",
+                "JMX vs Micrometer",
+                "Best Practices"
+              ],
+              "pointsAwarded": 10,
+              "analytics": {
+                "xapi_enabled": true
+              }
+            }
+          ],
+          "badgeOnCompletion": "BADGE_METRICS_STRATEGIST_V2"
+        }
+      ]
+    },
+    {
+      "id": "LESSON_03_NEWRELIC_INTEGRATION_V2",
+      "title": "Chapter 3: New Relic Integration & Queues/Streams UI v2",
+      "order": 4,
+      "totalEstimatedDuration": "60-70 minutes",
+      "learningObjectives": [
+        "Master QueueSample v2 schema with shareGroupId and processingMode",
+        "Build custom OHIs for Share Group observability",
+        "Leverage nri-flex for rapid metric collection",
+        "Optimize the Queues & Streams UI for Share Group monitoring"
+      ],
+      "episodes": [
+        {
+          "id": "EPISODE_03_01_QUEUESAMPLE_V2_SCHEMA_V2",
+          "title": "Episode 1: Understanding QueueSample v2 Schema",
+          "order": 1,
+          "estimatedDuration": "7 minutes",
+          "learningObjectives": [
+            "Understand the QueueSample event structure",
+            "Identify new v2 fields: shareGroupId and processingMode",
+            "Map Kafka concepts to QueueSample attributes"
+          ],
+          "prerequisite": null,
+          "segments": [
+            {
+              "id": "SEGMENT_03_01_01_QUEUESAMPLE_INTRO_V2",
+              "order": 1,
+              "segmentType": "schema_introduction",
+              "title": "QueueSample: The Universal Queue Language",
+              "learningObjectives": [
+                "Understand QueueSample as New Relic's queue abstraction"
+              ],
+              "textContent": "QueueSample events are New Relic's universal format for queue and stream metrics. Think of it as a common language that lets you compare apples to apples across Kafka, RabbitMQ, SQS, and more. But with v2, we get Share Group superpowers.",
+              "estimatedDuration": "40s",
+              "mediaRefs": {
+                "audioId": "AUDIO_SEG03_01_01_QS_INTRO_V2",
+                "visualIds": [
+                  "VISUAL_03_01_01_QUEUE_ROSETTA_V2"
+                ]
+              },
+              "interactiveCue": null,
+              "codeExample": null,
+              "keywords": [
+                "QueueSample",
+                "Universal Format",
+                "Queue Metrics"
+              ],
+              "pointsAwarded": 10,
+              "analytics": {
+                "xapi_enabled": true
+              }
+            },
+            {
+              "id": "SEGMENT_03_01_02_V2_NEW_FIELDS_V2",
+              "order": 2,
+              "segmentType": "new_feature_highlight",
+              "title": "New in v2: shareGroupId & processingMode",
+              "learningObjectives": [
+                "Define the shareGroupId field and its purpose",
+                "Understand processingMode values and their meaning"
+              ],
+              "textContent": "The January 2025 QueueSample v2 update brings two critical fields for Share Groups. The 'shareGroupId' explicitly identifies which Share Group generated this sample. The 'processingMode' field distinguishes between 'share_group', 'consumer_group', or other queue types.",
+              "estimatedDuration": "60s",
+              "mediaRefs": {
+                "audioId": "AUDIO_SEG03_01_02_NEW_FIELDS_V2",
+                "visualIds": [
+                  "VISUAL_NR_QUEUESAMPLE_V2_SCHEMA_HIGHLIGHT_V2"
+                ]
+              },
+              "interactiveCue": {
+                "cueType": "field_mapping_exercise",
+                "promptText": "Match the Kafka concept to the QueueSample field",
+                "mappings": [
+                  {
+                    "kafka": "Share Group Name",
+                    "correct": "shareGroupId"
+                  },
+                  {
+                    "kafka": "Topic Name",
+                    "correct": "queueName"
+                  },
+                  {
+                    "kafka": "Consumption Type",
+                    "correct": "processingMode"
+                  }
+                ],
+                "triggerAtSeconds": 45
+              },
+              "codeExample": null,
+              "keywords": [
+                "shareGroupId",
+                "processingMode",
+                "QueueSample v2"
+              ],
+              "pointsAwarded": 15,
+              "analytics": {
+                "xapi_enabled": true
+              }
+            },
+            {
+              "id": "SEGMENT_03_01_03_COMPLETE_EXAMPLE_V2",
+              "order": 3,
+              "segmentType": "practical_example",
+              "title": "Complete QueueSample v2 Example",
+              "learningObjectives": [
+                "Construct a complete QueueSample event for Share Groups"
+              ],
+              "textContent": "Let's build a complete QueueSample event for our payment-processors Share Group. Notice how we map Kafka metrics to queue concepts: unacknowledged messages become the queue depth, oldest unacked age becomes message age.",
+              "estimatedDuration": "55s",
+              "mediaRefs": {
+                "audioId": "AUDIO_SEG03_01_03_EXAMPLE_V2",
+                "visualIds": [
+                  "VISUAL_03_01_03_COMPLETE_EVENT_V2"
+                ]
+              },
+              "interactiveCue": null,
+              "codeExample": {
+                "language": "json",
+                "snippet": "{\n  \"eventType\": \"QueueSample\",\n  \"provider\": \"kafka\",\n  \"queueName\": \"orders\",\n  \"shareGroupId\": \"payment-processors\",\n  \"processingMode\": \"share_group\",\n  \"messageCount\": 145,\n  \"oldestMessageAge\": 32000,\n  \"throughputIn\": 523.4,\n  \"throughputOut\": 498.2,\n  \"errorRate\": 2.3,\n  \"clusterName\": \"prod-kafka-east\",\n  \"timestamp\": 1706803200000\n}",
+                "animateTyping": true,
+                "highlightNewFields": [
+                  "shareGroupId",
+                  "processingMode"
+                ]
+              },
+              "keywords": [
+                "Complete Example",
+                "Event Structure",
+                "Field Mapping"
+              ],
+              "pointsAwarded": 10,
+              "analytics": {
+                "xapi_enabled": true
+              }
+            }
+          ]
+        },
+        {
+          "id": "EPISODE_03_02_CUSTOM_OHI_DEVELOPMENT_V2",
+          "title": "Episode 2: Building a Custom OHI for Share Groups",
+          "order": 2,
+          "estimatedDuration": "8 minutes",
+          "learningObjectives": [
+            "Design an OHI architecture for Share Group metrics",
+            "Transform JMX data into QueueSample v2 events",
+            "Handle high-cardinality metrics efficiently"
+          ],
+          "prerequisite": null,
+          "segments": [
+            {
+              "id": "SEGMENT_03_02_01_OHI_ARCHITECTURE_V2",
+              "order": 1,
+              "segmentType": "architecture_design",
+              "title": "OHI Architecture for Share Groups",
+              "learningObjectives": [
+                "Design a scalable OHI architecture"
+              ],
+              "textContent": "Our custom OHI needs to bridge three worlds: scrape metrics from JMX or Prometheus endpoints, transform them into meaningful queue semantics, and emit both detailed diagnostic events and streamlined QueueSample v2 events for the UI.",
+              "estimatedDuration": "50s",
+              "mediaRefs": {
+                "audioId": "AUDIO_SEG03_02_01_ARCH_V2",
+                "visualIds": [
+                  "VISUAL_03_02_01_OHI_ARCHITECTURE_V2"
+                ]
+              },
+              "interactiveCue": null,
+              "codeExample": null,
+              "keywords": [
+                "OHI Architecture",
+                "Integration Design",
+                "Data Flow"
+              ],
+              "pointsAwarded": 10,
+              "analytics": {
+                "xapi_enabled": true
+              }
+            },
+            {
+              "id": "SEGMENT_03_02_02_TRANSFORMATION_LOGIC_V2",
+              "order": 2,
+              "segmentType": "code_walkthrough",
+              "title": "Transforming Metrics to QueueSample v2",
+              "learningObjectives": [
+                "Implement metric transformation logic",
+                "Map JMX metrics to QueueSample fields"
+              ],
+              "textContent": "The heart of our OHI is the transformation logic. We aggregate per-partition metrics, calculate derived values like error rates, and ensure every QueueSample event has the new shareGroupId and processingMode fields properly set.",
+              "estimatedDuration": "75s",
+              "mediaRefs": {
+                "audioId": "AUDIO_SEG03_02_02_TRANSFORM_V2",
+                "visualIds": [
+                  "VISUAL_03_02_02_TRANSFORM_FLOW_V2"
+                ]
+              },
+              "interactiveCue": null,
+              "codeExample": {
+                "language": "go",
+                "snippet": "func transformToQueueSample(metrics ShareGroupMetrics) QueueSample {\n    return QueueSample{\n        EventType:      \"QueueSample\",\n        Provider:       \"kafka\",\n        QueueName:      metrics.Topic,\n        ShareGroupId:   metrics.GroupID,  // NEW v2 field\n        ProcessingMode: \"share_group\",     // NEW v2 field\n        MessageCount:   metrics.UnackedCount + metrics.AvailableCount,\n        OldestMessageAge: metrics.OldestUnackedAgeMs,\n        ErrorRate:      calculateErrorRate(metrics),\n    }\n}",
+                "highlightLines": [
+                  6,
+                  7
+                ],
+                "executionDemo": true
+              },
+              "keywords": [
+                "Transformation Logic",
+                "Metric Mapping",
+                "Go Code"
+              ],
+              "pointsAwarded": 20,
+              "analytics": {
+                "xapi_enabled": true
+              }
+            },
+            {
+              "id": "SEGMENT_03_02_03_OHI_BEST_PRACTICES",
+              "order": 3,
+              "segmentType": "practical_example",
+              "title": "OHI Development: Real-World Best Practices",
+              "learningObjectives": [
+                "Learn OHI development patterns",
+                "Avoid common pitfalls",
+                "Build production-ready integrations"
+              ],
+              "textContent": "Building a production OHI requires attention to error handling, efficient metric collection, and proper configuration management. Let's walk through a real Kafka OHI that handles millions of metrics efficiently.",
+              "estimatedDuration": "10 minutes",
+              "mediaRefs": {
+                "audioId": "AUDIO_SEG03_02_03_PRACTICES",
+                "visualIds": [
+                  "VISUAL_OHI_ARCHITECTURE",
+                  "VISUAL_ERROR_HANDLING_FLOW"
+                ]
+              },
+              "interactiveCue": {
+                "cueType": "code_completion",
+                "config": {
+                  "title": "Complete the Error Handling",
+                  "template": "func (k *KafkaIntegration) handleMetricError(err error, metric string) {\n    // Increment error counter\n    k.errorCounter.Inc()\n    \n    // Determine if retriable\n    if ___ {\n        k.retryQueue.Add(metric)\n    } else {\n        // Log and skip\n        log.Errorf(\"Permanent failure for %s: %v\", metric, err)\n    }\n}",
+                  "solution": "isRetriable(err)",
+                  "hints": [
+                    "Some errors are temporary (timeouts, network)",
+                    "Others are permanent (auth failures, missing metrics)",
+                    "Check if the error type indicates a retriable condition"
+                  ]
+                }
+              },
+              "codeExample": {
+                "language": "go",
+                "code": "// Production-ready Kafka OHI excerpt\ntype KafkaIntegration struct {\n    client     *KafkaClient\n    collectors []MetricCollector\n    config     *Config\n    limiter    *rate.Limiter\n}\n\nfunc (k *KafkaIntegration) Collect(ctx context.Context) error {\n    // Rate limiting to prevent overwhelming Kafka\n    if err := k.limiter.Wait(ctx); err != nil {\n        return fmt.Errorf(\"rate limit: %w\", err)\n    }\n    \n    // Parallel collection with timeout\n    g, ctx := errgroup.WithContext(ctx)\n    \n    for _, collector := range k.collectors {\n        collector := collector // capture loop var\n        g.Go(func() error {\n            return k.collectWithTimeout(ctx, collector)\n        })\n    }\n    \n    if err := g.Wait(); err != nil {\n        // Log but don't fail entire collection\n        log.Warnf(\"Partial collection failure: %v\", err)\n    }\n    \n    return k.submitMetrics()\n}\n\n// Efficient batch submission\nfunc (k *KafkaIntegration) submitMetrics() error {\n    batch := make([]Metric, 0, 1000)\n    \n    for metric := range k.metricChan {\n        batch = append(batch, metric)\n        \n        if len(batch) >= 1000 {\n            if err := k.sendBatch(batch); err != nil {\n                return err\n            }\n            batch = batch[:0] // reuse slice\n        }\n    }\n    \n    // Send remaining\n    return k.sendBatch(batch)\n}",
+                "filename": "kafka_ohi_production.go"
+              },
+              "keywords": [
+                "OHI",
+                "best practices",
+                "production"
+              ],
+              "pointsAwarded": 40,
+              "analytics": {
+                "xapi_enabled": true
+              }
+            }
+          ]
+        },
+        {
+          "id": "EPISODE_03_03_QUEUES_STREAMS_UI_V2",
+          "title": "Episode 3: Mastering the Queues & Streams UI for Share Groups",
+          "order": 3,
+          "estimatedDuration": "7 minutes",
+          "learningObjectives": [
+            "Navigate the Queues & Streams UI with Share Group data",
+            "Use shareGroupId filters effectively",
+            "Create custom views for Share Group monitoring"
+          ],
+          "prerequisite": null,
+          "segments": [
+            {
+              "id": "SEGMENT_03_03_01_UI_NAVIGATION_V2",
+              "order": 1,
+              "segmentType": "ui_walkthrough",
+              "title": "Navigating Share Groups in the UI",
+              "learningObjectives": [
+                "Find and filter Share Group queues in the UI"
+              ],
+              "textContent": "With our QueueSample v2 events flowing, the Queues & Streams UI comes alive. You can now filter by shareGroupId, compare different processingModes side-by-side, and get queue-specific insights that were impossible with traditional monitoring.",
+              "estimatedDuration": "60s",
+              "mediaRefs": {
+                "audioId": "AUDIO_SEG03_03_01_UI_NAV_V2",
+                "visualIds": [
+                  "VISUAL_03_03_01_UI_OVERVIEW_V2",
+                  "VISUAL_03_03_01_FILTER_DEMO_V2"
+                ]
+              },
+              "interactiveCue": {
+                "cueType": "ui_simulation",
+                "promptText": "Try filtering by shareGroupId='payment-processors'",
+                "simulationType": "interactive_ui_mockup",
+                "triggerAtSeconds": 40
+              },
+              "codeExample": null,
+              "keywords": [
+                "UI Navigation",
+                "Filtering",
+                "Share Group Views"
+              ],
+              "pointsAwarded": 10,
+              "analytics": {
+                "xapi_enabled": true
+              }
+            },
+            {
+              "id": "SEGMENT_03_03_02_CUSTOM_DASHBOARDS_V2",
+              "order": 2,
+              "segmentType": "advanced_customization",
+              "title": "Building Share Group Dashboards",
+              "learningObjectives": [
+                "Create custom dashboard widgets for Share Groups",
+                "Combine traditional and Share Group metrics"
+              ],
+              "textContent": "The real power comes from custom dashboards that combine traditional Kafka metrics with Share Group insights. Let me show you a dashboard that saved our team during a production incident by revealing the zero lag fallacy in real-time.",
+              "estimatedDuration": "70s",
+              "mediaRefs": {
+                "audioId": "AUDIO_SEG03_03_02_DASHBOARDS_V2",
+                "visualIds": [
+                  "VISUAL_03_03_02_CUSTOM_DASHBOARD_V2"
+                ]
+              },
+              "interactiveCue": null,
+              "codeExample": null,
+              "keywords": [
+                "Custom Dashboards",
+                "Widget Design",
+                "Incident Response"
+              ],
+              "pointsAwarded": 15,
+              "analytics": {
+                "xapi_enabled": true
+              }
+            },
+            {
+              "id": "SEGMENT_03_03_03_ADVANCED_UI_FEATURES",
+              "order": 3,
+              "segmentType": "new_feature_discovery",
+              "title": "Hidden Gems: Advanced UI Features You're Missing",
+              "learningObjectives": [
+                "Discover advanced UI capabilities",
+                "Learn power-user shortcuts",
+                "Master complex visualizations"
+              ],
+              "textContent": "The Queues & Streams UI has powerful features that many users miss: partition heatmaps, consumer group drift visualization, and predictive lag alerts. Let's explore these hidden gems that can transform your monitoring.",
+              "estimatedDuration": "7 minutes",
+              "mediaRefs": {
+                "audioId": "AUDIO_SEG03_03_03_ADVANCED",
+                "visualIds": [
+                  "VISUAL_HEATMAP_EXAMPLE",
+                  "VISUAL_DRIFT_VISUALIZATION",
+                  "VISUAL_PREDICTIVE_ALERTS"
+                ]
+              },
+              "interactiveCue": {
+                "cueType": "ui_simulation",
+                "config": {
+                  "simulation": "advanced_ui_features",
+                  "freeExploration": true,
+                  "features": {
+                    "partitionHeatmap": {
+                      "description": "Visualize hot partitions at a glance",
+                      "howTo": "Click 'Heatmap View' in partition list",
+                      "useCase": "Quickly identify uneven load distribution"
+                    },
+                    "consumerDrift": {
+                      "description": "Track consumer processing speed vs production rate",
+                      "howTo": "Enable 'Drift Analysis' in consumer group view",
+                      "useCase": "Predict when consumers will fall behind"
+                    },
+                    "smartAlerts": {
+                      "description": "ML-powered anomaly detection",
+                      "howTo": "Configure in Alert Policies > Smart Alerts",
+                      "useCase": "Catch issues before they impact users"
+                    },
+                    "timeshiftCompare": {
+                      "description": "Compare current metrics with past periods",
+                      "howTo": "Hold Shift and click time range",
+                      "useCase": "Identify unusual patterns vs normal behavior"
+                    }
+                  }
+                }
+              },
+              "codeExample": null,
+              "keywords": [
+                "UI",
+                "advanced features",
+                "visualization"
+              ],
+              "pointsAwarded": 30,
+              "analytics": {
+                "xapi_enabled": true
+              }
+            },
+            {
+              "id": "SEGMENT_03_03_04_DASHBOARD_PATTERNS",
+              "order": 4,
+              "segmentType": "decision_framework",
+              "title": "Dashboard Design Patterns for Different Scenarios",
+              "learningObjectives": [
+                "Learn dashboard design patterns",
+                "Choose layouts for different use cases",
+                "Build effective monitoring screens"
+              ],
+              "textContent": "Different monitoring scenarios require different dashboard approaches. An operations dashboard differs from a capacity planning view, which differs from a troubleshooting layout. Let's explore proven patterns for each.",
+              "estimatedDuration": "8 minutes",
+              "mediaRefs": {
+                "audioId": "AUDIO_SEG03_03_04_PATTERNS",
+                "visualIds": [
+                  "VISUAL_DASHBOARD_PATTERNS",
+                  "VISUAL_LAYOUT_EXAMPLES"
+                ]
+              },
+              "interactiveCue": {
+                "cueType": "scenario_selection",
+                "config": {
+                  "title": "Choose the Right Dashboard Pattern",
+                  "scenarios": [
+                    {
+                      "id": "incident_response",
+                      "context": "It's 3 AM and you're paged for Kafka lag alerts",
+                      "question": "Which dashboard layout would you use?",
+                      "options": [
+                        {
+                          "pattern": "Troubleshooting Layout",
+                          "optimal": true,
+                          "components": [
+                            "Large lag trend graph at top",
+                            "Consumer group table with sort by lag",
+                            "Partition distribution view",
+                            "Recent error logs panel"
+                          ],
+                          "reasoning": "Focuses on quick problem identification and drill-down"
+                        },
+                        {
+                          "pattern": "Executive Overview",
+                          "optimal": false,
+                          "reasoning": "Too high-level for troubleshooting"
+                        }
+                      ]
+                    },
+                    {
+                      "id": "capacity_planning",
+                      "context": "Quarterly planning meeting to discuss Kafka scaling",
+                      "question": "Which dashboard pattern fits best?",
+                      "options": [
+                        {
+                          "pattern": "Capacity Planning Layout",
+                          "optimal": true,
+                          "components": [
+                            "90-day trend graphs",
+                            "Growth projections",
+                            "Resource utilization heatmaps",
+                            "Cost analysis widgets"
+                          ],
+                          "reasoning": "Long-term trends and projections for planning decisions"
+                        },
+                        {
+                          "pattern": "Real-time Operations",
+                          "optimal": false,
+                          "reasoning": "Too focused on current state, not trends"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              "codeExample": null,
+              "keywords": [
+                "dashboard",
+                "patterns",
+                "design"
+              ],
+              "pointsAwarded": 35,
+              "analytics": {
+                "xapi_enabled": true
+              }
+            }
+          ],
+          "badgeOnCompletion": "BADGE_UI_MASTER_V2"
+        }
+      ]
+    },
+    {
+      "id": "LESSON_04_ADVANCED_MONITORING_V2",
+      "title": "Advanced Monitoring & Best Practices",
+      "order": 4,
+      "totalEstimatedDuration": "3 hours",
+      "learningObjectives": [
+        "Implement alerting strategies",
+        "Optimize for scale",
+        "Troubleshoot common issues",
+        "Build monitoring culture"
+      ],
+      "episodes": [
+        {
+          "id": "EPISODE_04_01_ALERTING_STRATEGIES_V2",
+          "title": "Building Effective Alerting Strategies",
+          "order": 1,
+          "estimatedDuration": "45 minutes",
+          "learningObjectives": [
+            "Design alert hierarchies",
+            "Avoid alert fatigue",
+            "Implement SLO-based alerts",
+            "Create runbooks"
+          ],
+          "segments": [
+            {
+              "id": "SEG_04_01_01_ALERT_PHILOSOPHY",
+              "order": 1,
+              "segmentType": "paradigm_shift",
+              "title": "From Reactive to Proactive: Alert Philosophy",
+              "textContent": "Most teams drown in alerts. The problem isn't too few alerts - it's too many meaningless ones. We need a fundamental shift: from alerting on symptoms to alerting on customer impact. This means focusing on SLOs, not just metrics.",
+              "estimatedDuration": "6 minutes",
+              "pointsAwarded": 20,
+              "keywords": [
+                "alerting",
+                "SLO",
+                "philosophy"
+              ],
+              "mediaRefs": {
+                "audioId": "AUDIO_SEG04_01_01_PHILOSOPHY",
+                "visualIds": [
+                  "VISUAL_ALERT_HIERARCHY",
+                  "VISUAL_SLO_PYRAMID"
+                ]
+              },
+              "interactiveCue": {
+                "cueType": "drag_to_distribute",
+                "config": {
+                  "title": "Classify Alerts by Priority",
+                  "instruction": "Drag each alert to its appropriate tier",
+                  "items": [
+                    {
+                      "id": "1",
+                      "text": "Kafka cluster down"
+                    },
+                    {
+                      "id": "2",
+                      "text": "Disk usage at 60%"
+                    },
+                    {
+                      "id": "3",
+                      "text": "Consumer lag > 1M messages"
+                    },
+                    {
+                      "id": "4",
+                      "text": "JVM GC time > 10%"
+                    },
+                    {
+                      "id": "5",
+                      "text": "Single broker restart"
+                    },
+                    {
+                      "id": "6",
+                      "text": "Network packet loss detected"
+                    }
+                  ],
+                  "categories": [
+                    {
+                      "id": "page",
+                      "label": "Page Immediately (P1)",
+                      "description": "Customer impacting, requires immediate action",
+                      "correctItems": [
+                        "1",
+                        "3"
+                      ]
+                    },
+                    {
+                      "id": "notify",
+                      "label": "Notify On-Call (P2)",
+                      "description": "Potential impact, investigate within hours",
+                      "correctItems": [
+                        "4",
+                        "6"
+                      ]
+                    },
+                    {
+                      "id": "ticket",
+                      "label": "Create Ticket (P3)",
+                      "description": "Needs attention but not urgent",
+                      "correctItems": [
+                        "2",
+                        "5"
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "EPISODE_04_02_SCALE_OPTIMIZATION_V2",
+          "title": "Optimizing Kafka at Scale",
+          "order": 2,
+          "estimatedDuration": "45 minutes",
+          "learningObjectives": [
+            "Tune for high throughput",
+            "Optimize for low latency",
+            "Balance resources effectively",
+            "Plan capacity properly"
+          ],
+          "segments": []
+        },
+        {
+          "id": "EPISODE_04_03_TROUBLESHOOTING_V2",
+          "title": "Troubleshooting Common Issues",
+          "order": 3,
+          "estimatedDuration": "45 minutes",
+          "learningObjectives": [
+            "Diagnose performance problems",
+            "Fix consumer lag issues",
+            "Resolve replication problems",
+            "Debug Share Group issues"
+          ],
+          "segments": []
+        },
+        {
+          "id": "EPISODE_04_04_MONITORING_CULTURE_V2",
+          "title": "Building a Monitoring Culture",
+          "order": 4,
+          "estimatedDuration": "45 minutes",
+          "learningObjectives": [
+            "Foster observability mindset",
+            "Implement monitoring standards",
+            "Create effective dashboards",
+            "Build team expertise"
+          ],
+          "segments": []
+        }
+      ]
+    }
+  ],
+  "assessmentBank": {
+    "checkpoints": [
+      {
+        "id": "checkpoint-kafka-fundamentals",
+        "title": "Kafka Fundamentals Mastery",
+        "questions": [
+          {
+            "type": "multiple_choice",
+            "question": "What is the key architectural difference between Kafka and traditional message queues?",
+            "options": [
+              "Kafka is faster",
+              "Kafka persists messages and allows replay",
+              "Kafka uses HTTP instead of TCP",
+              "Kafka only supports one consumer"
+            ],
+            "correctAnswer": "Kafka persists messages and allows replay",
+            "explanation": "Unlike traditional MQs that delete messages after consumption, Kafka's log-based architecture persists messages, enabling replay and multiple consumers.",
+            "points": 10
+          },
+          {
+            "type": "scenario",
+            "scenario": "Your team needs to process 1 million events/second with the ability to replay data for reprocessing after algorithm updates.",
+            "question": "Which technology would you recommend?",
+            "correctAnswer": "Apache Kafka",
+            "explanation": "Kafka's persistent log architecture and high throughput make it ideal for this use case.",
+            "points": 15
+          },
+          {
+            "type": "practical",
+            "task": "Given a topic with 20 partitions and 5 consumers in a group, how many partitions per consumer?",
+            "correctAnswer": "4",
+            "explanation": "20 partitions / 5 consumers = 4 partitions per consumer for even distribution",
+            "points": 10
+          }
+        ],
+        "passingScore": 0.8,
+        "badge": "kafka-fundamentals-master"
+      },
+      {
+        "id": "checkpoint-share-groups",
+        "title": "Share Groups Expert",
+        "questions": [
+          {
+            "type": "multiple_choice",
+            "question": "What is the primary advantage of Share Groups over Consumer Groups?",
+            "options": [
+              "Higher throughput",
+              "Better ordering guarantees",
+              "Multiple consumers can process messages from the same partition",
+              "Lower latency"
+            ],
+            "correctAnswer": "Multiple consumers can process messages from the same partition",
+            "explanation": "Share Groups enable work-queue semantics where multiple consumers can cooperatively process messages from the same partition.",
+            "points": 15
+          },
+          {
+            "type": "scenario",
+            "scenario": "You have a work queue of image processing tasks where order doesn't matter but you need dynamic scaling.",
+            "question": "Would you use Consumer Groups or Share Groups?",
+            "correctAnswer": "Share Groups",
+            "explanation": "Share Groups are ideal for work-queue patterns where ordering isn't required but you need flexible scaling.",
+            "points": 20
+          }
+        ],
+        "passingScore": 0.8,
+        "badge": "share-groups-expert"
+      }
+    ]
+  },
+  "contentGuidelines": {
+    "segmentWriting": {
+      "principles": [
+        "Start with why - explain the problem before the solution",
+        "Use analogies to make complex concepts relatable",
+        "Include real-world examples from major companies",
+        "Keep segments focused on 1-2 learning objectives",
+        "End with practical application or reflection"
+      ],
+      "voiceAndTone": {
+        "characteristics": [
+          "Conversational",
+          "Encouraging",
+          "Expert but approachable"
+        ],
+        "avoid": [
+          "Jargon without explanation",
+          "Condescending tone",
+          "Information overload"
+        ]
+      }
+    },
+    "interactivityGuidelines": {
+      "when": {
+        "hover_to_explore": "Use for diagrams and architecture overviews",
+        "drag_to_distribute": "Use for categorization and sorting exercises",
+        "click_to_compare": "Use for before/after or A/B comparisons",
+        "simulation": "Use for system behavior and what-if scenarios",
+        "scenario_selection": "Use for decision-making practice"
+      },
+      "frequency": "Include interaction every 3-5 segments to maintain engagement"
+    }
+  }
+}

@@ -1,0 +1,1073 @@
+{
+  "segmentTemplates": {
+    "course_opening": {
+      "description": "Welcome learners to the entire course",
+      "template": {
+        "segmentType": "course_opening",
+        "title": "[Course Title] - Welcome",
+        "learningObjectives": [
+          "Feel welcomed and excited about the learning journey",
+          "Understand what they'll achieve by course completion"
+        ],
+        "textContent": "Welcome to [Course Name]! [Engaging opening that sets expectations and builds excitement]",
+        "estimatedDuration": "1-2 minutes",
+        "mediaRefs": {
+          "audioId": "AUDIO_[SEGMENT_ID]",
+          "visualIds": ["VISUAL_COURSE_TITLE", "VISUAL_COURSE_ROADMAP"]
+        },
+        "keywords": ["welcome", "introduction", "[course topic]"],
+        "pointsAwarded": 10
+      },
+      "bestPractices": [
+        "Keep it warm and welcoming",
+        "Build excitement for the journey ahead",
+        "Set clear expectations",
+        "Keep under 2 minutes"
+      ]
+    },
+    "instructor_introduction": {
+      "description": "Introduce the instructor and establish credibility",
+      "template": {
+        "segmentType": "instructor_introduction",
+        "title": "Meet Your Instructor",
+        "learningObjectives": [
+          "Get to know the instructor",
+          "Understand instructor's expertise and background"
+        ],
+        "textContent": "Hi! I'm [Name], and I'll be your guide. [Brief background and why you're passionate about this topic]",
+        "estimatedDuration": "1-2 minutes",
+        "mediaRefs": {
+          "audioId": "AUDIO_[SEGMENT_ID]",
+          "visualIds": ["VISUAL_INSTRUCTOR_PHOTO", "VISUAL_CREDENTIALS"]
+        },
+        "interactiveCue": {
+          "cueType": "hover_to_explore",
+          "config": {
+            "hotspots": [
+              {
+                "id": "experience",
+                "label": "Experience",
+                "content": "[Years and type of experience]"
+              },
+              {
+                "id": "achievements",
+                "label": "Key Achievements",
+                "content": "[Notable projects or accomplishments]"
+              }
+            ]
+          }
+        },
+        "keywords": ["instructor", "introduction", "expertise"],
+        "pointsAwarded": 5
+      }
+    },
+    "episode_opening": {
+      "description": "Introduce a specific episode within a lesson",
+      "template": {
+        "segmentType": "episode_opening",
+        "title": "Episode [X]: [Episode Title]",
+        "learningObjectives": [
+          "Understand what this episode covers",
+          "See how it connects to previous learning"
+        ],
+        "textContent": "In this episode, we'll explore [topic]. By the end, you'll be able to [key outcome].",
+        "estimatedDuration": "30-60 seconds",
+        "mediaRefs": {
+          "audioId": "AUDIO_[SEGMENT_ID]",
+          "visualIds": ["VISUAL_EPISODE_OVERVIEW"]
+        },
+        "keywords": ["episode", "[topic]"],
+        "pointsAwarded": 5
+      }
+    },
+    "concept_explanation": {
+      "description": "Explain a key concept in detail",
+      "template": {
+        "segmentType": "concept_explanation",
+        "title": "Understanding [Concept Name]",
+        "learningObjectives": [
+          "Define [concept]",
+          "Understand how [concept] works",
+          "Recognize when to use [concept]"
+        ],
+        "textContent": "[Concept] is [definition]. Think of it like [analogy]. Here's how it works: [explanation]",
+        "estimatedDuration": "3-5 minutes",
+        "mediaRefs": {
+          "audioId": "AUDIO_[SEGMENT_ID]",
+          "visualIds": ["VISUAL_CONCEPT_DIAGRAM", "VISUAL_CONCEPT_EXAMPLE"]
+        },
+        "interactiveCue": {
+          "cueType": "click_to_compare",
+          "config": {
+            "comparisons": [
+              {
+                "label": "With [Concept]",
+                "scenario": "[Example with concept applied]"
+              },
+              {
+                "label": "Without [Concept]",
+                "scenario": "[Example without concept]"
+              }
+            ]
+          }
+        },
+        "keywords": ["[concept]", "definition", "explanation"],
+        "pointsAwarded": 15
+      }
+    },
+    "historical_context": {
+      "description": "Provide historical background and evolution",
+      "template": {
+        "segmentType": "historical_context",
+        "title": "The Evolution of [Topic]",
+        "learningObjectives": [
+          "Understand the historical context",
+          "Appreciate why [topic] evolved as it did"
+        ],
+        "textContent": "To truly understand [topic], we need to go back to [year/era]. At that time, [context]...",
+        "estimatedDuration": "2-4 minutes",
+        "mediaRefs": {
+          "audioId": "AUDIO_[SEGMENT_ID]",
+          "visualIds": ["VISUAL_TIMELINE", "VISUAL_HISTORICAL_CONTEXT"]
+        },
+        "interactiveCue": {
+          "cueType": "interactive_explorer",
+          "config": {
+            "timeline": {
+              "[Year 1]": "[Event 1]",
+              "[Year 2]": "[Event 2]",
+              "[Year 3]": "[Event 3]"
+            }
+          }
+        },
+        "keywords": ["history", "evolution", "[topic]"],
+        "pointsAwarded": 10
+      }
+    },
+    "origin_story": {
+      "description": "Tell the story of how something came to be",
+      "template": {
+        "segmentType": "origin_story",
+        "title": "The Birth of [Topic]",
+        "learningObjectives": [
+          "Learn the origin story",
+          "Understand the original problem it solved"
+        ],
+        "textContent": "It all started when [person/company] faced [problem]. They realized that [insight], leading to [solution].",
+        "estimatedDuration": "2-3 minutes",
+        "mediaRefs": {
+          "audioId": "AUDIO_[SEGMENT_ID]",
+          "visualIds": ["VISUAL_ORIGIN_STORY", "VISUAL_KEY_FIGURES"]
+        },
+        "keywords": ["origin", "history", "creation"],
+        "pointsAwarded": 10
+      }
+    },
+    "problem_recap": {
+      "description": "Recap a problem before presenting the solution",
+      "template": {
+        "segmentType": "problem_recap",
+        "title": "The Challenge: [Problem Name]",
+        "learningObjectives": [
+          "Clearly understand the problem",
+          "Appreciate why a solution is needed"
+        ],
+        "textContent": "Let's recap the challenge: [Problem description]. This causes [consequences], which is why we need [solution preview].",
+        "estimatedDuration": "1-2 minutes",
+        "mediaRefs": {
+          "audioId": "AUDIO_[SEGMENT_ID]",
+          "visualIds": ["VISUAL_PROBLEM_DIAGRAM"]
+        },
+        "interactiveCue": {
+          "cueType": "pause_and_reflect",
+          "config": {
+            "duration": 30,
+            "prompts": [
+              "Have you encountered this problem?",
+              "What solutions have you tried?"
+            ]
+          }
+        },
+        "keywords": ["problem", "challenge", "issue"],
+        "pointsAwarded": 10
+      }
+    },
+    "paradigm_shift": {
+      "description": "Explain a fundamental change in thinking",
+      "template": {
+        "segmentType": "paradigm_shift",
+        "title": "Rethinking [Topic]: A New Paradigm",
+        "learningObjectives": [
+          "Understand the old way of thinking",
+          "Grasp the new paradigm",
+          "See why the shift is important"
+        ],
+        "textContent": "For years, we thought [old paradigm]. But [new discovery/insight] changed everything. Now we understand [new paradigm].",
+        "estimatedDuration": "3-4 minutes",
+        "mediaRefs": {
+          "audioId": "AUDIO_[SEGMENT_ID]",
+          "visualIds": ["VISUAL_OLD_VS_NEW", "VISUAL_PARADIGM_COMPARISON"]
+        },
+        "interactiveCue": {
+          "cueType": "click_to_compare",
+          "config": {
+            "title": "Old vs New Thinking",
+            "comparisons": [
+              {
+                "label": "Traditional Approach",
+                "content": "[Old way description]"
+              },
+              {
+                "label": "New Paradigm",
+                "content": "[New way description]"
+              }
+            ]
+          }
+        },
+        "keywords": ["paradigm shift", "innovation", "change"],
+        "pointsAwarded": 20
+      }
+    },
+    "technical_introduction": {
+      "description": "Introduce technical concepts or systems",
+      "template": {
+        "segmentType": "technical_introduction",
+        "title": "Technical Deep Dive: [Topic]",
+        "learningObjectives": [
+          "Understand the technical architecture",
+          "Learn key technical terms",
+          "See how components interact"
+        ],
+        "textContent": "Let's dive into the technical details of [topic]. At its core, [technical explanation]...",
+        "estimatedDuration": "4-6 minutes",
+        "mediaRefs": {
+          "audioId": "AUDIO_[SEGMENT_ID]",
+          "visualIds": ["VISUAL_ARCHITECTURE_DIAGRAM", "VISUAL_COMPONENT_FLOW"]
+        },
+        "keywords": ["technical", "architecture", "[technology]"],
+        "pointsAwarded": 25
+      }
+    },
+    "code_walkthrough": {
+      "description": "Walk through code examples step by step",
+      "template": {
+        "segmentType": "code_walkthrough",
+        "title": "Code Example: [What the Code Does]",
+        "learningObjectives": [
+          "Understand the code structure",
+          "Learn how to implement [feature]",
+          "Recognize common patterns"
+        ],
+        "textContent": "Let's walk through this code step by step. First, we [explain first part]...",
+        "estimatedDuration": "5-8 minutes",
+        "codeExample": {
+          "language": "[language]",
+          "code": "// Example code here\n// With comments explaining each part",
+          "filename": "example.[ext]"
+        },
+        "mediaRefs": {
+          "audioId": "AUDIO_[SEGMENT_ID]",
+          "visualIds": ["VISUAL_CODE_STRUCTURE", "VISUAL_EXECUTION_FLOW"]
+        },
+        "interactiveCue": {
+          "cueType": "code_completion",
+          "config": {
+            "template": "// Complete this code\n[partial code]",
+            "solution": "[complete solution]",
+            "hints": ["Hint 1", "Hint 2"]
+          }
+        },
+        "keywords": ["code", "implementation", "example"],
+        "pointsAwarded": 30
+      }
+    },
+    "architecture_design": {
+      "description": "Explain system architecture and design decisions",
+      "template": {
+        "segmentType": "architecture_design",
+        "title": "[System] Architecture Overview",
+        "learningObjectives": [
+          "Understand the overall architecture",
+          "Learn about key components",
+          "See how data flows through the system"
+        ],
+        "textContent": "The [system] architecture consists of [components]. Data flows from [source] through [process] to [destination].",
+        "estimatedDuration": "5-7 minutes",
+        "mediaRefs": {
+          "audioId": "AUDIO_[SEGMENT_ID]",
+          "visualIds": ["VISUAL_ARCHITECTURE_OVERVIEW", "VISUAL_DATA_FLOW"]
+        },
+        "interactiveCue": {
+          "cueType": "interactive_explorer",
+          "config": {
+            "components": {
+              "[Component 1]": "Responsible for [function]",
+              "[Component 2]": "Handles [function]",
+              "[Component 3]": "Manages [function]"
+            }
+          }
+        },
+        "keywords": ["architecture", "design", "components"],
+        "pointsAwarded": 25
+      }
+    },
+    "practical_example": {
+      "description": "Show real-world practical examples",
+      "template": {
+        "segmentType": "practical_example",
+        "title": "Real-World Example: [Scenario]",
+        "learningObjectives": [
+          "See [concept] in action",
+          "Understand real-world application",
+          "Learn from practical scenarios"
+        ],
+        "textContent": "Let's see how this works in practice. Imagine [scenario]. Here's how you'd apply [concept]...",
+        "estimatedDuration": "3-5 minutes",
+        "mediaRefs": {
+          "audioId": "AUDIO_[SEGMENT_ID]",
+          "visualIds": ["VISUAL_SCENARIO", "VISUAL_SOLUTION_STEPS"]
+        },
+        "interactiveCue": {
+          "cueType": "scenario_selection",
+          "config": {
+            "question": "Which approach would you take?",
+            "scenarios": [
+              {
+                "id": "a",
+                "text": "[Option A]",
+                "feedback": "[Why this is/isn't optimal]"
+              },
+              {
+                "id": "b",
+                "text": "[Option B]",
+                "feedback": "[Why this is/isn't optimal]"
+              }
+            ]
+          }
+        },
+        "keywords": ["example", "practical", "real-world"],
+        "pointsAwarded": 20
+      }
+    },
+    "practical_configuration": {
+      "description": "Guide through configuration steps",
+      "template": {
+        "segmentType": "practical_configuration",
+        "title": "Configuring [System/Feature]",
+        "learningObjectives": [
+          "Learn configuration options",
+          "Understand best practices",
+          "Avoid common pitfalls"
+        ],
+        "textContent": "Let's configure [system]. The key settings are [list settings]. Here's the step-by-step process...",
+        "estimatedDuration": "5-10 minutes",
+        "codeExample": {
+          "language": "yaml",
+          "code": "# Configuration example\nkey: value\nsetting: recommended_value",
+          "filename": "config.yaml"
+        },
+        "mediaRefs": {
+          "audioId": "AUDIO_[SEGMENT_ID]",
+          "visualIds": ["VISUAL_CONFIG_UI", "VISUAL_CONFIG_FLOW"]
+        },
+        "interactiveCue": {
+          "cueType": "ui_simulation",
+          "config": {
+            "simulation": "config_interface",
+            "steps": [
+              {
+                "instruction": "Set [parameter] to [value]",
+                "validation": "Check if value is within range"
+              }
+            ]
+          }
+        },
+        "keywords": ["configuration", "setup", "settings"],
+        "pointsAwarded": 25
+      }
+    },
+    "metric_deep_dive": {
+      "description": "Deep dive into a specific metric",
+      "template": {
+        "segmentType": "metric_deep_dive",
+        "title": "Understanding [Metric Name]",
+        "learningObjectives": [
+          "Understand what [metric] measures",
+          "Learn healthy vs unhealthy values",
+          "Know how to respond to changes"
+        ],
+        "textContent": "[Metric] measures [what it measures]. A healthy value is [range] because [reasoning]. Watch out for [warning signs].",
+        "estimatedDuration": "4-6 minutes",
+        "mediaRefs": {
+          "audioId": "AUDIO_[SEGMENT_ID]",
+          "visualIds": ["VISUAL_METRIC_GRAPH", "VISUAL_METRIC_THRESHOLDS"]
+        },
+        "interactiveCue": {
+          "cueType": "simulation",
+          "config": {
+            "simulationType": "metric_simulator",
+            "parameters": {
+              "metric": "[metric_name]",
+              "scenarios": ["normal", "warning", "critical"]
+            }
+          }
+        },
+        "keywords": ["metric", "monitoring", "threshold"],
+        "pointsAwarded": 20
+      }
+    },
+    "new_metric_deep_dive": {
+      "description": "Introduce a new or advanced metric",
+      "template": {
+        "segmentType": "new_metric_deep_dive",
+        "title": "New in [Version]: [Metric Name]",
+        "learningObjectives": [
+          "Learn about the new metric",
+          "Understand why it was added",
+          "Know how to use it effectively"
+        ],
+        "textContent": "Version [X] introduces [metric], which helps us understand [what]. This was added because [reason].",
+        "estimatedDuration": "5-7 minutes",
+        "mediaRefs": {
+          "audioId": "AUDIO_[SEGMENT_ID]",
+          "visualIds": ["VISUAL_NEW_METRIC", "VISUAL_METRIC_IMPACT"]
+        },
+        "keywords": ["new metric", "monitoring", "enhancement"],
+        "pointsAwarded": 25
+      }
+    },
+    "metrics_overview": {
+      "description": "Overview of multiple related metrics",
+      "template": {
+        "segmentType": "metrics_overview",
+        "title": "[Category] Metrics Overview",
+        "learningObjectives": [
+          "Understand the metrics landscape",
+          "See how metrics relate to each other",
+          "Learn which metrics to prioritize"
+        ],
+        "textContent": "Let's look at the key [category] metrics. The most important are [list], because [reasons].",
+        "estimatedDuration": "5-8 minutes",
+        "mediaRefs": {
+          "audioId": "AUDIO_[SEGMENT_ID]",
+          "visualIds": ["VISUAL_METRICS_DASHBOARD", "VISUAL_METRICS_RELATIONSHIP"]
+        },
+        "interactiveCue": {
+          "cueType": "drag_to_distribute",
+          "config": {
+            "instruction": "Categorize these metrics",
+            "items": [
+              {"id": "1", "text": "[Metric 1]"},
+              {"id": "2", "text": "[Metric 2]"}
+            ],
+            "categories": [
+              {"id": "performance", "label": "Performance"},
+              {"id": "health", "label": "Health"},
+              {"id": "capacity", "label": "Capacity"}
+            ]
+          }
+        },
+        "keywords": ["metrics", "overview", "monitoring"],
+        "pointsAwarded": 20
+      }
+    },
+    "metric_taxonomy": {
+      "description": "Classify and organize metrics",
+      "template": {
+        "segmentType": "metric_taxonomy",
+        "title": "Metric Classification: [System]",
+        "learningObjectives": [
+          "Learn metric categories",
+          "Understand metric relationships",
+          "Know when to use each type"
+        ],
+        "textContent": "Metrics can be classified into [categories]. Each category serves a different purpose...",
+        "estimatedDuration": "4-6 minutes",
+        "mediaRefs": {
+          "audioId": "AUDIO_[SEGMENT_ID]",
+          "visualIds": ["VISUAL_METRIC_TAXONOMY", "VISUAL_METRIC_HIERARCHY"]
+        },
+        "keywords": ["taxonomy", "classification", "metrics"],
+        "pointsAwarded": 15
+      }
+    },
+    "feature_introduction": {
+      "description": "Introduce a new feature or capability",
+      "template": {
+        "segmentType": "feature_introduction",
+        "title": "Introducing [Feature Name]",
+        "learningObjectives": [
+          "Understand what [feature] does",
+          "Learn key benefits",
+          "Know when to use it"
+        ],
+        "textContent": "[Feature] is a new capability that [what it does]. It's particularly useful when [use cases].",
+        "estimatedDuration": "3-5 minutes",
+        "mediaRefs": {
+          "audioId": "AUDIO_[SEGMENT_ID]",
+          "visualIds": ["VISUAL_FEATURE_OVERVIEW", "VISUAL_FEATURE_BENEFITS"]
+        },
+        "interactiveCue": {
+          "cueType": "hover_to_explore",
+          "config": {
+            "hotspots": [
+              {
+                "id": "benefit1",
+                "label": "Key Benefit 1",
+                "content": "[Detailed benefit explanation]"
+              },
+              {
+                "id": "benefit2",
+                "label": "Key Benefit 2",
+                "content": "[Detailed benefit explanation]"
+              }
+            ]
+          }
+        },
+        "keywords": ["feature", "new", "capability"],
+        "pointsAwarded": 15
+      }
+    },
+    "new_feature_highlight": {
+      "description": "Highlight what's new in a feature",
+      "template": {
+        "segmentType": "new_feature_highlight",
+        "title": "What's New: [Feature Update]",
+        "learningObjectives": [
+          "Learn what's changed",
+          "Understand improvements",
+          "Know migration steps if needed"
+        ],
+        "textContent": "The latest version of [feature] includes [improvements]. The biggest change is [highlight].",
+        "estimatedDuration": "2-4 minutes",
+        "mediaRefs": {
+          "audioId": "AUDIO_[SEGMENT_ID]",
+          "visualIds": ["VISUAL_BEFORE_AFTER", "VISUAL_IMPROVEMENTS"]
+        },
+        "keywords": ["update", "new", "improvement"],
+        "pointsAwarded": 10
+      }
+    },
+    "new_feature_discovery": {
+      "description": "Guide learners to discover feature capabilities",
+      "template": {
+        "segmentType": "new_feature_discovery",
+        "title": "Exploring [Feature Name]",
+        "learningObjectives": [
+          "Discover feature capabilities",
+          "Experiment with options",
+          "Build intuition for usage"
+        ],
+        "textContent": "Let's explore [feature] together. Start by [first step], then notice how [observation]...",
+        "estimatedDuration": "5-8 minutes",
+        "mediaRefs": {
+          "audioId": "AUDIO_[SEGMENT_ID]",
+          "visualIds": ["VISUAL_FEATURE_UI", "VISUAL_FEATURE_WORKFLOW"]
+        },
+        "interactiveCue": {
+          "cueType": "ui_simulation",
+          "config": {
+            "simulation": "feature_sandbox",
+            "freeExploration": true,
+            "guidedTasks": [
+              "Try [action 1]",
+              "Now try [action 2]",
+              "What happens when you [action 3]?"
+            ]
+          }
+        },
+        "keywords": ["explore", "discover", "feature"],
+        "pointsAwarded": 25
+      }
+    },
+    "concept_introduction": {
+      "description": "Introduce a new concept simply",
+      "template": {
+        "segmentType": "concept_introduction",
+        "title": "Introducing [Concept]",
+        "learningObjectives": [
+          "Understand [concept] at a high level",
+          "Learn key terminology",
+          "See simple examples"
+        ],
+        "textContent": "[Concept] is [simple definition]. Think of it like [analogy]. For example, [simple example].",
+        "estimatedDuration": "2-3 minutes",
+        "mediaRefs": {
+          "audioId": "AUDIO_[SEGMENT_ID]",
+          "visualIds": ["VISUAL_CONCEPT_SIMPLE", "VISUAL_CONCEPT_ANALOGY"]
+        },
+        "keywords": ["concept", "introduction", "basics"],
+        "pointsAwarded": 10
+      }
+    },
+    "scalability_concept": {
+      "description": "Explain scalability concepts and patterns",
+      "template": {
+        "segmentType": "scalability_concept",
+        "title": "Scaling [System/Component]",
+        "learningObjectives": [
+          "Understand scalability challenges",
+          "Learn scaling strategies",
+          "Know trade-offs"
+        ],
+        "textContent": "As [system] grows, we face [challenges]. The key to scaling is [strategy]. But remember, [trade-offs].",
+        "estimatedDuration": "4-6 minutes",
+        "mediaRefs": {
+          "audioId": "AUDIO_[SEGMENT_ID]",
+          "visualIds": ["VISUAL_SCALE_DIAGRAM", "VISUAL_SCALING_STRATEGIES"]
+        },
+        "interactiveCue": {
+          "cueType": "simulation",
+          "config": {
+            "simulationType": "scale_simulator",
+            "parameters": {
+              "load": "adjustable",
+              "resources": "adjustable",
+              "strategy": "selectable"
+            }
+          }
+        },
+        "keywords": ["scalability", "performance", "growth"],
+        "pointsAwarded": 20
+      }
+    },
+    "immutability_concept": {
+      "description": "Explain immutability and its benefits",
+      "template": {
+        "segmentType": "immutability_concept",
+        "title": "The Power of Immutability",
+        "learningObjectives": [
+          "Understand immutability",
+          "Learn benefits for distributed systems",
+          "See practical applications"
+        ],
+        "textContent": "Immutability means [definition]. In [context], this gives us [benefits]. Here's why it matters...",
+        "estimatedDuration": "3-5 minutes",
+        "mediaRefs": {
+          "audioId": "AUDIO_[SEGMENT_ID]",
+          "visualIds": ["VISUAL_IMMUTABLE_VS_MUTABLE", "VISUAL_BENEFITS_DIAGRAM"]
+        },
+        "keywords": ["immutability", "distributed systems", "consistency"],
+        "pointsAwarded": 15
+      }
+    },
+    "technology_comparison": {
+      "description": "Compare different technologies or approaches",
+      "template": {
+        "segmentType": "technology_comparison",
+        "title": "[Tech A] vs [Tech B]: Choosing the Right Tool",
+        "learningObjectives": [
+          "Understand strengths of each option",
+          "Learn selection criteria",
+          "Make informed decisions"
+        ],
+        "textContent": "Both [Tech A] and [Tech B] solve [problem], but in different ways. [Tech A] excels at [strengths], while [Tech B] is better for [strengths].",
+        "estimatedDuration": "5-7 minutes",
+        "mediaRefs": {
+          "audioId": "AUDIO_[SEGMENT_ID]",
+          "visualIds": ["VISUAL_COMPARISON_TABLE", "VISUAL_USE_CASE_MATRIX"]
+        },
+        "interactiveCue": {
+          "cueType": "scenario_selection",
+          "config": {
+            "question": "Which technology would you choose for this scenario?",
+            "scenarios": [
+              {
+                "id": "scenario1",
+                "text": "[Scenario description]",
+                "bestChoice": "[Tech A/B]",
+                "reasoning": "[Why this is best]"
+              }
+            ]
+          }
+        },
+        "keywords": ["comparison", "technology", "selection"],
+        "pointsAwarded": 20
+      }
+    },
+    "decision_framework": {
+      "description": "Provide framework for making decisions",
+      "template": {
+        "segmentType": "decision_framework",
+        "title": "Decision Framework: [Decision Type]",
+        "learningObjectives": [
+          "Learn decision criteria",
+          "Understand trade-offs",
+          "Apply framework to real scenarios"
+        ],
+        "textContent": "When deciding [decision type], consider these factors: [list factors]. Here's a framework to guide your decision...",
+        "estimatedDuration": "4-6 minutes",
+        "mediaRefs": {
+          "audioId": "AUDIO_[SEGMENT_ID]",
+          "visualIds": ["VISUAL_DECISION_TREE", "VISUAL_CRITERIA_MATRIX"]
+        },
+        "interactiveCue": {
+          "cueType": "field_mapping_exercise",
+          "config": {
+            "instruction": "Match requirements to solutions",
+            "fields": [
+              {"id": "req1", "label": "[Requirement 1]"},
+              {"id": "req2", "label": "[Requirement 2]"}
+            ],
+            "mappings": [
+              {"id": "sol1", "label": "[Solution 1]"},
+              {"id": "sol2", "label": "[Solution 2]"}
+            ]
+          }
+        },
+        "keywords": ["decision", "framework", "criteria"],
+        "pointsAwarded": 25
+      }
+    },
+    "ui_walkthrough": {
+      "description": "Walk through user interface elements",
+      "template": {
+        "segmentType": "ui_walkthrough",
+        "title": "Navigating the [UI Name]",
+        "learningObjectives": [
+          "Learn UI layout and navigation",
+          "Understand key features location",
+          "Master common workflows"
+        ],
+        "textContent": "Let's explore the [UI name]. The main areas are [list areas]. To [common task], you'll use [UI elements].",
+        "estimatedDuration": "4-6 minutes",
+        "mediaRefs": {
+          "audioId": "AUDIO_[SEGMENT_ID]",
+          "visualIds": ["VISUAL_UI_OVERVIEW", "VISUAL_UI_ANNOTATED"]
+        },
+        "interactiveCue": {
+          "cueType": "ui_simulation",
+          "config": {
+            "simulation": "ui_interface",
+            "tasks": [
+              {
+                "instruction": "Click on [element]",
+                "highlight": "[element_id]"
+              }
+            ]
+          }
+        },
+        "keywords": ["UI", "interface", "navigation"],
+        "pointsAwarded": 15
+      }
+    },
+    "schema_introduction": {
+      "description": "Introduce data schema or structure",
+      "template": {
+        "segmentType": "schema_introduction",
+        "title": "Understanding the [Schema Name] Schema",
+        "learningObjectives": [
+          "Learn schema structure",
+          "Understand field purposes",
+          "See relationships between entities"
+        ],
+        "textContent": "The [schema name] schema defines how [data type] is structured. Key fields include [list fields]...",
+        "estimatedDuration": "3-5 minutes",
+        "codeExample": {
+          "language": "json",
+          "code": "{\n  \"field1\": \"description\",\n  \"field2\": \"description\"\n}",
+          "filename": "schema.json"
+        },
+        "mediaRefs": {
+          "audioId": "AUDIO_[SEGMENT_ID]",
+          "visualIds": ["VISUAL_SCHEMA_DIAGRAM", "VISUAL_ENTITY_RELATIONSHIPS"]
+        },
+        "keywords": ["schema", "structure", "data model"],
+        "pointsAwarded": 15
+      }
+    },
+    "advanced_customization": {
+      "description": "Cover advanced customization options",
+      "template": {
+        "segmentType": "advanced_customization",
+        "title": "Advanced: Customizing [Feature/System]",
+        "learningObjectives": [
+          "Learn advanced configuration options",
+          "Understand customization patterns",
+          "Know limits and best practices"
+        ],
+        "textContent": "For advanced users, [system] offers deep customization through [methods]. Key customization points include...",
+        "estimatedDuration": "6-10 minutes",
+        "codeExample": {
+          "language": "[language]",
+          "code": "// Advanced customization example",
+          "filename": "custom.[ext]"
+        },
+        "mediaRefs": {
+          "audioId": "AUDIO_[SEGMENT_ID]",
+          "visualIds": ["VISUAL_CUSTOMIZATION_OPTIONS", "VISUAL_ADVANCED_PATTERNS"]
+        },
+        "interactiveCue": {
+          "cueType": "code_completion",
+          "config": {
+            "template": "// Implement custom [feature]\n[starter code]",
+            "solution": "[complete implementation]",
+            "difficulty": "advanced"
+          }
+        },
+        "keywords": ["advanced", "customization", "configuration"],
+        "pointsAwarded": 30
+      }
+    },
+    "knowledge_check": {
+      "description": "Quick knowledge check",
+      "template": {
+        "segmentType": "knowledge_check",
+        "title": "Quick Check: [Topic]",
+        "learningObjectives": [
+          "Verify understanding of key concepts",
+          "Identify knowledge gaps",
+          "Reinforce learning"
+        ],
+        "textContent": "Let's check your understanding of [topic]. This will help reinforce what you've learned.",
+        "estimatedDuration": "2-3 minutes",
+        "mediaRefs": {
+          "audioId": "AUDIO_[SEGMENT_ID]"
+        },
+        "interactiveCue": {
+          "cueType": "scenario_selection",
+          "config": {
+            "question": "[Check question]",
+            "scenarios": [
+              {
+                "id": "a",
+                "text": "[Option A]",
+                "correct": true,
+                "feedback": "[Why correct/incorrect]"
+              },
+              {
+                "id": "b",
+                "text": "[Option B]",
+                "correct": false,
+                "feedback": "[Why correct/incorrect]"
+              }
+            ]
+          }
+        },
+        "keywords": ["quiz", "check", "assessment"],
+        "pointsAwarded": 20
+      }
+    },
+    "checkpoint": {
+      "description": "Major checkpoint assessment",
+      "template": {
+        "segmentType": "checkpoint",
+        "title": "Checkpoint: [Topic] Mastery",
+        "learningObjectives": [
+          "Demonstrate mastery of [topic]",
+          "Apply knowledge to scenarios",
+          "Prepare for next section"
+        ],
+        "textContent": "Time for a comprehensive check of your [topic] knowledge. This checkpoint will test your understanding through practical scenarios.",
+        "estimatedDuration": "5-10 minutes",
+        "mediaRefs": {
+          "audioId": "AUDIO_[SEGMENT_ID]"
+        },
+        "checkpoint": {
+          "questions": [
+            {
+              "type": "multiple_choice",
+              "question": "[Question]",
+              "options": ["[Option A]", "[Option B]", "[Option C]", "[Option D]"],
+              "correctAnswer": "[Correct option]",
+              "explanation": "[Why this is correct]"
+            },
+            {
+              "type": "scenario",
+              "scenario": "[Scenario description]",
+              "question": "What would you do?",
+              "correctApproach": "[Best approach]",
+              "explanation": "[Why this approach is best]"
+            }
+          ],
+          "passingScore": 0.7
+        },
+        "keywords": ["checkpoint", "assessment", "mastery"],
+        "pointsAwarded": 50
+      }
+    },
+    "scenario_selection": {
+      "description": "Scenario-based learning",
+      "template": {
+        "segmentType": "scenario_selection",
+        "title": "Real-World Scenario: [Situation]",
+        "learningObjectives": [
+          "Apply knowledge to real situations",
+          "Make informed decisions",
+          "Learn from different approaches"
+        ],
+        "textContent": "You're faced with [scenario]. Based on what you've learned, how would you handle this?",
+        "estimatedDuration": "3-5 minutes",
+        "mediaRefs": {
+          "audioId": "AUDIO_[SEGMENT_ID]",
+          "visualIds": ["VISUAL_SCENARIO_CONTEXT"]
+        },
+        "interactiveCue": {
+          "cueType": "scenario_selection",
+          "config": {
+            "scenarios": [
+              {
+                "id": "approach1",
+                "text": "[Approach 1 description]",
+                "outcome": "[What happens]",
+                "optimal": true,
+                "reasoning": "[Why this works best]"
+              },
+              {
+                "id": "approach2",
+                "text": "[Approach 2 description]",
+                "outcome": "[What happens]",
+                "optimal": false,
+                "reasoning": "[Why this is suboptimal]"
+              }
+            ]
+          }
+        },
+        "keywords": ["scenario", "practical", "decision"],
+        "pointsAwarded": 25
+      }
+    },
+    "field_mapping_exercise": {
+      "description": "Exercise to map related concepts",
+      "template": {
+        "segmentType": "field_mapping_exercise",
+        "title": "Mapping Exercise: [Topic]",
+        "learningObjectives": [
+          "Understand relationships between concepts",
+          "Practice connecting related items",
+          "Build mental models"
+        ],
+        "textContent": "Let's practice mapping [type A] to [type B]. This will help you understand how they relate.",
+        "estimatedDuration": "3-5 minutes",
+        "mediaRefs": {
+          "audioId": "AUDIO_[SEGMENT_ID]",
+          "visualIds": ["VISUAL_MAPPING_GUIDE"]
+        },
+        "interactiveCue": {
+          "cueType": "field_mapping_exercise",
+          "config": {
+            "instruction": "Connect related items",
+            "leftSide": [
+              {"id": "left1", "label": "[Item 1]"},
+              {"id": "left2", "label": "[Item 2]"}
+            ],
+            "rightSide": [
+              {"id": "right1", "label": "[Related to Item 1]"},
+              {"id": "right2", "label": "[Related to Item 2]"}
+            ],
+            "correctMappings": {
+              "left1": "right1",
+              "left2": "right2"
+            }
+          }
+        },
+        "keywords": ["exercise", "mapping", "relationships"],
+        "pointsAwarded": 20
+      }
+    },
+    "simulation": {
+      "description": "Interactive simulation segment",
+      "template": {
+        "segmentType": "simulation",
+        "title": "Simulation: [System/Process]",
+        "learningObjectives": [
+          "Experience [system] behavior",
+          "Experiment with parameters",
+          "Build intuition through interaction"
+        ],
+        "textContent": "Let's simulate [system/process]. You can adjust [parameters] and see how the system responds.",
+        "estimatedDuration": "5-10 minutes",
+        "mediaRefs": {
+          "audioId": "AUDIO_[SEGMENT_ID]",
+          "visualIds": ["VISUAL_SIMULATION_UI"]
+        },
+        "interactiveCue": {
+          "cueType": "simulation",
+          "config": {
+            "simulationType": "[type]",
+            "parameters": {
+              "[param1]": {
+                "min": 0,
+                "max": 100,
+                "default": 50
+              },
+              "[param2]": {
+                "options": ["option1", "option2"],
+                "default": "option1"
+              }
+            },
+            "objectives": [
+              "Try to achieve [goal 1]",
+              "What happens when [condition]?",
+              "Find the optimal settings for [scenario]"
+            ]
+          }
+        },
+        "keywords": ["simulation", "interactive", "experiment"],
+        "pointsAwarded": 30
+      }
+    }
+  },
+  "interactionTypes": {
+    "hover_to_explore": {
+      "description": "Reveal information by hovering over hotspots",
+      "bestFor": ["Exploring diagrams", "Revealing details", "Progressive disclosure"],
+      "implementation": "Define hotspots with labels and content to reveal on hover"
+    },
+    "drag_to_distribute": {
+      "description": "Drag items to categorize or distribute them",
+      "bestFor": ["Classification exercises", "Sorting activities", "Resource allocation"],
+      "implementation": "Define draggable items and drop zones with validation"
+    },
+    "click_to_compare": {
+      "description": "Click to toggle between different states or views",
+      "bestFor": ["Before/after comparisons", "A/B comparisons", "State changes"],
+      "implementation": "Define comparison states with smooth transitions"
+    },
+    "simulation": {
+      "description": "Interactive simulation with adjustable parameters",
+      "bestFor": ["System behavior", "What-if scenarios", "Performance tuning"],
+      "implementation": "Define parameters, ranges, and system response logic"
+    },
+    "predict_value_change": {
+      "description": "Predict how values will change before revealing answer",
+      "bestFor": ["Testing understanding", "Building intuition", "Cause-effect relationships"],
+      "implementation": "Present scenario, collect prediction, reveal actual result"
+    },
+    "code_completion": {
+      "description": "Complete missing parts of code",
+      "bestFor": ["Syntax practice", "Pattern recognition", "Applied coding"],
+      "implementation": "Provide code template with blanks and validation"
+    },
+    "scenario_selection": {
+      "description": "Choose best approach for given scenarios",
+      "bestFor": ["Decision making", "Applied knowledge", "Trade-off analysis"],
+      "implementation": "Present scenario with multiple choices and feedback"
+    },
+    "pause_and_reflect": {
+      "description": "Timed pause for reflection",
+      "bestFor": ["Metacognition", "Personal connection", "Consolidation"],
+      "implementation": "Timer with reflection prompts"
+    },
+    "important_note": {
+      "description": "Highlight critical information",
+      "bestFor": ["Warnings", "Key takeaways", "Critical concepts"],
+      "implementation": "Emphasized display with icon and styling"
+    },
+    "interactive_explorer": {
+      "description": "Click to explore different parts of a system",
+      "bestFor": ["System exploration", "Feature discovery", "Non-linear learning"],
+      "implementation": "Clickable areas revealing information"
+    },
+    "field_mapping_exercise": {
+      "description": "Connect related concepts or fields",
+      "bestFor": ["Relationship building", "Schema mapping", "Correlation exercises"],
+      "implementation": "Drag lines to connect related items"
+    },
+    "ui_simulation": {
+      "description": "Simulate UI interactions",
+      "bestFor": ["Software training", "Workflow practice", "Feature exploration"],
+      "implementation": "Mock UI with guided or free exploration"
+    }
+  }
+}

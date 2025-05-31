@@ -1,0 +1,113 @@
+{
+  "codeSnippets": {
+    "producerExamples": {
+      "basicProducer": {
+        "id": "kafka-producer-basic",
+        "title": "Basic Kafka Producer",
+        "language": "java",
+        "description": "Simple producer sending messages to a topic",
+        "code": "import org.apache.kafka.clients.producer.*;\nimport java.util.Properties;\n\npublic class BasicProducer {\n    public static void main(String[] args) {\n        Properties props = new Properties();\n        props.put(\"bootstrap.servers\", \"localhost:9092\");\n        props.put(\"key.serializer\", \"org.apache.kafka.common.serialization.StringSerializer\");\n        props.put(\"value.serializer\", \"org.apache.kafka.common.serialization.StringSerializer\");\n        \n        Producer<String, String> producer = new KafkaProducer<>(props);\n        \n        for (int i = 0; i < 100; i++) {\n            ProducerRecord<String, String> record = \n                new ProducerRecord<>(\"my-topic\", Integer.toString(i), \"Message \" + i);\n            \n            producer.send(record, new Callback() {\n                public void onCompletion(RecordMetadata metadata, Exception exception) {\n                    if (exception != null) {\n                        exception.printStackTrace();\n                    } else {\n                        System.out.printf(\"Sent to partition %d at offset %d%n\", \n                            metadata.partition(), metadata.offset());\n                    }\n                }\n            });\n        }\n        \n        producer.close();\n    }\n}",
+        "concepts": ["producer", "async", "callback"],
+        "difficulty": "beginner"
+      },
+      "transactionalProducer": {
+        "id": "kafka-producer-transactional",
+        "title": "Transactional Producer",
+        "language": "java",
+        "description": "Producer with exactly-once semantics",
+        "code": "Properties props = new Properties();\nprops.put(\"bootstrap.servers\", \"localhost:9092\");\nprops.put(\"transactional.id\", \"my-transactional-id\");\nprops.put(\"enable.idempotence\", \"true\");\n\nProducer<String, String> producer = new KafkaProducer<>(props);\n\n// Initialize transactions\nproducer.initTransactions();\n\ntry {\n    // Start transaction\n    producer.beginTransaction();\n    \n    // Send messages\n    for (int i = 0; i < 100; i++) {\n        producer.send(new ProducerRecord<>(\"topic\", \"key-\" + i, \"value-\" + i));\n    }\n    \n    // Commit transaction\n    producer.commitTransaction();\n} catch (Exception e) {\n    // Abort on error\n    producer.abortTransaction();\n    throw e;\n} finally {\n    producer.close();\n}",
+        "concepts": ["transactions", "exactly-once", "idempotence"],
+        "difficulty": "advanced"
+      }
+    },
+    "consumerExamples": {
+      "basicConsumer": {
+        "id": "kafka-consumer-basic",
+        "title": "Basic Consumer with Manual Commit",
+        "language": "java",
+        "description": "Consumer with manual offset management",
+        "code": "Properties props = new Properties();\nprops.put(\"bootstrap.servers\", \"localhost:9092\");\nprops.put(\"group.id\", \"my-consumer-group\");\nprops.put(\"enable.auto.commit\", \"false\");\nprops.put(\"key.deserializer\", \"org.apache.kafka.common.serialization.StringDeserializer\");\nprops.put(\"value.deserializer\", \"org.apache.kafka.common.serialization.StringDeserializer\");\n\nKafkaConsumer<String, String> consumer = new KafkaConsumer<>(props);\nconsumer.subscribe(Arrays.asList(\"my-topic\"));\n\ntry {\n    while (true) {\n        ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(100));\n        \n        for (ConsumerRecord<String, String> record : records) {\n            System.out.printf(\"offset = %d, key = %s, value = %s%n\", \n                record.offset(), record.key(), record.value());\n            \n            // Process record\n            processRecord(record);\n        }\n        \n        // Commit after processing\n        consumer.commitSync();\n    }\n} finally {\n    consumer.close();\n}",
+        "concepts": ["consumer", "manual-commit", "at-least-once"],
+        "difficulty": "intermediate"
+      },
+      "shareGroupConsumer": {
+        "id": "kafka-consumer-share-group",
+        "title": "Share Group Consumer (Kafka 4.0+)",
+        "language": "java",
+        "description": "Consumer using new Share Groups feature",
+        "code": "// Share Group Consumer Configuration\nProperties props = new Properties();\nprops.put(\"bootstrap.servers\", \"localhost:9092\");\nprops.put(\"group.type\", \"share\"); // New property for Share Groups\nprops.put(\"share.group.id\", \"my-share-group\");\nprops.put(\"key.deserializer\", \"org.apache.kafka.common.serialization.StringDeserializer\");\nprops.put(\"value.deserializer\", \"org.apache.kafka.common.serialization.StringDeserializer\");\n\n// Share Group specific settings\nprops.put(\"share.acknowledgment.timeout.ms\", \"30000\");\nprops.put(\"share.max.delivery.count\", \"3\");\n\nKafkaShareConsumer<String, String> consumer = new KafkaShareConsumer<>(props);\nconsumer.subscribe(Arrays.asList(\"work-queue-topic\"));\n\ntry {\n    while (true) {\n        ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(1000));\n        \n        for (ConsumerRecord<String, String> record : records) {\n            try {\n                // Process record\n                processWorkItem(record);\n                \n                // Acknowledge successful processing\n                consumer.acknowledge(record);\n            } catch (Exception e) {\n                // Failed processing - message will be redelivered\n                consumer.reject(record);\n                log.error(\"Failed to process: \" + record, e);\n            }\n        }\n    }\n} finally {\n    consumer.close();\n}",
+        "concepts": ["share-groups", "acknowledgment", "work-queue"],
+        "difficulty": "advanced"
+      }
+    },
+    "monitoringExamples": {
+      "jmxMonitoring": {
+        "id": "kafka-jmx-monitoring",
+        "title": "JMX Metrics Collection",
+        "language": "java",
+        "description": "Collecting Kafka metrics via JMX",
+        "code": "import javax.management.*;\nimport javax.management.remote.*;\nimport java.util.*;\n\npublic class KafkaJMXMonitor {\n    private MBeanServerConnection mbsc;\n    \n    public void connect(String host, int port) throws Exception {\n        String url = \"service:jmx:rmi:///jndi/rmi://\" + host + \":\" + port + \"/jmxrmi\";\n        JMXServiceURL serviceUrl = new JMXServiceURL(url);\n        JMXConnector jmxConnector = JMXConnectorFactory.connect(serviceUrl);\n        mbsc = jmxConnector.getMBeanServerConnection();\n    }\n    \n    public double getMetric(String mbeanName, String attribute) throws Exception {\n        ObjectName objectName = new ObjectName(mbeanName);\n        return (Double) mbsc.getAttribute(objectName, attribute);\n    }\n    \n    public Map<String, Double> getConsumerLagMetrics(String groupId) throws Exception {\n        Map<String, Double> metrics = new HashMap<>();\n        \n        // Consumer lag metrics\n        String pattern = \"kafka.consumer:type=consumer-fetch-manager-metrics,\" +\n                        \"client-id=*,topic=*,partition=*\";\n        \n        Set<ObjectName> names = mbsc.queryNames(new ObjectName(pattern), null);\n        \n        for (ObjectName name : names) {\n            if (name.toString().contains(groupId)) {\n                Double lag = (Double) mbsc.getAttribute(name, \"records-lag-max\");\n                metrics.put(name.toString(), lag);\n            }\n        }\n        \n        return metrics;\n    }\n}",
+        "concepts": ["JMX", "monitoring", "metrics"],
+        "difficulty": "intermediate"
+      },
+      "micrometerIntegration": {
+        "id": "kafka-micrometer",
+        "title": "Micrometer Metrics Integration",
+        "language": "java",
+        "description": "Modern metrics with Micrometer",
+        "code": "import io.micrometer.core.instrument.*;\nimport org.apache.kafka.clients.producer.Producer;\nimport org.apache.kafka.clients.consumer.Consumer;\n\n@Component\npublic class KafkaMicrometerMetrics {\n    private final MeterRegistry registry;\n    \n    public KafkaMicrometerMetrics(MeterRegistry registry) {\n        this.registry = registry;\n    }\n    \n    public Producer<String, String> monitoredProducer(Properties props) {\n        Producer<String, String> producer = new KafkaProducer<>(props);\n        \n        // Add Micrometer binder\n        new KafkaClientMetrics(producer).bindTo(registry);\n        \n        // Custom metrics\n        Counter sentCounter = Counter.builder(\"kafka.messages.sent\")\n            .tag(\"client.id\", props.getProperty(\"client.id\"))\n            .register(registry);\n        \n        // Wrap producer to count messages\n        return new MonitoredProducer(producer, sentCounter);\n    }\n    \n    public void recordLag(String topic, int partition, long lag) {\n        Gauge.builder(\"kafka.consumer.lag\", () -> lag)\n            .tag(\"topic\", topic)\n            .tag(\"partition\", String.valueOf(partition))\n            .register(registry);\n    }\n    \n    // Export to Prometheus\n    @Bean\n    public PrometheusMeterRegistry prometheusMeterRegistry() {\n        return new PrometheusMeterRegistry(PrometheusConfig.DEFAULT);\n    }\n}",
+        "concepts": ["micrometer", "prometheus", "modern-monitoring"],
+        "difficulty": "advanced"
+      }
+    },
+    "configurationExamples": {
+      "brokerConfig": {
+        "id": "kafka-broker-config",
+        "title": "Production Broker Configuration",
+        "language": "properties",
+        "description": "Optimized broker settings for production",
+        "code": "# Broker Basics\nbroker.id=1\nlisteners=PLAINTEXT://localhost:9092\nlog.dirs=/var/kafka-logs\n\n# Replication\ndefault.replication.factor=3\nmin.insync.replicas=2\nunclean.leader.election.enable=false\n\n# Performance Tuning\nnum.network.threads=8\nnum.io.threads=8\nsocket.send.buffer.bytes=102400\nsocket.receive.buffer.bytes=102400\nsocket.request.max.bytes=104857600\n\n# Log Retention\nlog.retention.hours=168\nlog.segment.bytes=1073741824\nlog.retention.check.interval.ms=300000\n\n# Compression\ncompression.type=lz4\n\n# Share Groups (Kafka 4.0+)\nshare.group.enable=true\nshare.group.max.size=200\nshare.group.session.timeout.ms=45000\nshare.group.heartbeat.interval.ms=3000",
+        "concepts": ["configuration", "production", "tuning"],
+        "difficulty": "intermediate"
+      },
+      "alertingRules": {
+        "id": "kafka-alerting-prometheus",
+        "title": "Prometheus Alerting Rules",
+        "language": "yaml",
+        "description": "Critical Kafka alerts for production",
+        "code": "groups:\n  - name: kafka_alerts\n    interval: 30s\n    rules:\n      # Broker availability\n      - alert: KafkaBrokerDown\n        expr: up{job=\"kafka\"} == 0\n        for: 1m\n        labels:\n          severity: critical\n        annotations:\n          summary: \"Kafka broker {{ $labels.instance }} is down\"\n          \n      # Under-replicated partitions\n      - alert: KafkaUnderReplicatedPartitions\n        expr: kafka_server_replicamanager_underreplicatedpartitions > 0\n        for: 5m\n        labels:\n          severity: warning\n        annotations:\n          summary: \"{{ $value }} under-replicated partitions on {{ $labels.instance }}\"\n          \n      # Consumer lag\n      - alert: KafkaHighConsumerLag\n        expr: kafka_consumer_lag_sum > 1000000\n        for: 10m\n        labels:\n          severity: warning\n        annotations:\n          summary: \"Consumer group {{ $labels.group }} has high lag: {{ $value }}\"\n          \n      # Share Group specific alerts\n      - alert: ShareGroupHighRedeliveryRate\n        expr: rate(kafka_share_group_redelivered_messages[5m]) > 0.1\n        for: 5m\n        labels:\n          severity: warning\n        annotations:\n          summary: \"Share group {{ $labels.group }} redelivery rate: {{ $value }}\"",
+        "concepts": ["alerting", "prometheus", "monitoring"],
+        "difficulty": "advanced"
+      }
+    },
+    "troubleshootingExamples": {
+      "diagnosticScript": {
+        "id": "kafka-diagnostic-script",
+        "title": "Kafka Cluster Health Check Script",
+        "language": "bash",
+        "description": "Comprehensive health check script",
+        "code": "#!/bin/bash\n# Kafka Cluster Health Check\n\nKAFKA_HOME=\"/opt/kafka\"\nZK_CONNECT=\"localhost:2181\"\nBOOTSTRAP_SERVERS=\"localhost:9092\"\n\necho \"=== Kafka Cluster Health Check ===\"\necho \"Timestamp: $(date)\"\necho \"\"\n\n# Check Kafka processes\necho \"1. Checking Kafka processes...\"\nps aux | grep -E \"(kafka|zookeeper)\" | grep -v grep\n\n# Check broker status\necho -e \"\\n2. Active brokers:\"\n$KAFKA_HOME/bin/kafka-broker-api-versions.sh --bootstrap-server $BOOTSTRAP_SERVERS | head -5\n\n# List topics\necho -e \"\\n3. Topics in cluster:\"\n$KAFKA_HOME/bin/kafka-topics.sh --bootstrap-server $BOOTSTRAP_SERVERS --list\n\n# Check under-replicated partitions\necho -e \"\\n4. Under-replicated partitions:\"\n$KAFKA_HOME/bin/kafka-topics.sh --bootstrap-server $BOOTSTRAP_SERVERS \\\n  --describe --under-replicated-partitions\n\n# Consumer group status\necho -e \"\\n5. Consumer groups:\"\n$KAFKA_HOME/bin/kafka-consumer-groups.sh --bootstrap-server $BOOTSTRAP_SERVERS --list\n\n# Check consumer lag\necho -e \"\\n6. Consumer lag for all groups:\"\nfor group in $($KAFKA_HOME/bin/kafka-consumer-groups.sh --bootstrap-server $BOOTSTRAP_SERVERS --list); do\n    echo \"Group: $group\"\n    $KAFKA_HOME/bin/kafka-consumer-groups.sh --bootstrap-server $BOOTSTRAP_SERVERS \\\n      --group $group --describe 2>/dev/null | head -10\n    echo \"\"\ndone\n\n# Share Groups status (Kafka 4.0+)\necho -e \"\\n7. Share Groups status:\"\n$KAFKA_HOME/bin/kafka-share-groups.sh --bootstrap-server $BOOTSTRAP_SERVERS --list\n\n# Cluster metadata\necho -e \"\\n8. Cluster metadata:\"\n$KAFKA_HOME/bin/kafka-metadata.sh --bootstrap-server $BOOTSTRAP_SERVERS --list",
+        "concepts": ["troubleshooting", "diagnostics", "health-check"],
+        "difficulty": "intermediate"
+      }
+    }
+  },
+  "templates": {
+    "producerTemplate": {
+      "description": "Boilerplate for Kafka producer applications",
+      "files": {
+        "pom.xml": "Maven dependencies for Kafka client",
+        "application.properties": "Configuration template",
+        "KafkaProducerApp.java": "Main application class"
+      }
+    },
+    "monitoringSetup": {
+      "description": "Complete monitoring setup files",
+      "files": {
+        "docker-compose.yml": "Kafka + Prometheus + Grafana",
+        "prometheus.yml": "Prometheus configuration",
+        "grafana-dashboard.json": "Pre-built Kafka dashboard"
+      }
+    }
+  }
+}

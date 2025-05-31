@@ -1,0 +1,15 @@
+{
+  "audioId": "AUDIO_SEG01_01_03_NOT_QUEUE_V2",
+  "text": "The answer wasn't to build a better message queue\u2014it was to reimagine messaging as a distributed, append-only log.",
+  "generatedAt": "2025-05-31T23:34:28.807218",
+  "metadata": {
+    "segmentId": "SEGMENT_01_01_03_NOT_JUST_QUEUE_V2",
+    "lessonId": "LESSON_01_KAFKA_FUNDAMENTALS_V2",
+    "episodeId": "EPISODE_01_01_WHY_KAFKA_V2",
+    "title": "Not Just Another Message Queue"
+  },
+  "model": "Tacotron2-DDC",
+  "quality": "high",
+  "device": "cpu",
+  "speaker": null
+}
