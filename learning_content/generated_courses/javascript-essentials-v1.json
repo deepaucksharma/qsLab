@@ -1,0 +1,244 @@
+{
+  "course": {
+    "id": "javascript-essentials-v1",
+    "title": "JavaScript Essentials: Modern Development",
+    "description": "Master modern JavaScript from ES6+ to async programming and web APIs",
+    "totalEstimatedDuration": "10 hours",
+    "level": "beginner",
+    "prerequisites": [
+      "Basic HTML/CSS knowledge"
+    ],
+    "learningObjectives": [
+      "Master JavaScript fundamentals and ES6+ features",
+      "Understand asynchronous programming patterns",
+      "Work with DOM and browser APIs",
+      "Build interactive web applications",
+      "Debug and test JavaScript code"
+    ],
+    "instructor": {
+      "name": "Maya Patel",
+      "bio": "Full-stack developer with 8+ years of JavaScript expertise",
+      "avatar": "/static/instructors/maya-patel.png"
+    },
+    "completionRequirements": {
+      "minSegmentsCompleted": 0.8,
+      "minCheckpointScore": 0.7,
+      "requiredCheckpoints": []
+    },
+    "certificateId": "cert-javascript-essentials-v1",
+    "badges": [
+      {
+        "id": "js-starter",
+        "name": "JavaScript Starter",
+        "criteria": "Complete first lesson"
+      },
+      {
+        "id": "async-master",
+        "name": "Async Master",
+        "criteria": "Master promises and async/await"
+      },
+      {
+        "id": "js-developer",
+        "name": "JavaScript Developer",
+        "criteria": "Complete entire course"
+      }
+    ]
+  },
+  "lessons": [
+    {
+      "id": "javascript-essentials-v1-lesson-1",
+      "title": "JavaScript Fundamentals",
+      "order": 1,
+      "totalEstimatedDuration": "2.5 hours",
+      "learningObjectives": [
+        "Understand JS basics",
+        "Work with data types",
+        "Control program flow"
+      ],
+      "episodes": [
+        {
+          "id": "javascript-essentials-v1-lesson-1-episode-1",
+          "title": "Introduction to JavaScript",
+          "order": 1,
+          "estimatedDuration": "30 minutes",
+          "learningObjectives": [
+            "Understand what JavaScript is",
+            "Set up development environment"
+          ],
+          "segments": [
+            {
+              "id": "javascript-essentials-v1-lesson-1-episode-1-seg-1",
+              "order": 1,
+              "segmentType": "course_opening",
+              "title": "Welcome to JavaScript Essentials",
+              "textContent": "Welcome to the exciting world of JavaScript! This course will transform you from a beginner to a confident JavaScript developer. We'll start with the basics and build up to creating interactive web applications.",
+              "estimatedDuration": "1-2 minutes",
+              "learningObjectives": [],
+              "keywords": [
+                "javascript",
+                "welcome",
+                "introduction"
+              ],
+              "pointsAwarded": 10,
+              "mediaRefs": {
+                "audioId": "AUDIO_javascript-essentials-v1-lesson-1-episode-1_SEG_1",
+                "visualIds": []
+              }
+            },
+            {
+              "id": "javascript-essentials-v1-lesson-1-episode-1-seg-2",
+              "order": 2,
+              "segmentType": "origin_story",
+              "title": "JavaScript's Journey: From 10 Days to Everywhere",
+              "textContent": "In 1995, Brendan Eich created JavaScript in just 10 days. Originally called Mocha, then LiveScript, it was designed to make web pages interactive. Today, JavaScript runs everywhere - browsers, servers, mobile apps, and even IoT devices.",
+              "estimatedDuration": "2-3 minutes",
+              "learningObjectives": [],
+              "keywords": [
+                "history",
+                "brendan eich",
+                "evolution"
+              ],
+              "pointsAwarded": 15,
+              "mediaRefs": {
+                "audioId": "AUDIO_javascript-essentials-v1-lesson-1-episode-1_SEG_2",
+                "visualIds": []
+              },
+              "interactiveCue": {
+                "cueType": "interactive_explorer",
+                "config": {
+                  "timeline": {
+                    "1995": "JavaScript created at Netscape",
+                    "1997": "ECMAScript standard established",
+                    "2009": "Node.js brings JS to servers",
+                    "2015": "ES6/ES2015 modernizes the language",
+                    "2024": "JavaScript powers 98% of websites"
+                  }
+                }
+              }
+            },
+            {
+              "id": "javascript-essentials-v1-lesson-1-episode-1-seg-3",
+              "order": 3,
+              "segmentType": "practical_configuration",
+              "title": "Setting Up Your JavaScript Environment",
+              "textContent": "Let's set up a modern JavaScript development environment. We'll use VS Code as our editor, Chrome DevTools for debugging, and Node.js for running JavaScript outside the browser.",
+              "estimatedDuration": "10 minutes",
+              "learningObjectives": [],
+              "keywords": [
+                "setup",
+                "environment",
+                "tools"
+              ],
+              "pointsAwarded": 20,
+              "mediaRefs": {
+                "audioId": "AUDIO_javascript-essentials-v1-lesson-1-episode-1_SEG_3",
+                "visualIds": [
+                  "VISUAL_VSCODE_SETUP",
+                  "VISUAL_DEVTOOLS_INTRO"
+                ]
+              },
+              "interactiveCue": {
+                "cueType": "ui_simulation",
+                "config": {
+                  "simulation": "setup_wizard",
+                  "steps": [
+                    "Download VS Code",
+                    "Install Node.js",
+                    "Configure extensions",
+                    "Test installation"
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "javascript-essentials-v1-lesson-1-episode-2",
+          "title": "Variables and Data Types",
+          "order": 2,
+          "estimatedDuration": "45 minutes",
+          "learningObjectives": [
+            "Declare and use variables",
+            "Understand data types",
+            "Type conversion"
+          ],
+          "segments": [
+            {
+              "id": "javascript-essentials-v1-lesson-1-episode-2-seg-1",
+              "order": 1,
+              "segmentType": "concept_explanation",
+              "title": "Variables: Containers for Data",
+              "textContent": "Variables are like labeled boxes where we store data. In modern JavaScript, we use 'let' for values that change and 'const' for values that stay the same. The old 'var' keyword has quirks we'll explore.",
+              "estimatedDuration": "3-5 minutes",
+              "learningObjectives": [],
+              "keywords": [
+                "variables",
+                "let",
+                "const",
+                "var"
+              ],
+              "pointsAwarded": 15,
+              "mediaRefs": {
+                "audioId": "AUDIO_javascript-essentials-v1-lesson-1-episode-2_SEG_1",
+                "visualIds": []
+              },
+              "codeExample": {
+                "language": "javascript",
+                "code": "// Modern variable declaration\nconst name = 'Alice';  // Can't be reassigned\nlet age = 25;         // Can be reassigned\nage = 26;             // This works!\n\n// Old way (avoid in modern code)\nvar oldStyle = 'legacy';",
+                "filename": "variables.js"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "javascript-essentials-v1-lesson-2",
+      "title": "Functions and Scope",
+      "order": 2,
+      "totalEstimatedDuration": "2 hours",
+      "learningObjectives": [
+        "Create and use functions",
+        "Understand scope and closures",
+        "Master arrow functions"
+      ],
+      "episodes": []
+    },
+    {
+      "id": "javascript-essentials-v1-lesson-3",
+      "title": "Asynchronous JavaScript",
+      "order": 3,
+      "totalEstimatedDuration": "2.5 hours",
+      "learningObjectives": [
+        "Master callbacks, promises, and async/await",
+        "Handle errors gracefully",
+        "Work with APIs"
+      ],
+      "episodes": []
+    },
+    {
+      "id": "javascript-essentials-v1-lesson-4",
+      "title": "DOM and Web APIs",
+      "order": 4,
+      "totalEstimatedDuration": "2 hours",
+      "learningObjectives": [
+        "Manipulate the DOM",
+        "Handle events",
+        "Use browser APIs"
+      ],
+      "episodes": []
+    },
+    {
+      "id": "javascript-essentials-v1-lesson-5",
+      "title": "Modern JavaScript Practices",
+      "order": 5,
+      "totalEstimatedDuration": "1 hour",
+      "learningObjectives": [
+        "Use modules",
+        "Debug effectively",
+        "Follow best practices"
+      ],
+      "episodes": []
+    }
+  ]
+}
