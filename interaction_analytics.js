@@ -969,7 +969,7 @@ class AnalyticsDashboard {
 window.interactionAnalytics = new InteractionAnalytics();
 
 // Hook into existing interaction manager
-if (window.interactiveCueManager) {
+if (window.interactiveCueManager && window.InteractiveCueHandler) {
     const originalLogInteraction = window.InteractiveCueHandler.prototype.logInteraction;
     
     window.InteractiveCueHandler.prototype.logInteraction = function(segmentId, interactionData) {

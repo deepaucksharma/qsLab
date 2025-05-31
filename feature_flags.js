@@ -13,7 +13,7 @@ const FEATURES = {
     LEARNING_INSIGHTS: true,
     
     // UI features
-    DARK_MODE: false,
+    DARK_MODE: true,
     ENHANCED_NAVIGATION: true,
     KEYBOARD_SHORTCUTS: true,
     PROGRESS_DASHBOARD: true,
@@ -22,6 +22,10 @@ const FEATURES = {
     SERVICE_WORKER: false, // Disabled due to port mismatch
     ASSET_PRELOADING: true,
     LAZY_LOADING: true,
+    PERFORMANCE_MODE: true,
+    SKELETON_LOADERS: true,
+    ACCESSIBILITY: true,
+    OFFLINE_SUPPORT: false, // Ready but not enabled
     
     // Content features
     MULTIPLE_COURSES: true,

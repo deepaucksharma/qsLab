@@ -160,6 +160,24 @@ class LearningAnalytics {
     }
 
     /**
+     * Update engagement metrics
+     */
+    updateEngagementMetrics(event) {
+        this.updateMetric('totalInteractions', 1);
+        
+        // Calculate engagement score
+        const score = event.data?.score || (event.data?.isCorrect ? 100 : 50);
+        this.updateMetric('engagementScore', score, 'average');
+        
+        // Update streak if applicable
+        if (event.data?.isCorrect) {
+            this.updateMetric('correctStreak', 1);
+        } else {
+            this.metrics.correctStreak = 0;
+        }
+    }
+
+    /**
      * Send analytics data to backend
      */
     async flushEvents() {

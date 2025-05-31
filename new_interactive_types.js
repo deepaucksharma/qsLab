@@ -1932,7 +1932,8 @@ class AROverlayHandler extends InteractiveCueHandler {
 }
 
 // === Particle System (Enhanced) ===
-class ParticleSystem {
+// Commented out as ParticleSystem is already defined in interactive_cues.js
+/* class ParticleSystem {
     constructor() {
         this.particles = [];
         this.animationFrame = null;
@@ -1999,7 +2000,7 @@ class ParticleSystem {
         
         requestAnimationFrame(animate);
     }
-}
+} */
 
 // Register new handlers with the InteractiveCueManager
 if (window.InteractiveCueManager) {
