@@ -6,6 +6,12 @@
       "path": "./src/plugins/episodes/kafka-share-groups",
       "enabled": true,
       "category": "distributed-systems"
+    },
+    {
+      "id": "key-shifts-critical-metrics",
+      "path": "./src/plugins/episodes/key-shifts-critical-metrics",
+      "enabled": true,
+      "category": "distributed-systems"
     }
   ],
   "categories": {

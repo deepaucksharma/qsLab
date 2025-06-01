@@ -1,0 +1,21 @@
+{
+  "version": "1.0.0",
+  "name": "key-shifts-critical-metrics",
+  "displayName": "Key Shifts & Critical Metrics",
+  "description": "Scenes covering trade-offs, critical metrics, the zero lag fallacy, and a module recap.",
+  "author": "TechFlix Team",
+  "episodeClass": "./index.js",
+  "seasonNumber": 1,
+  "episodeNumber": 3,
+  "dependencies": [],
+  "assets": {
+    "thumbnails": [],
+    "images": [],
+    "audio": []
+  },
+  "config": {
+    "runtime": 5,
+    "level": "Intermediate",
+    "tags": ["kafka", "share-groups", "metrics"]
+  }
+}
