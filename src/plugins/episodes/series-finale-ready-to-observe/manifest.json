@@ -1,0 +1,20 @@
+{
+  "version": "1.0.0",
+  "name": "series-finale-ready-to-observe",
+  "displayName": "Series Finale: You're Ready to Observe!",
+  "description": "You've journeyed from Kafka fundamentals to full New Relic Ultra integration! Explore the resources, and elevate your Kafka observability.",
+  "author": "TechFlix Team",
+  "episodeClass": "./index.js",
+  "seasonNumber": 3,
+  "episodeNumber": 3,
+  "dependencies": [],
+  "assets": {
+    "thumbnails": [],
+    "images": [],
+    "audio": []
+  },
+  "config": {
+    "runtime": 60,
+    "level": "Advanced"
+  }
+}

@@ -6,6 +6,12 @@
       "path": "./src/plugins/episodes/kafka-share-groups",
       "enabled": true,
       "category": "distributed-systems"
+    },
+    {
+      "id": "series-finale-ready-to-observe",
+      "path": "./src/plugins/episodes/series-finale-ready-to-observe",
+      "enabled": true,
+      "category": "distributed-systems"
     }
   ],
   "categories": {
