@@ -1,0 +1,21 @@
+{
+  "version": "1.0.0",
+  "name": "data-ingestion-paths",
+  "displayName": "Data Ingestion Paths: Kafka to New Relic",
+  "description": "Different ways metrics flow depending on Kafka hosting.",
+  "author": "TechFlix Team",
+  "episodeClass": "./index.js",
+  "seasonNumber": 2,
+  "episodeNumber": 3,
+  "dependencies": [],
+  "assets": {
+    "thumbnails": [],
+    "images": [],
+    "audio": []
+  },
+  "config": {
+    "runtime": 4.5,
+    "level": "Intermediate",
+    "tags": ["kafka", "monitoring", "new relic"]
+  }
+}

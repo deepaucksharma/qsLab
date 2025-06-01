@@ -6,6 +6,12 @@
       "path": "./src/plugins/episodes/kafka-share-groups",
       "enabled": true,
       "category": "distributed-systems"
+    },
+    {
+      "id": "data-ingestion-paths",
+      "path": "./src/plugins/episodes/data-ingestion-paths",
+      "enabled": true,
+      "category": "data-engineering"
     }
   ],
   "categories": {
