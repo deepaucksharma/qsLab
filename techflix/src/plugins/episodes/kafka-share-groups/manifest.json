@@ -1,0 +1,21 @@
+{
+  "version": "1.0.0",
+  "name": "kafka-share-groups",
+  "displayName": "Breaking the Partition Barrier",
+  "description": "Discover how Kafka Share Groups revolutionize message consumption patterns",
+  "author": "TechFlix Team",
+  "episodeClass": "index.js",
+  "seasonNumber": 1,
+  "episodeNumber": 1,
+  "dependencies": [],
+  "assets": {
+    "thumbnails": ["./assets/thumbnail.jpg"],
+    "images": [],
+    "videos": []
+  },
+  "config": {
+    "runtime": 45,
+    "level": "Advanced",
+    "tags": ["Kafka", "Distributed Systems", "Architecture", "Share Groups"]
+  }
+}

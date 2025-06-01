@@ -1,0 +1,29 @@
+{
+  "version": "1.0.0",
+  "episodes": [
+    {
+      "id": "kafka-share-groups",
+      "path": "/src/plugins/episodes/kafka-share-groups",
+      "enabled": true,
+      "category": "distributed-systems"
+    }
+  ],
+  "categories": {
+    "distributed-systems": {
+      "name": "Distributed Systems",
+      "description": "Episodes about distributed systems architecture and patterns"
+    },
+    "cloud-native": {
+      "name": "Cloud Native",
+      "description": "Episodes about cloud-native technologies and patterns"
+    },
+    "data-engineering": {
+      "name": "Data Engineering",
+      "description": "Episodes about data pipelines and processing"
+    },
+    "security": {
+      "name": "Security",
+      "description": "Episodes about security best practices and patterns"
+    }
+  }
+}
