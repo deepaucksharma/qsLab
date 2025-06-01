@@ -1,0 +1,31 @@
+{
+  "version": "1.0.0",
+  "name": "kafka-evolution-limits",
+  "displayName": "The Evolution & Limitations of Kafka",
+  "description": "Explore Kafka's journey from traditional consumer groups to the need for Share Groups",
+  "author": "TechFlix Team",
+  "episodeClass": "./index.js",
+  "seasonNumber": 1,
+  "episodeNumber": 1,
+  "dependencies": [],
+  "assets": {
+    "thumbnails": ["./assets/S1_E1_thumb_episode-thumbnail.jpg"],
+    "images": [
+      "./assets/S1_E1_S1_svg_kafka-timeline.svg",
+      "./assets/S1_E1_S2_svg_traffic-jam-visualization.svg"
+    ],
+    "audio": [
+      "./assets/S1_E1_S1_audio_narration.mp3",
+      "./assets/S1_E1_S1_audio_bgm-epic-intro.mp3",
+      "./assets/S1_E1_S2_audio_narration.mp3",
+      "./assets/S1_E1_S2_audio_bgm-tension-building.mp3"
+    ]
+  },
+  "config": {
+    "runtime": 3.25,
+    "level": "Intermediate",
+    "tags": ["kafka", "consumer-groups", "scalability", "share-groups"],
+    "voiceOverArtist": "TechFlix Narrator A",
+    "backgroundMusicVolume": 0.3
+  }
+}

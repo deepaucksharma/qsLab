@@ -1,0 +1,17 @@
+{
+  "version": "1.0.0",
+  "episodes": [
+    {
+      "id": "kafka-evolution-limits",
+      "path": "./kafka-evolution-limits",
+      "enabled": true,
+      "category": "distributed-systems"
+    }
+  ],
+  "categories": {
+    "distributed-systems": {
+      "name": "Distributed Systems",
+      "description": "Episodes about distributed systems architecture and patterns"
+    }
+  }
+}
