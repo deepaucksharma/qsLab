@@ -1,0 +1,22 @@
+{
+  "version": "1.0.0",
+  "name": "prometheus-jmx-exporter-setup",
+  "displayName": "Prometheus JMX Exporter Setup",
+  "description": "Configure Prometheus JMX Exporter for Kafka Share Groups and verify metrics.",
+  "author": "TechFlix Team",
+  "episodeClass": "./index.js",
+  "seasonNumber": 2,
+  "episodeNumber": 2,
+  "dependencies": [],
+  "assets": {
+    "thumbnails": [],
+    "images": [],
+    "audio": []
+  },
+  "config": {
+    "runtime": 1.5,
+    "level": "Intermediate",
+    "tags": ["kafka", "prometheus", "monitoring"],
+    "voiceOverArtist": "TechFlix Narrator"
+  }
+}
