@@ -3,13 +3,7 @@
   "episodes": [
     {
       "id": "kafka-share-groups",
-      "path": "/src/plugins/episodes/kafka-share-groups",
-      "enabled": true,
-      "category": "distributed-systems"
-    },
-    {
-      "id": "kafka-share-groups-ultra",
-      "path": "/src/plugins/episodes/kafka-share-groups-ultra",
+      "path": "./src/plugins/episodes/kafka-share-groups",
       "enabled": true,
       "category": "distributed-systems"
     }

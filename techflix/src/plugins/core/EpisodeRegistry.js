@@ -30,19 +30,24 @@ export class EpisodeRegistry {
 
   async loadRegistryConfig() {
     try {
-      const response = await fetch('/plugins/episodes/registry.json');
+      const response = await fetch('/src/plugins/episodes/registry.json');
       if (!response.ok) {
         throw new Error('Failed to load registry configuration');
       }
       return await response.json();
     } catch (error) {
       console.error('Failed to load registry config, using fallback:', error);
-      // Fallback configuration
+      // Fallback configuration with both episodes
       return {
         episodes: [
           {
             id: 'kafka-share-groups',
             path: '/src/plugins/episodes/kafka-share-groups',
+            enabled: true
+          },
+          {
+            id: 'kafka-share-groups-ultra',
+            path: '/src/plugins/episodes/kafka-share-groups-ultra',
             enabled: true
           }
         ]
@@ -124,7 +129,7 @@ export class EpisodeRegistry {
     // This could be configured elsewhere
     const seasonTitles = {
       1: 'Foundations',
-      2: 'Advanced Concepts',
+      2: 'Advanced Topics',
       3: 'Production Systems',
       4: 'Expert Patterns'
     };

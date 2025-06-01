@@ -1,3 +1,5 @@
+import { partitionBarrierEpisode, kafkaShareGroupsEpisode } from '../episodes'
+
 export const SERIES_DATA = {
   seasons: [
     {
@@ -12,45 +14,7 @@ export const SERIES_DATA = {
           level: "Advanced",
           tags: ["Kafka", "Distributed Systems", "Streaming"],
           hasContent: true,
-          episodeData: {
-            metadata: {
-              seriesId: 'tech-insights',
-              seasonNumber: 1,
-              episodeNumber: 1,
-              title: 'Breaking the Partition Barrier',
-              synopsis: 'Discover how Kafka Share Groups revolutionize message consumption',
-              runtime: 45,
-              rating: 'Advanced',
-              genres: ['Kafka', 'Distributed Systems', 'Streaming']
-            },
-            scenes: [
-              {
-                id: 'opening',
-                title: 'Epic Opening',
-                duration: 8,
-                component: 'CinematicOpeningScene'
-              },
-              {
-                id: 'problem',
-                title: 'The Problem',
-                duration: 15,
-                component: 'ProblemVisualizationScene'
-              },
-              {
-                id: 'code',
-                title: 'Code Examples',
-                duration: 20,
-                component: 'CodeExampleScene',
-                interactiveMoments: [
-                  {
-                    id: 'state-machine',
-                    timestamp: 15,
-                    component: 'InteractiveStateMachine'
-                  }
-                ]
-              }
-            ]
-          }
+          episodeData: partitionBarrierEpisode
         },
         {
           number: 2,
@@ -87,6 +51,16 @@ export const SERIES_DATA = {
       episodes: [
         {
           number: 1,
+          title: "Kafka Share Groups: The Future of Event Streaming",
+          description: "Explore Apache Kafka 4.0's revolutionary Share Groups feature that breaks the scalability bottleneck of traditional consumer groups.",
+          duration: "32m",
+          level: "Advanced",
+          tags: ["Kafka", "Share Groups", "Event Streaming"],
+          hasContent: true,
+          episodeData: kafkaShareGroupsEpisode
+        },
+        {
+          number: 2,
           title: "Distributed Systems Consensus",
           description: "Explore Raft, Paxos, and modern consensus algorithms.",
           duration: "55m",
@@ -95,7 +69,7 @@ export const SERIES_DATA = {
           hasContent: false
         },
         {
-          number: 2,
+          number: 3,
           title: "Real-time Stream Processing",
           description: "Build high-performance streaming pipelines with Apache Flink.",
           duration: "42m",
@@ -104,7 +78,7 @@ export const SERIES_DATA = {
           hasContent: false
         },
         {
-          number: 3,
+          number: 4,
           title: "Cloud Native Security",
           description: "Implement zero-trust architecture in Kubernetes environments.",
           duration: "50m",

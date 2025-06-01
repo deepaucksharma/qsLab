@@ -3,9 +3,9 @@ import Header from './components/Header'
 import HeroSection from './components/HeroSection'
 import EpisodesSection from './components/EpisodesSection'
 import SeriesDetails from './components/SeriesDetails'
-import NetflixEpisodePlayerPlugin from './components/NetflixEpisodePlayerPlugin'
-import { episodeRegistry } from './plugins/core/EpisodeRegistry'
+import NetflixEpisodePlayer from './components/NetflixEpisodePlayer'
 import EpisodeErrorBoundary from './components/EpisodeErrorBoundary'
+import { SERIES_DATA } from './data/seriesData'
 import './styles/global.css'
 
 // App Context for state management
@@ -16,7 +16,6 @@ export const AppContext = createContext({
   setIsPlayerActive: () => {},
   currentEpisode: null,
   setCurrentEpisode: () => {},
-  episodeRegistry: null,
   seasons: [],
   isLoading: true,
   error: null
@@ -31,14 +30,13 @@ function App() {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState(null)
 
-  // Initialize episode registry on mount
+  // Initialize seasons from static data
   useEffect(() => {
     const initializeEpisodes = async () => {
       try {
         setIsLoading(true)
-        await episodeRegistry.initialize()
-        const loadedSeasons = episodeRegistry.getSeasons()
-        setSeasons(loadedSeasons)
+        // Use static SERIES_DATA
+        setSeasons(SERIES_DATA.seasons)
         setError(null)
       } catch (err) {
         console.error('Failed to initialize episodes:', err)
@@ -58,7 +56,6 @@ function App() {
     setIsPlayerActive,
     currentEpisode,
     setCurrentEpisode,
-    episodeRegistry,
     seasons,
     isLoading,
     error
@@ -73,7 +70,7 @@ function App() {
             setCurrentEpisode(null)
           }}
         >
-          <NetflixEpisodePlayerPlugin
+          <NetflixEpisodePlayer
             episodeData={currentEpisode}
             onEpisodeEnd={() => {
               console.log("Episode completed!")

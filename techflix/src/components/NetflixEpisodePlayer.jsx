@@ -2,11 +2,6 @@ import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { Play, Pause, ChevronLeft, Maximize2, Volume2, Settings, 
          SkipForward, SkipBack, Info } from 'lucide-react'
 
-// Import scene components
-import CinematicOpeningScene from './scenes/CinematicOpeningScene'
-import ProblemVisualizationScene from './scenes/ProblemVisualizationScene'
-import CodeExampleScene from './scenes/CodeExampleScene'
-
 // Import interactive components
 import InteractiveStateMachine from './interactive/InteractiveStateMachine'
 
@@ -22,13 +17,7 @@ const NetflixEpisodePlayer = ({ episodeData, onEpisodeEnd, onBack }) => {
   const playerRef = useRef(null)
   const controlsTimeoutRef = useRef(null)
 
-  // Scene component mapping
-  const sceneComponents = {
-    CinematicOpeningScene,
-    ProblemVisualizationScene,
-    CodeExampleScene
-  }
-
+  // Interactive component mapping for string references
   const interactiveComponents = {
     InteractiveStateMachine
   }
@@ -155,7 +144,7 @@ const NetflixEpisodePlayer = ({ episodeData, onEpisodeEnd, onBack }) => {
   }
 
   const currentSceneData = episode.scenes[currentSceneIndex]
-  const SceneComponent = sceneComponents[currentSceneData?.component]
+  const SceneComponent = currentSceneData?.component
   const InteractiveComponent = interactiveMode ? interactiveComponents[interactiveMode.component] : null
 
   return (
