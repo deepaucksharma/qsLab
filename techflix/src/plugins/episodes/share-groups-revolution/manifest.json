@@ -1,0 +1,40 @@
+{
+  "version": "1.0.0",
+  "name": "share-groups-revolution",
+  "displayName": "Share Groups Revolution",
+  "description": "Dive into Kafka 4.0's Share Groups feature and see how it removes consumer limitations",
+  "author": "TechFlix Team",
+  "episodeClass": "./index.js",
+  "seasonNumber": 1,
+  "episodeNumber": 2,
+  "dependencies": [],
+  "assets": {
+    "thumbnails": ["./assets/S1_E2_thumb_episode-thumbnail.jpg"],
+    "images": [
+      "./assets/S1_E2_S1_svg_reservoir-base.svg",
+      "./assets/S1_E2_S1_svg_consumer-tap-template.svg",
+      "./assets/S1_E2_S1_svg_throughput-gauge.svg",
+      "./assets/S1_E2_S1_png_kip932-badge.png"
+    ],
+    "animations": [
+      "./assets/S1_E2_S1_anim_particle-flow.json",
+      "./assets/S1_E2_S1_anim_holographic-shimmer.json"
+    ],
+    "data": [
+      "./assets/S1_E2_S1_data_throughput-metrics.json"
+    ],
+    "audio": [
+      "./assets/S1_E2_S1_audio_narration.mp3",
+      "./assets/S1_E2_S1_audio_bgm-innovation-reveal.mp3",
+      "./assets/S1_E2_S1_audio_sfx-particle-flow.mp3",
+      "./assets/S1_E2_S1_audio_sfx-achievement.mp3"
+    ]
+  },
+  "config": {
+    "runtime": 4.0,
+    "level": "Advanced",
+    "tags": ["kafka", "share-groups", "distributed-systems"],
+    "voiceOverArtist": "TechFlix Narrator A",
+    "backgroundMusicVolume": 0.3
+  }
+}

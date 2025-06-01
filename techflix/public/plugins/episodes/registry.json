@@ -6,6 +6,12 @@
       "path": "./src/plugins/episodes/kafka-share-groups",
       "enabled": true,
       "category": "distributed-systems"
+    },
+    {
+      "id": "share-groups-revolution",
+      "path": "./src/plugins/episodes/share-groups-revolution",
+      "enabled": true,
+      "category": "distributed-systems"
     }
   ],
   "categories": {
