@@ -1,0 +1,18 @@
+{
+  "version": "1.0.0",
+  "name": "custom-ohi-development",
+  "displayName": "Custom OHI Development",
+  "description": "Developing a custom New Relic On‑Host Integration using the OHI builder.",
+  "author": "TechFlix Team",
+  "episodeClass": "./index.js",
+  "seasonNumber": 3,
+  "episodeNumber": 1,
+  "dependencies": [],
+  "assets": {},
+  "config": {
+    "runtime": 120,
+    "level": "Advanced",
+    "tags": ["newrelic", "ohi", "observability"],
+    "voiceOverArtist": "TechFlix Narrator"
+  }
+}

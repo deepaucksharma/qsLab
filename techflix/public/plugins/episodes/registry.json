@@ -6,6 +6,12 @@
       "path": "./src/plugins/episodes/kafka-share-groups",
       "enabled": true,
       "category": "distributed-systems"
+    },
+    {
+      "id": "custom-ohi-development",
+      "path": "./src/plugins/episodes/custom-ohi-development",
+      "enabled": true,
+      "category": "cloud-native"
     }
   ],
   "categories": {
