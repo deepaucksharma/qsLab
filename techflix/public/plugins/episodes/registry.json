@@ -6,6 +6,12 @@
       "path": "./src/plugins/episodes/kafka-share-groups",
       "enabled": true,
       "category": "distributed-systems"
+    },
+    {
+      "id": "queues-streams-ui-integration",
+      "path": "./src/plugins/episodes/queues-streams-ui-integration",
+      "enabled": true,
+      "category": "cloud-native"
     }
   ],
   "categories": {
