@@ -209,7 +209,7 @@ This document - providing overview and next steps
 
 ### TechFlix Platform
 - Episode Specification v1.0
-- Plugin Development Guide
+- Episode Development Guide
 - Asset Guidelines
 
 ---

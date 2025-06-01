@@ -52,7 +52,14 @@ techflix/
 │   │   ├── NetflixEpisodePlayer.jsx # Video player
 │   │   ├── interactive/     # Interactive components
 │   │   └── scenes/          # Scene-specific components
-│   ├── data/               # Content and episode data
+│   ├── episodes/           # Episode modules (direct imports)
+│   │   ├── index.js        # Episode exports
+│   │   ├── season1/        # Season 1 episodes
+│   │   │   └── ep1-partition-barrier/
+│   │   └── season2/        # Season 2 episodes
+│   │       └── ep1-kafka-share-groups/
+│   ├── data/               # Content and series data
+│   │   └── seriesData.js   # Series and episode metadata
 │   ├── styles/             # Global CSS and themes
 │   ├── App.jsx             # Main application component
 │   ├── main.jsx            # React entry point
@@ -74,8 +81,9 @@ techflix/
 - **ProgressBar**: Scene navigation and progress tracking
 
 ### Content Management
-- **episodeData.js**: Episode content and structure
-- **seriesData.js**: Series metadata and organization
+- **seriesData.js**: Series metadata and episode links
+- **episodes/**: Episode modules with direct component imports
+- **Scene Components**: Reusable scene components in `/components/scenes/`
 
 ### UI Components
 - **Header**: Navigation and user controls
@@ -106,23 +114,35 @@ npm run lint     # Run ESLint
 
 ### Adding New Content
 
-#### Episodes
-Edit `src/data/episodeData.js`:
+#### Creating a New Episode
+1. Create episode directory: `src/episodes/season{X}/ep{Y}-{name}/`
+2. Create `index.js` with episode data:
 ```javascript
-{
-  id: 'new-episode',
-  title: 'Episode Title',
-  description: 'Episode description...',
+import SceneComponent from '../../../components/scenes/SceneComponent'
+
+export const myEpisode = {
+  metadata: {
+    seriesId: 'tech-insights',
+    seasonNumber: 1,
+    episodeNumber: 1,
+    title: 'Episode Title',
+    synopsis: 'Episode description...',
+    runtime: 45,
+    rating: 'Advanced',
+    genres: ['Tech', 'Programming']
+  },
   scenes: [
     {
       id: 'scene-1',
       title: 'Scene Title',
-      content: 'Scene content...',
-      interactiveElements: [...]
+      duration: 300, // seconds
+      component: SceneComponent
     }
   ]
 }
 ```
+3. Export from `src/episodes/index.js`
+4. Add to `src/data/seriesData.js`
 
 #### Interactive Elements
 ```javascript

@@ -80,9 +80,7 @@ const ImpactMetricsScene = ({ time, duration }) => {
               <div className="text-5xl mb-4">{metric.icon}</div>
               
               {/* Value */}
-              <div className="text-6xl font-black mb-4 bg-gradient-to-r bg-clip-text text-transparent"
-                   style={{ backgroundImage: `linear-gradient(to right, var(--tw-gradient-stops))` }}
-                   className={`bg-gradient-to-r ${metric.color} bg-clip-text text-transparent`}>
+              <div className={`text-6xl font-black mb-4 bg-gradient-to-r ${metric.color} bg-clip-text text-transparent`}>
                 {metricValues[index]}{metric.suffix}
               </div>
               

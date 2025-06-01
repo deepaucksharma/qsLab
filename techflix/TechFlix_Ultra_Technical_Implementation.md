@@ -602,13 +602,12 @@ export default {
   build: {
     rollupOptions: {
       input: {
-        'kafka-evolution-limits': './src/plugins/episodes/kafka-evolution-limits/index.js',
-        'share-groups-revolution': './src/plugins/episodes/share-groups-revolution/index.js',
-        // ... other episodes
+        'main': './src/main.jsx',
+        // Episodes are now directly imported in the application
       },
       output: {
-        entryFileNames: 'episodes/[name]/bundle.js',
-        assetFileNames: 'episodes/[name]/assets/[name].[ext]'
+        entryFileNames: '[name].[hash].js',
+        assetFileNames: 'assets/[name].[hash].[ext]'
       }
     },
     // Code splitting for better performance
