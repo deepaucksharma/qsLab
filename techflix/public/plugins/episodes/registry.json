@@ -6,6 +6,12 @@
       "path": "./src/plugins/episodes/kafka-share-groups",
       "enabled": true,
       "category": "distributed-systems"
+    },
+    {
+      "id": "kafka-jmx-exploration",
+      "path": "./src/plugins/episodes/kafka-jmx-exploration",
+      "enabled": true,
+      "category": "distributed-systems"
     }
   ],
   "categories": {
