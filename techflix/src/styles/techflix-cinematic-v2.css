@@ -1,0 +1,352 @@
+/* TechFlix Cinematic Design System v2 - Content-First Approach */
+
+/* ========================================
+   DESIGN PHILOSOPHY:
+   - Content is the hero, not effects
+   - Clear visual hierarchy
+   - Generous whitespace for breathing room
+   - Subtle, purposeful animations
+   - Professional, not distracting
+   ======================================== */
+
+:root {
+  /* Core Colors - Simplified */
+  --tf-black: #0a0a0a;
+  --tf-white: #ffffff;
+  --tf-primary: #e50914;
+  --tf-text-primary: #ffffff;
+  --tf-text-secondary: #b3b3b3;
+  --tf-text-muted: #737373;
+  
+  /* Technical Semantic Colors */
+  --tf-success: #46d369;
+  --tf-warning: #ffa500;
+  --tf-error: #e50914;
+  --tf-info: #0080ff;
+  --tf-code: #61dafb;
+  
+  /* Backgrounds - Subtle */
+  --tf-bg-primary: #0a0a0a;
+  --tf-bg-secondary: #141414;
+  --tf-bg-elevated: #1f1f1f;
+  --tf-bg-overlay: rgba(0, 0, 0, 0.85);
+  
+  /* Content Spacing System */
+  --content-max-width: 1200px;
+  --content-padding-mobile: 1.5rem;
+  --content-padding-tablet: 3rem;
+  --content-padding-desktop: 4rem;
+  --content-margin-top: 5rem;
+  --content-margin-bottom: 5rem;
+  
+  /* Typography - Readable */
+  --font-display: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+  
+  /* Font Sizes - Constrained */
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.25rem;
+  --text-xl: 1.5rem;
+  --text-2xl: 2rem;
+  --text-3xl: 2.5rem;
+  --text-4xl: 3rem;
+  --text-5xl: 3.5rem;
+  
+  /* Transitions - Smooth, not flashy */
+  --transition-fast: 150ms ease;
+  --transition-base: 250ms ease;
+  --transition-slow: 500ms ease;
+  --easing-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ========================================
+   BASE SCENE STRUCTURE
+   ======================================== */
+
+.scene-container-v2 {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  background: var(--tf-bg-primary);
+  color: var(--tf-text-primary);
+  overflow: hidden;
+  
+  /* Remove all distracting backgrounds */
+  /* Focus on content */
+}
+
+/* Content Wrapper - Properly Centered */
+.scene-content {
+  position: relative;
+  width: 100%;
+  max-width: var(--content-max-width);
+  margin: 0 auto;
+  padding: var(--content-margin-top) var(--content-padding-mobile) var(--content-margin-bottom);
+  
+  /* Ensure content is centered and has breathing room */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  
+  @media (min-width: 768px) {
+    padding: var(--content-margin-top) var(--content-padding-tablet) var(--content-margin-bottom);
+  }
+  
+  @media (min-width: 1024px) {
+    padding: var(--content-margin-top) var(--content-padding-desktop) var(--content-margin-bottom);
+  }
+}
+
+/* ========================================
+   TYPOGRAPHY - CLEAR & READABLE
+   ======================================== */
+
+.scene-title {
+  font-family: var(--font-display);
+  font-size: clamp(var(--text-3xl), 5vw, var(--text-5xl));
+  font-weight: 700;
+  line-height: 1.1;
+  text-align: center;
+  margin-bottom: 1.5rem;
+  
+  /* Subtle entrance */
+  opacity: 0;
+  animation: fadeInUp 1s var(--easing-smooth) forwards;
+}
+
+.scene-subtitle {
+  font-size: clamp(var(--text-lg), 3vw, var(--text-2xl));
+  font-weight: 400;
+  color: var(--tf-text-secondary);
+  text-align: center;
+  margin-bottom: 3rem;
+  max-width: 800px;
+  
+  opacity: 0;
+  animation: fadeInUp 1s var(--easing-smooth) 0.2s forwards;
+}
+
+.scene-text {
+  font-size: var(--text-lg);
+  line-height: 1.7;
+  color: var(--tf-text-secondary);
+  max-width: 720px;
+  margin: 0 auto 2rem;
+  text-align: center;
+}
+
+/* ========================================
+   LAYOUT COMPONENTS
+   ======================================== */
+
+/* Architecture Diagram - Clean & Focused */
+.architecture-container {
+  position: relative;
+  width: 100%;
+  max-width: 900px;
+  margin: 3rem auto;
+  padding: 2rem;
+  background: var(--tf-bg-elevated);
+  border-radius: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.architecture-node {
+  position: absolute;
+  padding: 1rem 1.5rem;
+  background: var(--tf-bg-secondary);
+  border: 2px solid currentColor;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  transition: all var(--transition-base);
+  
+  /* Remove hover effects that are too flashy */
+  &:hover {
+    transform: translateY(-2px);
+    background: var(--tf-bg-elevated);
+  }
+}
+
+/* Metrics Display - Information-Dense */
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  width: 100%;
+  max-width: 900px;
+  margin: 3rem auto;
+}
+
+.metric-card-v2 {
+  background: var(--tf-bg-elevated);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 1.5rem;
+  border-radius: 0.75rem;
+  
+  /* No gradients or glows */
+}
+
+.metric-value {
+  font-size: var(--text-3xl);
+  font-weight: 700;
+  color: var(--tf-text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.metric-label {
+  font-size: var(--text-sm);
+  color: var(--tf-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* ========================================
+   CODE BLOCKS - READABLE
+   ======================================== */
+
+.code-block {
+  background: var(--tf-bg-secondary);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  margin: 2rem 0;
+  overflow-x: auto;
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  line-height: 1.6;
+  
+  /* No animations on code */
+}
+
+/* ========================================
+   ANIMATIONS - SUBTLE & PURPOSEFUL
+   ======================================== */
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Simple reveal for elements */
+.reveal {
+  opacity: 0;
+  animation: fadeInUp 0.8s var(--easing-smooth) forwards;
+}
+
+.reveal-delay-1 { animation-delay: 0.1s; }
+.reveal-delay-2 { animation-delay: 0.2s; }
+.reveal-delay-3 { animation-delay: 0.3s; }
+.reveal-delay-4 { animation-delay: 0.4s; }
+
+/* ========================================
+   DATA FLOW VISUALIZATION - FOCUSED
+   ======================================== */
+
+.data-flow-container {
+  position: relative;
+  width: 100%;
+  height: 400px;
+  margin: 3rem 0;
+  background: var(--tf-bg-elevated);
+  border-radius: 1rem;
+  overflow: hidden;
+}
+
+.data-packet {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: var(--tf-info);
+  border-radius: 50%;
+  opacity: 0.8;
+  
+  /* Simple linear movement, no fancy effects */
+}
+
+/* ========================================
+   INTERACTIVE ELEMENTS - CLEAR AFFORDANCES
+   ======================================== */
+
+.button-primary {
+  background: var(--tf-primary);
+  color: var(--tf-white);
+  padding: 0.75rem 2rem;
+  border: none;
+  border-radius: 0.25rem;
+  font-weight: 600;
+  font-size: var(--text-base);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  
+  &:hover {
+    background: #f40612;
+    transform: translateY(-1px);
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+/* ========================================
+   REMOVE OLD DISTRACTING ELEMENTS
+   ======================================== */
+
+/* No particle backgrounds */
+.particle-background { display: none !important; }
+
+/* No tech grids */
+.bg-tech-grid { display: none !important; }
+
+/* Disabled floating animations - replaced with static positioning */
+/* .animate-float class should be removed from components */
+
+/* No pulse effects */
+.pulse { animation: none !important; }
+
+/* ========================================
+   RESPONSIVE ADJUSTMENTS
+   ======================================== */
+
+@media (max-width: 768px) {
+  .scene-content {
+    padding: 3rem 1.5rem;
+  }
+  
+  .architecture-container {
+    padding: 1rem;
+  }
+  
+  .metrics-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ========================================
+   DARK MODE OPTIMIZATIONS
+   ======================================== */
+
+@media (prefers-color-scheme: light) {
+  /* Provide light mode support if needed */
+  :root {
+    --tf-bg-primary: #ffffff;
+    --tf-bg-secondary: #f5f5f5;
+    --tf-text-primary: #000000;
+    --tf-text-secondary: #4a4a4a;
+  }
+}

@@ -1,7 +1,12 @@
 import React, { useState, useEffect } from 'react'
+import SoundControl from './SoundControl'
+import { useClickSound, useHoverSound } from '@hooks/useAudio'
 
+// Header Component
 const Header = () => {
   const [scrolled, setScrolled] = useState(false)
+  const withClickSound = useClickSound()
+  const hoverProps = useHoverSound()
 
   useEffect(() => {
     const handleScroll = () => {
@@ -15,16 +20,17 @@ const Header = () => {
   return (
     <header className={`header ${scrolled ? 'scrolled' : ''}`}>
       <nav className="nav">
-        <a href="#" className="logo" onClick={() => window.location.reload()}>TechFlix</a>
+        <a href="#" className="logo" onClick={withClickSound(() => window.location.reload())} {...hoverProps}>TechFlix</a>
         <ul className="nav-links">
-          <li><a href="#">Home</a></li>
-          <li><a href="#">Series</a></li>
-          <li><a href="#">New & Popular</a></li>
-          <li><a href="#">My List</a></li>
+          <li><a href="#" onClick={withClickSound()} {...hoverProps}>Home</a></li>
+          <li><a href="#" onClick={withClickSound()} {...hoverProps}>Series</a></li>
+          <li><a href="#" onClick={withClickSound()} {...hoverProps}>New & Popular</a></li>
+          <li><a href="#" onClick={withClickSound()} {...hoverProps}>My List</a></li>
         </ul>
         <div className="nav-right">
           <input type="text" className="search-box" placeholder="Search titles..." />
-          <div className="profile">U</div>
+          <SoundControl className="mx-4" />
+          <div className="profile" onClick={withClickSound()} {...hoverProps}>U</div>
         </div>
       </nav>
     </header>

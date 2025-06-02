@@ -1,4 +1,4 @@
-import { partitionBarrierEpisode, kafkaShareGroupsEpisode } from '../episodes'
+import { partitionBarrierEpisode, criticalMetricsEpisode, kafkaShareGroupsEpisode, jmxExplorationEpisode, prometheusSetupEpisode, customOHIEpisode, criticalMetricsShiftsEpisode, seriesFinaleEpisode } from '../episodes'
 
 export const SERIES_DATA = {
   seasons: [
@@ -23,7 +23,8 @@ export const SERIES_DATA = {
           duration: "38m",
           level: "Intermediate",
           tags: ["Monitoring", "Observability", "Metrics"],
-          hasContent: false
+          hasContent: true,
+          episodeData: criticalMetricsEpisode
         },
         {
           number: 3,
@@ -66,7 +67,8 @@ export const SERIES_DATA = {
           duration: "55m",
           level: "Expert",
           tags: ["Consensus", "Distributed Systems", "Algorithms"],
-          hasContent: false
+          hasContent: true,
+          episodeData: jmxExplorationEpisode
         },
         {
           number: 3,
@@ -75,7 +77,8 @@ export const SERIES_DATA = {
           duration: "42m",
           level: "Advanced",
           tags: ["Streaming", "Flink", "Real-time"],
-          hasContent: false
+          hasContent: true,
+          episodeData: prometheusSetupEpisode
         },
         {
           number: 4,
@@ -84,7 +87,24 @@ export const SERIES_DATA = {
           duration: "50m",
           level: "Advanced",
           tags: ["Security", "Kubernetes", "Zero Trust"],
-          hasContent: false
+          hasContent: true,
+          episodeData: customOHIEpisode
+        }
+      ]
+    },
+    {
+      number: 3,
+      title: "Season 3: Series Finale",
+      episodes: [
+        {
+          number: 3,
+          title: "Series Finale: You're Ready to Observe!",
+          description: "Celebrate your journey from Kafka fundamentals to full observability mastery.",
+          duration: "10m",
+          level: "Advanced",
+          tags: ["Finale", "Kafka", "Observability", "Share Groups"],
+          hasContent: true,
+          episodeData: seriesFinaleEpisode
         }
       ]
     }
