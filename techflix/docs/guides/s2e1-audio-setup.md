@@ -159,8 +159,8 @@ Subtitles are automatically extracted from voice-over text. To modify:
 
 ### Missing Subtitles
 1. Ensure CC is enabled (button in top-right)
-2. Check episodeAudioManager is initialized
-3. Verify subtitle callback is set
+2. Check audioManager is initialized (and episode audio has been loaded via `loadEpisodeAudio`)
+3. Verify subtitle callback is set (via `setEpisodeSubtitleCallback`)
 
 ## Production Tips
 

@@ -197,7 +197,7 @@ async def generate_all_voiceovers():
     """Generate all voice-overs for the episode"""
     # Create output directory
     base_dir = Path(__file__).parent.parent
-    output_dir = base_dir / "public" / "sounds" / "voiceovers" / "s2e1"
+    output_dir = base_dir / "public" / "audio" / "voiceovers" / "s2e1"
     output_dir.mkdir(parents=True, exist_ok=True)
     
     # Track metadata
