@@ -63,19 +63,21 @@ export const criticalMetricsShiftsEpisode = {
       }
     }
   ],
-  interactiveMoments: [
-    {
-      id: 'metric-quiz',
-      timestamp: 25,
-      type: 'quiz',
-      question: 'Which metric best indicates share group health?',
-      options: [
-        'Consumer lag',
-        'Records unacknowledged age',
-        'Partition count',
-        'Throughput rate'
-      ],
-      correctAnswer: 1
-    }
-  ]
+  // Temporarily disabled - quiz component not implemented
+  // interactiveMoments: [
+  //   {
+  //     id: 'metric-quiz',
+  //     timestamp: 25,
+  //     type: 'quiz',
+  //     question: 'Which metric best indicates share group health?',
+  //     options: [
+  //       'Consumer lag',
+  //       'Records unacknowledged age',
+  //       'Partition count',
+  //       'Throughput rate'
+  //     ],
+  //     correctAnswer: 1
+  //   }
+  // ]
+  interactiveMoments: []
 }

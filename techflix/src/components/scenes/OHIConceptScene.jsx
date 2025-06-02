@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Wrench, BarChart3, Rocket, Zap, Target, TrendingUp, ArrowRight, Cpu, Cloud, Server } from 'lucide-react';
 import '../../styles/techflix-cinematic-v2.css';
@@ -135,7 +135,7 @@ const OHIConceptScene = ({ time, duration }) => {
                 
                 <div className="flex items-center justify-between gap-4 flex-wrap md:flex-nowrap">
                   {architectureFlow.map((component, index) => (
-                    <React.Fragment key={component.id}>
+                    <div key={component.id}>
                       {shouldShowArchitecture(index) && (
                         <motion.div
                           initial={{ opacity: 0, y: 30 }}
@@ -166,7 +166,7 @@ const OHIConceptScene = ({ time, duration }) => {
                           <ArrowRight className="w-8 h-8 text-gray-600" />
                         </motion.div>
                       )}
-                    </React.Fragment>
+                    </div>
                   ))}
                 </div>
 

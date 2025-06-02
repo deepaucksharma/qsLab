@@ -4,6 +4,8 @@ import HomePage from '../pages/HomePage';
 import BrowsePage from '../pages/BrowsePage';
 import SeriesPage from '../pages/SeriesPage';
 import TTSTestPage from '../pages/TTSTestPage';
+import NotFoundPage from '../pages/NotFoundPage';
+import SearchPage from '../pages/SearchPage';
 
 export const router = createBrowserRouter([
   {
@@ -19,6 +21,10 @@ export const router = createBrowserRouter([
         element: <BrowsePage />,
       },
       {
+        path: 'search',
+        element: <SearchPage />,
+      },
+      {
         path: 'series/:seriesId',
         element: <SeriesPage />,
       },
@@ -28,7 +34,7 @@ export const router = createBrowserRouter([
       },
       {
         path: '*',
-        element: <Navigate to="/browse" replace />,
+        element: <NotFoundPage />,
       },
     ],
   },
@@ -38,5 +44,6 @@ export const router = createBrowserRouter([
 export const ROUTES = {
   HOME: '/',
   BROWSE: '/browse',
+  SEARCH: '/search',
   SERIES: (seriesId) => `/series/${seriesId}`,
 };

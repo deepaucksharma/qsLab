@@ -1,4 +1,4 @@
-import { Volume2, VolumeX, Mic, MicOff, SkipBack, Pause, Play } from 'lucide-react';
+import { Volume2, VolumeX, SkipBack, Pause, Play } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState } from 'react';
 import audioManager from '@utils/audioManager';

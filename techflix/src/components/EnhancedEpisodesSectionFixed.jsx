@@ -1,10 +1,10 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useContext, useEffect, useCallback, useMemo } from 'react';
 import { AppContext } from '../App';
 import SeasonTabs from './SeasonTabs';
 import NetflixEpisodeCard from './NetflixEpisodeCard';
 import { Grid3x3, List, Clock } from 'lucide-react';
 // import { SERIES_DATA } from '../data/seriesData'; // Not needed - using from context
-import { useEpisodeProgress } from '../hooks/useEpisodeProgress';
+import logger from '../utils/logger';
 
 // Progress tracking utilities
 const getProgress = (seasonNumber, episodeNumber) => {
@@ -85,15 +85,21 @@ const EnhancedEpisodesSectionFixed = () => {
   useEffect(() => {
     const transformed = {};
     seasons.forEach(season => {
-      transformed[season.number] = season.episodes.map(episode => 
-        transformEpisodeData(episode, season.number)
-      );
+      // Defensive check: ensure episodes array exists
+      if (season && season.episodes && Array.isArray(season.episodes)) {
+        transformed[season.number] = season.episodes.map(episode => 
+          transformEpisodeData(episode, season.number)
+        );
+      } else {
+        logger.warn('Season missing episodes array', { seasonNumber: season?.number });
+        transformed[season.number] = [];
+      }
     });
     setTransformedData(transformed);
   }, [seasons]);
   
-  // Get continue watching episodes
-  const getContinueWatching = () => {
+  // Get continue watching episodes (memoized for performance)
+  const continueWatchingEpisodes = useMemo(() => {
     const continueWatching = [];
     Object.entries(transformedData).forEach(([_seasonNumber, episodes]) => {
       episodes.forEach(episode => {
@@ -107,9 +113,7 @@ const EnhancedEpisodesSectionFixed = () => {
       const dateB = new Date(b.progress.watchedDate || 0);
       return dateB - dateA;
     });
-  };
-  
-  const continueWatchingEpisodes = getContinueWatching();
+  }, [transformedData]);
   
   // Get current season data
   const currentSeasonData = seasons.find(s => s.number === selectedSeason);

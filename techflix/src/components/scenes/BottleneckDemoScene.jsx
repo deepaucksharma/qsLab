@@ -1,4 +1,3 @@
-import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import '../../styles/techflix-cinematic-v2.css';
 

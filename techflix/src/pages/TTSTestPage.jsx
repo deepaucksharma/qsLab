@@ -131,7 +131,7 @@ const TTSTestPage = () => {
     
     try {
       // Check if running mock API (development)
-      const API_URL = process.env.NODE_ENV === 'development' 
+      const API_URL = import.meta.env.MODE === 'development' 
         ? 'http://localhost:3333/api/tts/generate'
         : '/api/tts/generate';
       

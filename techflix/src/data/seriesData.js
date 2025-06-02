@@ -1,4 +1,4 @@
-import { partitionBarrierEpisode, criticalMetricsEpisode, microservicesEpisode, kafkaShareGroupsEpisode, jmxExplorationEpisode, prometheusSetupEpisode, customOHIEpisode, criticalMetricsShiftsEpisode, seriesFinaleEpisode } from '../episodes'
+import { partitionBarrierEpisode, criticalMetricsEpisode, microservicesEpisode, kafkaShareGroupsEpisode, jmxExplorationEpisode, prometheusSetupEpisode, customOHIEpisode, criticalMetricsShiftsEpisode, dataIngestionPathsEpisode, kafkaEvolutionLimitsEpisode, seriesFinaleEpisode } from '../episodes'
 
 export const SERIES_DATA = {
   seasons: [
@@ -90,6 +90,36 @@ export const SERIES_DATA = {
           tags: ["Security", "Kubernetes", "Zero Trust"],
           hasContent: true,
           episodeData: customOHIEpisode
+        },
+        {
+          number: 5,
+          title: "Key Shifts in Critical Metrics",
+          description: "Discover the paradigm shifts in Kafka monitoring - from traditional consumer lag to share group metrics.",
+          duration: "45m",
+          level: "Advanced",
+          tags: ["Kafka", "Monitoring", "Metrics", "Share Groups"],
+          hasContent: true,
+          episodeData: criticalMetricsShiftsEpisode
+        },
+        {
+          number: 6,
+          title: "Data Ingestion Paths",
+          description: "Master the art of data ingestion patterns in Kafka - from direct producer APIs to complex stream processing pipelines.",
+          duration: "50m",
+          level: "Intermediate",
+          tags: ["Kafka", "Data Engineering", "Stream Processing", "Architecture"],
+          hasContent: true,
+          episodeData: dataIngestionPathsEpisode
+        },
+        {
+          number: 7,
+          title: "Kafka Evolution and Limits",
+          description: "Journey through Kafka's evolution, understand its architectural limits, and glimpse the future of distributed streaming.",
+          duration: "55m",
+          level: "Expert",
+          tags: ["Kafka", "Architecture", "Distributed Systems", "Future Tech"],
+          hasContent: true,
+          episodeData: kafkaEvolutionLimitsEpisode
         }
       ]
     },

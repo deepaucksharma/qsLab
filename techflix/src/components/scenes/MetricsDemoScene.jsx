@@ -1,4 +1,3 @@
-import React from 'react'
 import AnimatedMetricCounter from '../AnimatedMetricCounter'
 import ProgressiveReveal from '../ProgressiveReveal'
 import { motion } from 'framer-motion'

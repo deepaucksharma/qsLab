@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Terminal, CheckCircle, Search, TrendingUp, Clock, Database, Sparkles } from 'lucide-react';
 import { ParticleBackground, SceneTransition, CinematicTitle } from '../StorytellingComponents';

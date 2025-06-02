@@ -3,7 +3,7 @@
  * Shows the history of Apache Kafka from 2011 to present
  */
 
-import React, { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Calendar, Users, MessageSquare, TrendingUp, Zap } from 'lucide-react'
 import audioManager from '@utils/audioManagerV2' // Use new streamlined audio manager
@@ -89,11 +89,13 @@ const EvolutionTimelineSceneV3 = ({ time = 0, duration = 480 }) => {
     
     return () => {
       // Cleanup when component unmounts
-      if (audioInitialized.current) {
-        logger.debug('EvolutionTimelineSceneV3: Cleaning up audio')
-        audioManager.cleanupEpisodeAudio()
-        audioInitialized.current = false
-      }
+      // TEMPORARILY DISABLED: Prevents audio from cutting out during scene transitions
+      // This was cleaning up ALL episode audio, not just scene-specific audio
+      // if (audioInitialized.current) {
+      //   logger.debug('EvolutionTimelineSceneV3: Cleaning up audio')
+      //   audioManager.cleanupEpisodeAudio()
+      //   audioInitialized.current = false
+      // }
     }
   }, [])
   

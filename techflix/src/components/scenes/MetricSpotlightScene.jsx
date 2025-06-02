@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { BarChart3, Clock, AlertTriangle, TrendingUp, Activity, Gauge } from 'lucide-react';
 import '../../styles/techflix-cinematic-v2.css';

@@ -6,22 +6,37 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This repository contains **TechFlix**, a Netflix-style streaming platform for technical educational content built with React, Tailwind CSS, and Vite. The platform specializes in teaching Kafka 4.0 Share Groups and New Relic observability through interactive, cinematic episodes.
 
+## Recent Project Reorganization (Important)
+
+The project underwent a major reorganization in January 2025:
+- Configuration files moved to `config/` directory  
+- Scripts moved to `scripts/` directory
+- Server files moved to `server/` directory
+- Documentation reorganized into `docs/` with hierarchical structure
+- All npm scripts now use `--config` flags
+
 ## Common Development Commands
 
 ```bash
+# Development - Working directory: techflix/
+cd techflix/
+
 # Install dependencies
 npm install
 
 # Start development server (http://localhost:3000)
 npm run dev
 
+# Start on specific port
+PORT=3001 npm run dev
+
 # Build for production
 npm run build
 
-# Preview production build
+# Preview production build  
 npm run preview
 
-# Run tests
+# Run tests (uses config/vitest.config.js)
 npm test
 
 # Run tests with UI
@@ -30,85 +45,109 @@ npm run test:ui
 # Run tests with coverage
 npm run test:coverage
 
-# Lint code
+# Run single test file
+npm test -- src/components/Header.test.jsx
+
+# Linting and formatting
 npm run lint
-
-# Fix linting issues
 npm run lint:fix
-
-# Format code
 npm run format
-
-# Check formatting
 npm run format:check
-
-# Type check (TypeScript)
 npm run type-check
+
+# Bundle analysis
+npm run build:analyze
+
+# Parallel testing instances
+./scripts/parallel-instances.sh
+
+# Start server (after build)
+node server/server.js
 ```
 
 ## High-Level Architecture
 
 ### Episode System Architecture
-The content is organized in an episode-based structure where each episode contains:
 
-1. **Episode Module** (`src/episodes/season{X}/ep{Y}-{name}/index.js`):
-   - Exports episode metadata and scene array
-   - Directly imports scene components (no dynamic loading)
-   - Defines interactive moments with timestamps
+The platform uses a sophisticated episode-based content delivery system:
 
-2. **Scene Components** (`src/components/scenes/*.jsx`):
-   - Time-based animations synchronized with narration
-   - Receives `time` and `duration` props for progress tracking
-   - Self-contained visual experiences with particle effects and animations
+1. **Episode Registry** (`src/episodes/index.js`):
+   ```javascript
+   // All episodes are imported and exported here
+   export { episode as s1e1 } from './season1/ep1-partition-barrier'
+   ```
 
-3. **Interactive System**:
-   - `NetflixEpisodePlayer` manages playback and pauses for interactions
-   - `InteractiveStateMachine` component for learning exercises
-   - Interactive moments defined with timestamps in episode data
+2. **Episode Structure** (`src/episodes/season{X}/ep{Y}-{name}/index.js`):
+   - Exports episode metadata (title, runtime, description)
+   - Imports and references scene components
+   - Defines interactive moments with precise timestamps
+   - No dynamic loading - all imports are static
 
-### State Management
-- **Zustand Store** (`src/store/episodeStore.js`): 
-  - Manages episode progress, current episode/season
-  - Persists progress to localStorage
-  - Tracks continue watching functionality
-- **React Context** for UI state and player controls
+3. **Scene Components** (`src/components/scenes/*.jsx`):
+   - Receive `time` and `duration` props for animation synchronization
+   - Implement phase-based animations tied to playback progress
+   - Self-contained visual experiences with particle effects
+   - Use Framer Motion for complex animations
 
-### Content Structure
+4. **Interactive System**:
+   - `NetflixEpisodePlayer` controls playback and handles interactions
+   - Pauses automatically at interactive moments
+   - `InteractiveStateMachine` manages quizzes and decision trees
+   - Results tracked in global state
+
+### State Management Architecture
+
+- **Zustand Store** (`src/store/episodeStore.js`):
+  - Episode progress persistence to localStorage
+  - Current episode/season tracking
+  - User preferences and settings
+  - Continue watching functionality
+
+- **Audio System** (`src/utils/audioManagerV2.js`):
+  - Centralized audio context management
+  - Scene-based audio lifecycle
+  - VoiceOver integration with TTS
+  - Volume and mute state management
+
+### Content Organization
+
 ```
-Series: Tech Insights
+Series: Tech Insights (3 Seasons, 10+ Episodes)
 ├── Season 1: Foundations
 │   ├── Episode 1: Breaking the Partition Barrier
 │   ├── Episode 2: Performance Metrics Deep Dive
-│   └── Episode 3: Microservices Architecture (partial)
-├── Season 2: Advanced Topics
-│   ├── Episode 1: Kafka Share Groups
-│   ├── Episode 2: JMX Exploration
-│   ├── Episode 3: Prometheus Setup
-│   └── Episode 4: Custom OHI
+│   └── Episode 3: Microservices Architecture
+├── Season 2: Advanced Topics (7 episodes)
+│   ├── Episode 1: Kafka Share Groups (Kafka 4.0)
+│   ├── Episode 2-4: Monitoring stack (JMX, Prometheus, OHI)
+│   └── Episode 5-7: Advanced Kafka patterns
 └── Season 3: Mastery
     └── Episode 3: Series Finale
 ```
 
 ### Key Architectural Patterns
 
-1. **Episode Loading**:
-   - Episodes are imported directly in `src/episodes/index.js`
-   - Referenced in `src/data/seriesData.js` with metadata
-   - Scene components are React components, not plugins
+1. **Time-Based Animation System**:
+   - 100ms tick intervals for smooth playback
+   - Scene progress calculated as `(currentTime - startTime) / duration`
+   - Animations synchronized to progress percentage
+   - Phase-based reveals for cinematic effect
 
-2. **Playback Engine**:
-   - Time-based progression with 100ms intervals
-   - Automatic scene transitions based on duration
-   - Pause on interactive moments
-   - Netflix-style controls overlay
+2. **Component Communication**:
+   - Player → Scene: time, duration, isPlaying props
+   - Scene → Player: onComplete callbacks
+   - Global → Components: Zustand store subscriptions
+   - Debug → All: Logger events and performance metrics
 
-3. **Animation System**:
-   - Framer Motion for component animations
-   - CSS animations for particles and effects
-   - Time-synchronized scene animations
-   - Progress-based visual changes
+3. **Build Optimization**:
+   - Code splitting by season and vendor
+   - Lazy loading for heavy components
+   - PWA support with service workers
+   - Optimized chunk sizes (<500KB warning)
 
 ### Path Aliases (Vite)
+
+All imports use these aliases defined in `config/vite.config.js`:
 ```javascript
 '@': './src'
 '@components': './src/components'
@@ -123,71 +162,104 @@ Series: Tech Insights
 '@router': './src/router'
 ```
 
-### Important Implementation Details
+## Critical Implementation Details
 
-- **Episode Player**: Custom implementation, not using React Player for episodes
-- **Scene Timing**: All durations in seconds
-- **Interactive Components**: Mapped by string reference in `NetflixEpisodePlayer`
-- **Styling**: Tailwind CSS with Netflix-inspired color scheme
-- **Build Tool**: Vite (not Parcel) - fast development and optimized builds
-- **Port**: Development server runs on port 3000 (not 1234)
-- **No Backend**: All content is frontend-only
-- **No Authentication**: Public access to all content
+### Episode Player Specifics
+- Custom implementation (NOT React Player)
+- Scene transitions use opacity fades
+- Interactive components mapped by ID strings
+- Playback state persists across navigation
 
-## Episode Development
+### Scene Component Requirements
+- Must accept `time` and `duration` props
+- Should implement `progress` calculation
+- Use `isPlaying` for pause behavior
+- Return null or placeholder during load
 
-To add a new episode:
-1. Create directory: `src/episodes/season{X}/ep{Y}-{name}/`
-2. Export episode data with metadata and scenes array
-3. Import scene components from `src/components/scenes/`
-4. Add to exports in `src/episodes/index.js`
-5. Reference in `src/data/seriesData.js`
+### Audio System Rules
+- One audio context per session
+- Scene audio cleaned up on unmount
+- VoiceOver can be toggled globally
+- Volume settings persist in localStorage
 
-## Debugging and Logging
+### Performance Considerations
+- Keep scene components under 200KB
+- Minimize re-renders with React.memo
+- Use CSS transforms for animations
+- Debounce progress updates
 
-The application includes comprehensive debugging tools:
+## Debugging and Development Tools
 
-### Debug Panel
-- Press `Ctrl+Shift+D` to toggle the debug panel
-- Add `?debug=true` to URL to auto-open debug panel
-- Features:
-  - Real-time log streaming
-  - Log level filtering (debug, info, warn, error)
-  - Search functionality
-  - Export logs to JSON
-  - Performance metrics
+### Debug Panel (Ctrl+Shift+D)
+- Real-time log streaming with filtering
+- Performance metrics display
+- State inspection tools
+- Scene jump navigation
+- Export logs functionality
 
-### Logger API
+### Logger API Usage
 ```javascript
 import logger from '@utils/logger'
 
-// Basic logging
-logger.debug('Debug message', { data })
-logger.info('Info message', { data })
-logger.warn('Warning message', { data })
-logger.error('Error message', { data })
+// Component lifecycle
+logger.debug('Component mounted', { props })
 
-// Performance timing
-logger.startTimer('operationName')
-// ... do work ...
-logger.endTimer('operationName', { metadata })
+// Performance tracking
+logger.startTimer('scene-load')
+// ... loading logic ...
+logger.endTimer('scene-load', { sceneId })
 
 // Episode events
-logger.logEpisodeEvent('EPISODE_PLAY', { episodeId, duration })
+logger.logEpisodeEvent('EPISODE_START', { episodeId })
 logger.logSceneTransition(fromScene, toScene, episodeId)
 ```
 
-### Performance Monitoring Hooks
+### Performance Monitoring
 ```javascript
-import { usePerformanceMonitor, useOperationTimer } from '@hooks/usePerformanceMonitor'
+import { usePerformanceMonitor } from '@hooks/usePerformanceMonitor'
 
-// Monitor component performance
-usePerformanceMonitor('ComponentName', props)
-
-// Time specific operations
-const { startTimer, endTimer } = useOperationTimer('fetchData')
+// In components
+usePerformanceMonitor('SceneName', props)
 ```
 
-### Debugging URLs
-- `http://localhost:3000/?debug=true` - Enable debug mode
-- Debug data is stored in localStorage and can be exported
+## Testing Strategy
+
+### Manual Testing Setup
+```bash
+# Single instance
+npm run dev
+
+# Parallel testing (4 instances)
+./scripts/parallel-instances.sh
+
+# Specific test focus
+PORT=3001 npm run dev  # Functional
+PORT=3002 npm run dev  # Visual
+PORT=3003 npm run dev  # Integration
+PORT=3004 npm run dev  # Performance
+```
+
+### Test Categories
+1. **Functional**: Core features and user flows
+2. **Visual**: UI consistency and design system
+3. **Integration**: Cross-component interactions  
+4. **Performance**: Load times and runtime metrics
+
+Test documentation located in `/testing/` directory with comprehensive test cases and templates.
+
+## Common Troubleshooting
+
+### Build Issues
+- Clear `.parcel-cache` if build artifacts cause issues
+- Check Node version (requires 18+)
+- Verify all config files are in `config/` directory
+
+### Audio Problems
+- Check browser autoplay policies
+- Verify audio files exist in public directory
+- Use debug panel to check audio state
+
+### Performance Issues
+- Use React DevTools Profiler
+- Check for unnecessary re-renders
+- Monitor bundle size with `npm run build:analyze`

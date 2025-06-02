@@ -28,9 +28,10 @@ const NetflixEpisodePlayer = ({ episodeData, onEpisodeEnd, onBack }) => {
   const sceneId = currentScene?.id
   
   // Use voice-over hook for current scene
+  // TEMPORARILY DISABLED: Old voice-over system to prevent conflicts with new episode audio
   const voiceOver = useVoiceOver(episodeId, sceneId, {
-    enabled: voiceOverEnabled && !interactiveMode && !isLoading,
-    autoPlay: isPlaying,
+    enabled: false, // Disabled to prevent conflicts with new audio system in scenes
+    autoPlay: false,
     onEnd: () => {
       logger.info('Scene voice-over completed', { episodeId, sceneId })
     },

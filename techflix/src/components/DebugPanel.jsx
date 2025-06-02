@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react'
-import { Bug, X, Download, Trash2, Filter, Clock, AlertCircle, Info } from 'lucide-react'
+import { useState, useEffect, useRef } from 'react'
+import { Bug, X, Download, Trash2, Clock, AlertCircle, Info } from 'lucide-react'
 import logger from '../utils/logger'
 
 const DebugPanel = () => {

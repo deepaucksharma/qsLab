@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { RefreshCw, BarChart3, Clock, AlertTriangle, Target, CheckCircle, BookOpen, ArrowRight } from 'lucide-react';
 import '../../styles/techflix-cinematic-v2.css';
