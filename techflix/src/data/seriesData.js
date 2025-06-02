@@ -1,4 +1,4 @@
-import { partitionBarrierEpisode, criticalMetricsEpisode, kafkaShareGroupsEpisode, jmxExplorationEpisode, prometheusSetupEpisode, customOHIEpisode, criticalMetricsShiftsEpisode, seriesFinaleEpisode } from '../episodes'
+import { partitionBarrierEpisode, criticalMetricsEpisode, microservicesEpisode, kafkaShareGroupsEpisode, jmxExplorationEpisode, prometheusSetupEpisode, customOHIEpisode, criticalMetricsShiftsEpisode, seriesFinaleEpisode } from '../episodes'
 
 export const SERIES_DATA = {
   seasons: [
@@ -33,7 +33,8 @@ export const SERIES_DATA = {
           duration: "52m",
           level: "Advanced",
           tags: ["Architecture", "Microservices", "Design Patterns"],
-          hasContent: false
+          hasContent: true,
+          episodeData: microservicesEpisode
         },
         {
           number: 4,

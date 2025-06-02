@@ -1,6 +1,7 @@
 // Season 1 Episodes
 import { partitionBarrierEpisode } from './season1/ep1-partition-barrier'
 import { criticalMetricsEpisode } from './season1/ep2-critical-metrics'
+import { microservicesEpisode } from './season1/ep3-microservices'
 
 // Season 2 Episodes  
 import { kafkaShareGroupsEpisode } from './season2/ep1-kafka-share-groups'
@@ -17,7 +18,8 @@ import { seriesFinaleEpisode } from './season3/ep3-series-finale'
 // Re-export episodes
 export { 
   partitionBarrierEpisode, 
-  criticalMetricsEpisode, 
+  criticalMetricsEpisode,
+  microservicesEpisode,
   kafkaShareGroupsEpisode, 
   jmxExplorationEpisode,
   prometheusSetupEpisode,
@@ -32,7 +34,8 @@ export {
 export const ALL_EPISODES = {
   season1: {
     episode1: partitionBarrierEpisode,
-    episode2: criticalMetricsEpisode
+    episode2: criticalMetricsEpisode,
+    episode3: microservicesEpisode
   },
   season2: {
     episode1: kafkaShareGroupsEpisode,
