@@ -7,7 +7,7 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'happy-dom',
-    setupFiles: '../src/test/setup.js',
+    setupFiles: path.resolve(__dirname, '../src/test/setup.js'),
     coverage: {
       reporter: ['text', 'json', 'html'],
       exclude: [
