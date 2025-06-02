@@ -66,7 +66,7 @@ class TTSConfigManager {
         isCustom: true
       };
       
-      localStorage.setItem(this.storageKey, JSON.stringify(savedConfigs));
+      this.savePreference(this.storageKey, JSON.stringify(savedConfigs));
       logger.info('TTS config saved', { name, configCount: configs.length });
       
       return { success: true };
@@ -81,7 +81,7 @@ class TTSConfigManager {
    */
   getAllConfigs() {
     try {
-      const savedStr = localStorage.getItem(this.storageKey);
+      const savedStr = this.loadPreference(this.storageKey, null);
       const savedConfigs = savedStr ? JSON.parse(savedStr) : {};
       
       // Merge with presets
@@ -120,7 +120,7 @@ class TTSConfigManager {
       // Remove presets before saving
       Object.keys(this.presets).forEach(key => delete savedConfigs[key]);
       
-      localStorage.setItem(this.storageKey, JSON.stringify(savedConfigs));
+      this.savePreference(this.storageKey, JSON.stringify(savedConfigs));
       logger.info('TTS config deleted', { name });
       
       return { success: true };
