@@ -21,7 +21,10 @@
     "serve": "node server.js",
     "start": "npm run build && npm run serve",
     "generate:voiceovers": "node scripts/generate-voiceovers.js",
-    "voiceover:list": "edge-tts --list-voices | grep en-US"
+    "voiceover:list": "edge-tts --list-voices | grep en-US",
+    "tts:api": "node scripts/tts-api-mock.js",
+    "tts:test": "concurrently \"npm run dev\" \"npm run tts:api\"",
+    "generate:voiceovers:gtts": "node scripts/generate-voiceovers-gtts.js"
   },
   "dependencies": {
     "clsx": "^2.1.0",
