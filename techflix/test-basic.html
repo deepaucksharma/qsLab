@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Basic Test</title>
+  </head>
+  <body>
+    <div id="output">JavaScript not working</div>
+    <script type="module">
+      console.log('Inline script running');
+      document.getElementById('output').innerHTML = 'JavaScript is working!';
+      
+      // Test module imports
+      import('./src/main.jsx').then(
+        () => console.log('main.jsx loaded successfully'),
+        (err) => {
+          console.error('Failed to load main.jsx:', err);
+          document.getElementById('output').innerHTML += '<br>Error: ' + err.message;
+        }
+      );
+    </script>
+  </body>
+</html>

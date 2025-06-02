@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TechFlix Diagnostics</title>
+    <style>
+      body { 
+        font-family: monospace; 
+        background: #000; 
+        color: #0f0; 
+        padding: 20px;
+      }
+      .error { color: #f00; }
+      .success { color: #0f0; }
+      .warning { color: #ff0; }
+      .info { color: #0ff; }
+      pre { 
+        background: #111; 
+        padding: 10px; 
+        border: 1px solid #333;
+        overflow-x: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>TechFlix React App Diagnostics</h1>
+    <div id="diagnostics"></div>
+    
+    <script type="module">
+      const log = (msg, type = 'info') => {
+        const div = document.createElement('div');
+        div.className = type;
+        div.innerHTML = `[${new Date().toLocaleTimeString()}] ${msg}`;
+        document.getElementById('diagnostics').appendChild(div);
+      };
+
+      // Check browser support
+      log('Starting diagnostics...', 'info');
+      log(`Browser: ${navigator.userAgent}`, 'info');
+      
+      // Error handlers
+      window.addEventListener('error', (e) => {
+        log(`ERROR: ${e.message} at ${e.filename}:${e.lineno}:${e.colno}`, 'error');
+        if (e.error?.stack) {
+          const pre = document.createElement('pre');
+          pre.className = 'error';
+          pre.textContent = e.error.stack;
+          document.getElementById('diagnostics').appendChild(pre);
+        }
+      });
+      
+      window.addEventListener('unhandledrejection', (e) => {
+        log(`UNHANDLED REJECTION: ${e.reason}`, 'error');
+        if (e.reason?.stack) {
+          const pre = document.createElement('pre');
+          pre.className = 'error';
+          pre.textContent = e.reason.stack;
+          document.getElementById('diagnostics').appendChild(pre);
+        }
+      });
+
+      // Try to load React
+      log('Attempting to load React modules...', 'info');
+      
+      try {
+        // First check if root element exists
+        const rootElement = document.getElementById('root');
+        if (rootElement) {
+          log('✓ Root element found', 'success');
+        } else {
+          log('✗ Root element NOT found!', 'error');
+        }
+
+        // Import React modules
+        import('react').then(
+          (module) => {
+            log('✓ React module loaded successfully', 'success');
+            log(`React version: ${module.version}`, 'info');
+          },
+          (error) => {
+            log('✗ Failed to load React module', 'error');
+            log(error.toString(), 'error');
+          }
+        );
+
+        import('react-dom/client').then(
+          (module) => {
+            log('✓ ReactDOM module loaded successfully', 'success');
+          },
+          (error) => {
+            log('✗ Failed to load ReactDOM module', 'error');
+            log(error.toString(), 'error');
+          }
+        );
+
+        // Try to import the router
+        import('./src/router/index.jsx').then(
+          (module) => {
+            log('✓ Router module loaded successfully', 'success');
+            log(`Router exports: ${Object.keys(module).join(', ')}`, 'info');
+          },
+          (error) => {
+            log('✗ Failed to load router module', 'error');
+            log(error.toString(), 'error');
+          }
+        );
+
+        // Try to import main.jsx
+        import('./src/main.jsx').then(
+          () => {
+            log('✓ main.jsx loaded and executed', 'success');
+            
+            // Check if React mounted
+            setTimeout(() => {
+              const root = document.getElementById('root');
+              if (root && root.children.length > 0) {
+                log('✓ React app appears to have mounted!', 'success');
+                log(`Root element has ${root.children.length} children`, 'info');
+              } else {
+                log('✗ React app did NOT mount - root element is empty', 'error');
+              }
+            }, 1000);
+          },
+          (error) => {
+            log('✗ Failed to load main.jsx', 'error');
+            log(error.toString(), 'error');
+            if (error.stack) {
+              const pre = document.createElement('pre');
+              pre.className = 'error';
+              pre.textContent = error.stack;
+              document.getElementById('diagnostics').appendChild(pre);
+            }
+          }
+        );
+
+      } catch (error) {
+        log('✗ Caught error during imports', 'error');
+        log(error.toString(), 'error');
+      }
+    </script>
+    
+    <!-- Include root element for React -->
+    <div id="root"></div>
+  </body>
+</html>
