@@ -41,19 +41,9 @@ const BrowsePage = () => {
     setIsLoading(false);
   }, []);
 
-  const handleEpisodeSelect = (episode, seasonNumber) => {
-    logger.logEpisodeEvent('EPISODE_SELECTED', {
-      episodeId: episode.episodeData?.metadata?.title,
-      seasonNumber,
-      episodeNumber: episode.number
-    });
-    setCurrentEpisode(episode);
-    setIsPlayerActive(true);
-  };
-
   const handleEpisodeEnd = () => {
     logger.logEpisodeEvent('EPISODE_COMPLETED', {
-      episodeId: currentEpisode?.episodeData?.metadata?.title
+      episodeId: currentEpisode?.metadata?.title
     });
     setIsPlayerActive(false);
     setCurrentEpisode(null);
@@ -69,13 +59,12 @@ const BrowsePage = () => {
       setCurrentEpisode,
       seasons,
       isLoading,
-      error,
-      handleEpisodeSelect
+      error
     }}>
       {isPlayerActive && currentEpisode ? (
         <EpisodeErrorBoundary>
           <NetflixEpisodePlayer 
-            episodeData={currentEpisode.episodeData}
+            episodeData={currentEpisode}
             onEpisodeEnd={handleEpisodeEnd}
             onBack={() => {
               setIsPlayerActive(false);

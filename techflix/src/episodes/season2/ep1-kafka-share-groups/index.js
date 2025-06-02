@@ -1,6 +1,6 @@
-import EvolutionTimelineScene from '../../../components/scenes/EvolutionTimelineScene'
+import EvolutionTimelineSceneV2 from '../../../components/scenes/EvolutionTimelineSceneV2'
 import BottleneckDemoScene from '../../../components/scenes/BottleneckDemoScene'
-import ShareGroupArchitectureScene from '../../../components/scenes/ShareGroupArchitectureScene'
+import ShareGroupArchitectureSceneV2 from '../../../components/scenes/ShareGroupArchitectureSceneV2'
 import ImpactMetricsScene from '../../../components/scenes/ImpactMetricsScene'
 
 export const kafkaShareGroupsEpisode = {
@@ -19,7 +19,7 @@ export const kafkaShareGroupsEpisode = {
       id: 'evolution',
       title: 'The Evolution of Apache Kafka',
       duration: 480,
-      component: EvolutionTimelineScene
+      component: EvolutionTimelineSceneV2
     },
     {
       id: 'bottleneck',
@@ -31,7 +31,7 @@ export const kafkaShareGroupsEpisode = {
       id: 'share-groups',
       title: 'Share Groups: The Breakthrough',
       duration: 600,
-      component: ShareGroupArchitectureScene
+      component: ShareGroupArchitectureSceneV2
     },
     {
       id: 'impact',

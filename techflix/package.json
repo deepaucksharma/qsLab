@@ -19,7 +19,9 @@
     "analyze": "vite-bundle-visualizer --open",
     "build:analyze": "npm run build && npm run analyze",
     "serve": "node server.js",
-    "start": "npm run build && npm run serve"
+    "start": "npm run build && npm run serve",
+    "generate:voiceovers": "node scripts/generate-voiceovers.js",
+    "voiceover:list": "edge-tts --list-voices | grep en-US"
   },
   "dependencies": {
     "clsx": "^2.1.0",

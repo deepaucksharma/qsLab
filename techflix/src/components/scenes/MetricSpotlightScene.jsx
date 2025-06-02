@@ -1,185 +1,226 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { BarChart3, Clock, AlertTriangle, TrendingUp, Activity, Gauge } from 'lucide-react';
+import '../../styles/techflix-cinematic-v2.css';
 
-const MetricSpotlightScene = ({ time, duration }) => {
+const MetricSpotlightSceneV2 = ({ time, duration }) => {
   const [recordsUnacked, setRecordsUnacked] = useState(0);
   const [oldestUnackedAge, setOldestUnackedAge] = useState(0);
   const progress = (time / duration) * 100;
 
+  // 5-phase storytelling structure
+  const phase = useMemo(() => {
+    if (time < 2) return 'intro';
+    if (time < 5) return 'phase2';
+    if (time < 8) return 'phase3';
+    if (time < 11) return 'phase4';
+    return 'conclusion';
+  }, [time]);
+
   const metrics = [
     {
       name: 'RecordsUnacked',
-      icon: '📊',
+      icon: <BarChart3 className="w-12 h-12" />,
       target: 120,
       unit: 'records',
       description: 'Messages awaiting acknowledgment',
       color: 'from-orange-600 to-red-600',
-      bgGlow: 'rgba(251, 146, 60, 0.3)'
+      criticalThreshold: 100
     },
     {
       name: 'OldestUnackedMessageAgeMs',
-      icon: '⏱️',
+      icon: <Clock className="w-12 h-12" />,
       target: 5000,
       unit: 'ms',
       description: 'Time since oldest unprocessed message',
       color: 'from-blue-600 to-purple-600',
-      bgGlow: 'rgba(147, 51, 234, 0.3)'
+      criticalThreshold: 4000
     }
   ];
 
-  // Animate metric values
+  // Animate metric values with phase-based easing
   useEffect(() => {
-    if (time > 2) {
-      const animationProgress = Math.min((time - 2) / 4, 1);
+    if (phase === 'phase2' || phase === 'phase3' || phase === 'phase4' || phase === 'conclusion') {
+      const animationProgress = Math.min((time - 2) / 6, 1);
       const easeProgress = 1 - Math.pow(1 - animationProgress, 3);
       
-      setRecordsUnacked(Math.floor(metrics[0].target * easeProgress));
-      setOldestUnackedAge(Math.floor(metrics[1].target * easeProgress));
+      // Add some variation to simulate real-time data
+      const variation = phase === 'phase4' ? Math.sin(time * 2) * 5 : 0;
+      
+      setRecordsUnacked(Math.floor(metrics[0].target * easeProgress + variation));
+      setOldestUnackedAge(Math.floor(metrics[1].target * easeProgress + variation * 50));
     }
-  }, [time]);
-
-  const getCardOpacity = (index) => {
-    const delay = 1 + index * 1.5;
-    return time > delay ? 1 : 0;
-  };
-
-  const getCardScale = (index) => {
-    const delay = 1 + index * 1.5;
-    if (time <= delay) return 0.8;
-    const elapsed = time - delay;
-    if (elapsed < 0.5) return 0.8 + (elapsed / 0.5) * 0.2;
-    return 1;
-  };
+  }, [time, phase]);
 
   const currentValues = [recordsUnacked, oldestUnackedAge];
 
+  // Check if metrics are in critical state
+  const isCritical = currentValues.some((value, index) => value > metrics[index].criticalThreshold);
+
   return (
-    <div className="w-full h-full bg-gradient-to-br from-gray-900 via-black to-purple-900 flex items-center justify-center p-8 relative overflow-hidden">
-      {/* Animated Background Orbs */}
-      <div className="absolute inset-0">
-        {[...Array(3)].map((_, i) => (
-          <div
-            key={i}
-            className="absolute rounded-full blur-3xl opacity-20"
-            style={{
-              width: `${300 + i * 100}px`,
-              height: `${300 + i * 100}px`,
-              background: `radial-gradient(circle, ${i % 2 ? '#9333ea' : '#f97316'} 0%, transparent 70%)`,
-              left: `${20 + i * 30}%`,
-              top: `${10 + i * 20}%`,
-              animation: `float ${15 + i * 5}s ease-in-out infinite`,
-              animationDelay: `${i * 2}s`
-            }}
-          />
-        ))}
+    <div className="scene-container-v2">
+      <div className="scene-content">
+        <div className="flex flex-col items-center justify-center min-h-full py-12">
+          {/* Title with simple animation */}
+          <AnimatePresence>
+            {phase === 'intro' && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.8 }}
+                className="text-center mb-12"
+              >
+                <h1 className="scene-title">Critical Share Groups Metrics</h1>
+                <p className="scene-subtitle">Monitor What Matters Most</p>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Metrics Grid */}
+          <AnimatePresence>
+            {(phase === 'phase2' || phase === 'phase3' || phase === 'phase4' || phase === 'conclusion') && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.8 }}
+                className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto w-full"
+              >
+                {metrics.map((metric, index) => {
+                  const value = currentValues[index];
+                  const isCriticalMetric = value > metric.criticalThreshold;
+                  
+                  return (
+                    <motion.div
+                      key={index}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ 
+                        opacity: 1, 
+                        y: 0
+                      }}
+                      transition={{ 
+                        delay: index * 0.3, 
+                        duration: 0.8
+                      }}
+                      className="relative"
+                    >
+                      {/* Metric Card */}
+                      <div className="metric-card-v2 p-8">
+                        {/* Icon */}
+                        <div className={`mb-4 ${isCriticalMetric ? 'text-red-400' : 'text-gray-400'}`}>
+                          {metric.icon}
+                        </div>
+                        
+                        {/* Metric Name */}
+                        <h3 className="text-xl font-bold mb-2 text-gray-200">{metric.name}</h3>
+                        
+                        {/* Description */}
+                        <p className="text-gray-400 mb-6 text-sm">{metric.description}</p>
+                        
+                        {/* Value Display */}
+                        <div className="metric-value text-5xl mb-4">
+                          {value.toLocaleString()}
+                          <span className="text-2xl ml-2 text-gray-400">{metric.unit}</span>
+                        </div>
+                        
+                        {/* Progress Bar */}
+                        <div className="relative h-3 bg-gray-800 rounded-full overflow-hidden">
+                          <motion.div 
+                            className={`h-full bg-gradient-to-r ${metric.color} rounded-full`}
+                            initial={{ width: 0 }}
+                            animate={{ width: `${(value / metric.target) * 100}%` }}
+                            transition={{ duration: 1, ease: "easeOut" }}
+                          />
+                          {/* Critical threshold marker */}
+                          <div 
+                            className="absolute top-0 h-full w-0.5 bg-yellow-400/50"
+                            style={{ left: `${(metric.criticalThreshold / metric.target) * 100}%` }}
+                          />
+                        </div>
+                        
+                        {/* Threshold Indicator */}
+                        <div className="mt-4 flex items-center justify-between text-sm">
+                          <span className="text-gray-500">0</span>
+                          <div className="flex items-center gap-2">
+                            <Gauge className="w-4 h-4 text-yellow-400" />
+                            <span className="text-yellow-400">{metric.criticalThreshold}</span>
+                          </div>
+                          <span className="text-gray-400">{metric.target}</span>
+                        </div>
+
+                        {/* Status indicator */}
+                        {isCriticalMetric && (
+                          <motion.div
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="mt-4 flex items-center gap-2 text-red-400"
+                          >
+                            <AlertTriangle className="w-5 h-5" />
+                            <span className="text-sm font-medium">Critical Threshold Exceeded</span>
+                          </motion.div>
+                        )}
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Alert Message */}
+          <AnimatePresence>
+            {phase === 'phase4' && isCritical && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.5 }}
+                className="mt-12 relative max-w-3xl mx-auto w-full"
+              >
+                <div className="alert-box p-6">
+                  <div className="flex items-center justify-center gap-3">
+                    <AlertTriangle className="w-6 h-6 text-red-400 flex-shrink-0" />
+                    <p className="text-lg text-center text-red-300">
+                      High unacked records indicate consumer processing bottlenecks
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Conclusion insights */}
+          <AnimatePresence>
+            {phase === 'conclusion' && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 1 }}
+                className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6 max-w-3xl mx-auto w-full"
+              >
+                {[
+                  { icon: <Activity className="w-6 h-6" />, label: "Monitor Continuously" },
+                  { icon: <TrendingUp className="w-6 h-6" />, label: "Set Alert Thresholds" },
+                  { icon: <Gauge className="w-6 h-6" />, label: "Track Trends" }
+                ].map((item, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.2 }}
+                    className="metric-card-v2 p-4 flex items-center gap-3"
+                  >
+                    <div className="text-blue-400">{item.icon}</div>
+                    <span className="text-gray-300">{item.label}</span>
+                  </motion.div>
+                ))}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       </div>
-
-      <div className="relative z-10 max-w-6xl w-full">
-        {/* Title */}
-        <div className="text-center mb-16" style={{ opacity: Math.min(time * 0.5, 1) }}>
-          <h1 className="text-5xl font-black mb-4 bg-gradient-to-r from-orange-400 to-purple-400 bg-clip-text text-transparent">
-            Critical Share Groups Metrics
-          </h1>
-          <p className="text-2xl text-gray-300">Monitor What Matters Most</p>
-        </div>
-
-        {/* Metrics Grid */}
-        <div className="grid grid-cols-2 gap-8">
-          {metrics.map((metric, index) => (
-            <div
-              key={index}
-              className="relative"
-              style={{
-                opacity: getCardOpacity(index),
-                transform: `scale(${getCardScale(index)})`,
-                transition: 'all 0.5s ease-out'
-              }}
-            >
-              {/* Glow Effect */}
-              <div
-                className="absolute inset-0 rounded-3xl blur-2xl"
-                style={{ background: metric.bgGlow }}
-              />
-              
-              {/* Card */}
-              <div className="relative bg-gray-900/90 backdrop-blur-lg rounded-3xl p-10 border border-gray-700/50 hover:border-gray-600 transition-all duration-300">
-                {/* Icon */}
-                <div className="text-6xl mb-6">{metric.icon}</div>
-                
-                {/* Metric Name */}
-                <h3 className="text-2xl font-bold mb-2 text-gray-200">{metric.name}</h3>
-                
-                {/* Description */}
-                <p className="text-gray-400 mb-6">{metric.description}</p>
-                
-                {/* Value Display */}
-                <div className={`text-6xl font-black mb-4 bg-gradient-to-r ${metric.color} bg-clip-text text-transparent`}>
-                  {currentValues[index].toLocaleString()}
-                  <span className="text-3xl ml-2 text-gray-400">{metric.unit}</span>
-                </div>
-                
-                {/* Progress Bar */}
-                <div className="h-3 bg-gray-800 rounded-full overflow-hidden">
-                  <div 
-                    className={`h-full bg-gradient-to-r ${metric.color} rounded-full transition-all duration-1000`}
-                    style={{ width: `${(currentValues[index] / metric.target) * 100}%` }}
-                  />
-                </div>
-                
-                {/* Threshold Indicator */}
-                <div className="mt-4 flex items-center justify-between text-sm">
-                  <span className="text-gray-500">0</span>
-                  <span className="text-gray-400">Target: {metric.target}</span>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Alert Message */}
-        {time > 8 && (
-          <div 
-            className="mt-12 p-6 bg-red-900/20 border border-red-500/30 rounded-xl backdrop-blur-lg"
-            style={{
-              opacity: Math.min((time - 8) * 0.5, 1),
-              transform: `translateY(${Math.max(0, 30 - (time - 8) * 15)}px)`
-            }}
-          >
-            <p className="text-xl text-center text-red-300">
-              <span className="text-2xl mr-2">⚠️</span>
-              High unacked records indicate consumer processing bottlenecks
-            </p>
-          </div>
-        )}
-
-        {/* Progress Bar */}
-        <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 w-96">
-          <div className="h-1 bg-gray-800 rounded-full overflow-hidden">
-            <div 
-              className="h-full bg-gradient-to-r from-orange-600 to-purple-600 rounded-full transition-all duration-300"
-              style={{ width: `${progress}%` }}
-            />
-          </div>
-        </div>
-      </div>
-
-      <style>{`
-        @keyframes float {
-          0%, 100% {
-            transform: translateY(0) translateX(0);
-          }
-          25% {
-            transform: translateY(-20px) translateX(10px);
-          }
-          50% {
-            transform: translateY(10px) translateX(-5px);
-          }
-          75% {
-            transform: translateY(-10px) translateX(-10px);
-          }
-        }
-      `}</style>
     </div>
   );
 };
 
-export default MetricSpotlightScene;
+export default MetricSpotlightSceneV2;

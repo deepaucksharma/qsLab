@@ -1,260 +1,314 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Code2, FolderOpen, FileCode, Terminal, CheckCircle, Package, Zap, GitBranch } from 'lucide-react';
+import '../../styles/techflix-cinematic-v2.css';
 
 const OHIBuilderScene = ({ time, duration }) => {
   const progress = (time / duration) * 100;
   const [currentLine, setCurrentLine] = useState(0);
-  const [showFileTree, setShowFileTree] = useState(false);
-  const [showTerminal, setShowTerminal] = useState(false);
   const [terminalOutput, setTerminalOutput] = useState([]);
 
-  // Code content
+  // 5-phase storytelling structure
+  const phase = useMemo(() => {
+    if (time < 2) return 'intro';
+    if (time < 6) return 'phase2'; // File tree and code setup
+    if (time < 12) return 'phase3'; // Code writing
+    if (time < 17) return 'phase4'; // Build and test
+    return 'conclusion';
+  }, [time]);
+
+  // Code content with syntax highlighting info
   const codeLines = [
-    'package main',
-    '',
-    'import (',
-    '    "context"',
-    '    "fmt"',
-    '    "log"',
-    '    ',
-    '    "github.com/newrelic/infra-integrations-sdk/v4/integration"',
-    '    "github.com/prometheus/client_golang/api"',
-    '    v1 "github.com/prometheus/client_golang/api/prometheus/v1"',
-    ')',
-    '',
-    'const (',
-    '    integrationName    = "com.newrelic.kafka.sharegroups"',
-    '    integrationVersion = "1.0.0"',
-    ')',
-    '',
-    'func main() {',
-    '    // Create New Relic integration',
-    '    i, err := integration.New(integrationName, integrationVersion)',
-    '    if err != nil {',
-    '        log.Fatal(err)',
-    '    }',
-    '',
-    '    // Connect to Prometheus endpoint',
-    '    client, err := api.NewClient(api.Config{',
-    '        Address: "http://localhost:9404",',
-    '    })',
-    '',
-    '    // Query Share Group metrics',
-    '    metrics, err := queryShareGroupMetrics(client)',
-    '',
-    '    // Create QueueSample events',
-    '    for _, metric := range metrics {',
-    '        entity := i.Entity("kafka-sharegroup", metric.QueueName)',
-    '        event := entity.NewEvent("QueueSample")',
-    '        ',
-    '        // Set required attributes',
-    '        event.SetAttribute("provider", "kafka-sharegroup")',
-    '        event.SetAttribute("queue.name", metric.QueueName)',
-    '        event.SetAttribute("queue.depth", metric.RecordsUnacked)',
-    '    }',
-    '',
-    '    // Publish to New Relic',
-    '    i.Publish()',
-    '}'
+    { text: 'package main', type: 'keyword' },
+    { text: '', type: 'normal' },
+    { text: 'import (', type: 'keyword' },
+    { text: '    "context"', type: 'string' },
+    { text: '    "fmt"', type: 'string' },
+    { text: '    "log"', type: 'string' },
+    { text: '    ', type: 'normal' },
+    { text: '    "github.com/newrelic/infra-integrations-sdk/v4/integration"', type: 'string' },
+    { text: '    "github.com/prometheus/client_golang/api"', type: 'string' },
+    { text: '    v1 "github.com/prometheus/client_golang/api/prometheus/v1"', type: 'string' },
+    { text: ')', type: 'keyword' },
+    { text: '', type: 'normal' },
+    { text: 'const (', type: 'keyword' },
+    { text: '    integrationName    = "com.newrelic.kafka.sharegroups"', type: 'const' },
+    { text: '    integrationVersion = "1.0.0"', type: 'const' },
+    { text: ')', type: 'keyword' },
+    { text: '', type: 'normal' },
+    { text: 'func main() {', type: 'function' },
+    { text: '    // Create New Relic integration', type: 'comment' },
+    { text: '    i, err := integration.New(integrationName, integrationVersion)', type: 'normal' },
+    { text: '    if err != nil {', type: 'keyword' },
+    { text: '        log.Fatal(err)', type: 'normal' },
+    { text: '    }', type: 'keyword' },
+    { text: '', type: 'normal' },
+    { text: '    // Connect to Prometheus endpoint', type: 'comment' },
+    { text: '    client, err := api.NewClient(api.Config{', type: 'normal' },
+    { text: '        Address: "http://localhost:9404",', type: 'string' },
+    { text: '    })', type: 'normal' },
+    { text: '', type: 'normal' },
+    { text: '    // Query Share Group metrics', type: 'comment' },
+    { text: '    metrics, err := queryShareGroupMetrics(client)', type: 'normal' },
+    { text: '', type: 'normal' },
+    { text: '    // Create QueueSample events', type: 'comment' },
+    { text: '    for _, metric := range metrics {', type: 'keyword' },
+    { text: '        entity := i.Entity("kafka-sharegroup", metric.QueueName)', type: 'normal' },
+    { text: '        event := entity.NewEvent("QueueSample")', type: 'normal' },
+    { text: '        ', type: 'normal' },
+    { text: '        // Set required attributes', type: 'comment' },
+    { text: '        event.SetAttribute("provider", "kafka-sharegroup")', type: 'normal' },
+    { text: '        event.SetAttribute("queue.name", metric.QueueName)', type: 'normal' },
+    { text: '        event.SetAttribute("queue.depth", metric.RecordsUnacked)', type: 'normal' },
+    { text: '    }', type: 'keyword' },
+    { text: '', type: 'normal' },
+    { text: '    // Publish to New Relic', type: 'comment' },
+    { text: '    i.Publish()', type: 'normal' },
+    { text: '}', type: 'function' }
   ];
 
   // File tree structure
   const fileTree = [
-    { name: 'nri-kafka-sharegroups/', type: 'folder', expanded: true },
-    { name: '  main.go', type: 'file', active: true },
-    { name: '  config.yml', type: 'file' },
-    { name: '  Makefile', type: 'file' },
-    { name: '  go.mod', type: 'file' },
-    { name: '  test/', type: 'folder' },
-    { name: '    main_test.go', type: 'file' },
-    { name: '  README.md', type: 'file' }
+    { name: 'nri-kafka-sharegroups/', type: 'folder', icon: <FolderOpen className="w-4 h-4" />, expanded: true },
+    { name: '  main.go', type: 'file', icon: <FileCode className="w-4 h-4" />, active: true },
+    { name: '  config.yml', type: 'file', icon: <FileCode className="w-4 h-4" /> },
+    { name: '  Makefile', type: 'file', icon: <FileCode className="w-4 h-4" /> },
+    { name: '  go.mod', type: 'file', icon: <FileCode className="w-4 h-4" /> },
+    { name: '  test/', type: 'folder', icon: <FolderOpen className="w-4 h-4" /> },
+    { name: '    main_test.go', type: 'file', icon: <FileCode className="w-4 h-4" /> },
+    { name: '  README.md', type: 'file', icon: <FileCode className="w-4 h-4" /> }
   ];
 
   // Progressive code reveal
   useEffect(() => {
-    if (time > 2) {
-      const linesPerSecond = 5;
-      const visibleLines = Math.floor((time - 2) * linesPerSecond);
-      setCurrentLine(Math.min(visibleLines, codeLines.length));
+    if (phase === 'phase3') {
+      const linesPerSecond = 4;
+      const targetLine = Math.min(Math.floor((time - 6) * linesPerSecond), codeLines.length);
+      setCurrentLine(targetLine);
     }
-    
-    if (time > 3) setShowFileTree(true);
-    if (time > 10) setShowTerminal(true);
-    
-    // Terminal output simulation
-    if (time > 11) setTerminalOutput(['$ make build']);
-    if (time > 12) setTerminalOutput(prev => [...prev, '✓ Building nri-kafka-sharegroups...', '✓ Binary created at ./bin/nri-kafka-sharegroups']);
-    if (time > 14) setTerminalOutput(prev => [...prev, '', '$ make test']);
-    if (time > 15) setTerminalOutput(prev => [...prev, 'Running tests...', 'PASS: TestQueryMetrics', 'PASS: TestCreateEntity', 'PASS: TestPublishEvents', '✓ All tests passed (15/15)']);
-    if (time > 17) setTerminalOutput(prev => [...prev, '', '$ sudo make install']);
-    if (time > 18) setTerminalOutput(prev => [...prev, '✓ Installed to /var/db/newrelic-infra/custom-integrations/']);
-  }, [time]);
+  }, [time, phase]);
 
-  const showIDE = time > 1;
-  const showSuccess = time > 19;
+  // Terminal output animation
+  useEffect(() => {
+    if (phase === 'phase4') {
+      const outputs = [
+        { time: 13, text: '$ make build', type: 'command' },
+        { time: 13.5, text: 'Building OHI integration...', type: 'info' },
+        { time: 14, text: '✓ Dependencies resolved', type: 'success' },
+        { time: 14.5, text: '✓ Compiled successfully', type: 'success' },
+        { time: 15, text: '$ make test', type: 'command' },
+        { time: 15.5, text: 'Running tests...', type: 'info' },
+        { time: 16, text: '✓ All tests passed (4/4)', type: 'success' },
+        { time: 16.5, text: '✓ Integration ready for deployment', type: 'success' }
+      ];
+      
+      const currentOutputs = outputs.filter(o => time >= o.time);
+      setTerminalOutput(currentOutputs);
+    }
+  }, [time, phase]);
+
+  // Get syntax highlighting color
+  const getSyntaxColor = (type) => {
+    switch (type) {
+      case 'keyword': return 'text-purple-400';
+      case 'string': return 'text-green-400';
+      case 'comment': return 'text-gray-500';
+      case 'function': return 'text-blue-400';
+      case 'const': return 'text-orange-400';
+      default: return 'text-gray-300';
+    }
+  };
+
+  // Get terminal output color
+  const getTerminalColor = (type) => {
+    switch (type) {
+      case 'command': return 'text-blue-400';
+      case 'success': return 'text-green-400';
+      case 'error': return 'text-red-400';
+      case 'info': return 'text-gray-400';
+      default: return 'text-gray-300';
+    }
+  };
 
   return (
-    <div className="w-full h-full bg-gradient-to-br from-gray-900 via-black to-indigo-900 flex items-center justify-center p-8 relative overflow-hidden">
-      {/* Code Rain Background */}
-      <div className="absolute inset-0 opacity-10">
-        {[...Array(20)].map((_, i) => (
-          <div
-            key={i}
-            className="absolute text-green-500 font-mono text-xs"
-            style={{
-              left: `${Math.random() * 100}%`,
-              animation: `code-fall ${10 + Math.random() * 10}s linear infinite`,
-              animationDelay: `${Math.random() * 5}s`
-            }}
-          >
-            {Array(20).fill(null).map((_, j) => (
-              <div key={j}>{Math.random() > 0.5 ? '1' : '0'}</div>
-            ))}
-          </div>
-        ))}
-      </div>
+    <div className="scene-container-v2">
+      <div className="scene-content">
+        <div className="flex flex-col items-center justify-center min-h-full py-12">
+          {/* Title */}
+          <AnimatePresence>
+            {phase === 'intro' && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.8 }}
+                className="text-center mb-12"
+              >
+                <h1 className="scene-title">Building Custom OHI</h1>
+                <p className="scene-subtitle">New Relic Integration for Share Groups</p>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
-      <div className="relative z-10 w-full max-w-7xl">
-        {/* Title */}
-        <div className="text-center mb-8" style={{ opacity: Math.min(time * 0.5, 1) }}>
-          <h1 className="text-5xl font-black mb-4 bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
-            Building Your Custom OHI
-          </h1>
-          <p className="text-2xl text-gray-300">Go Development in Action</p>
-        </div>
-
-        {/* IDE Container */}
-        {showIDE && (
-          <div 
-            className="bg-gray-900/90 backdrop-blur-lg rounded-2xl overflow-hidden border border-indigo-500/30"
-            style={{
-              opacity: Math.min((time - 1) * 0.5, 1),
-              transform: `scale(${Math.min(1, 0.95 + (time - 1) * 0.025)})`,
-              transition: 'all 0.5s ease-out'
-            }}
-          >
-            {/* IDE Header */}
-            <div className="bg-gray-800 px-4 py-2 flex items-center justify-between border-b border-gray-700">
-              <div className="flex items-center space-x-2">
-                <div className="w-3 h-3 rounded-full bg-red-500"></div>
-                <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
-                <div className="w-3 h-3 rounded-full bg-green-500"></div>
-              </div>
-              <span className="text-sm text-gray-400">nri-kafka-sharegroups - Visual Studio Code</span>
-            </div>
-
-            <div className="flex" style={{ height: '500px' }}>
-              {/* File Tree */}
-              {showFileTree && (
-                <div className="w-64 bg-gray-850 border-r border-gray-700 p-4">
-                  <h3 className="text-xs font-semibold text-gray-400 uppercase mb-3">Explorer</h3>
-                  {fileTree.map((item, idx) => (
-                    <div
-                      key={idx}
-                      className={`py-1 px-2 text-sm cursor-pointer hover:bg-gray-700 rounded ${
-                        item.active ? 'bg-gray-700 text-white' : 'text-gray-400'
-                      }`}
-                      style={{
-                        opacity: Math.min((time - 3 - idx * 0.1) * 2, 1),
-                        transform: `translateX(${Math.max(0, -10 + (time - 3 - idx * 0.1) * 10)}px)`
-                      }}
-                    >
-                      <span className="mr-2">
-                        {item.type === 'folder' ? '📁' : '📄'}
-                      </span>
-                      {item.name}
+          {/* IDE Layout */}
+          <AnimatePresence>
+            {(phase === 'phase2' || phase === 'phase3') && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.8 }}
+                className="w-full max-w-7xl"
+              >
+                <div className="metric-card-v2 p-0 overflow-hidden">
+                  {/* IDE Header */}
+                  <div className="bg-gray-900 p-3 border-b border-gray-800 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Code2 className="w-5 h-5 text-blue-400" />
+                      <span className="text-sm text-gray-300">OHI Development Environment</span>
                     </div>
+                    <div className="flex gap-2">
+                      <div className="w-3 h-3 rounded-full bg-red-500" />
+                      <div className="w-3 h-3 rounded-full bg-yellow-500" />
+                      <div className="w-3 h-3 rounded-full bg-green-500" />
+                    </div>
+                  </div>
+
+                  {/* IDE Content */}
+                  <div className="flex h-[600px]">
+                    {/* File Tree */}
+                    <div className="w-64 bg-gray-900/50 border-r border-gray-800 p-4">
+                      <div className="space-y-1">
+                        {fileTree.map((item, index) => (
+                          <motion.div
+                            key={index}
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: index * 0.1 }}
+                            className={`flex items-center gap-2 py-1 px-2 rounded ${
+                              item.active ? 'bg-blue-600/20 text-blue-400' : 'text-gray-400 hover:bg-gray-800/50'
+                            }`}
+                          >
+                            {item.icon}
+                            <span className="text-sm">{item.name}</span>
+                          </motion.div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Code Editor */}
+                    <div className="flex-1 bg-gray-900/30 p-6 overflow-auto">
+                      <pre className="font-mono text-sm">
+                        {codeLines.map((line, index) => (
+                          <motion.div
+                            key={index}
+                            initial={{ opacity: 0 }}
+                            animate={{ 
+                              opacity: index <= currentLine ? 1 : 0.1
+                            }}
+                            transition={{ duration: 0.3 }}
+                            className="leading-relaxed"
+                          >
+                            <span className="text-gray-600 select-none mr-4">
+                              {String(index + 1).padStart(2, '0')}
+                            </span>
+                            <span className={getSyntaxColor(line.type)}>
+                              {line.text}
+                            </span>
+                          </motion.div>
+                        ))}
+                      </pre>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Terminal Output */}
+          <AnimatePresence>
+            {phase === 'phase4' && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8 }}
+                className="w-full max-w-5xl mt-8"
+              >
+                <div className="metric-card-v2 p-0 overflow-hidden">
+                  {/* Terminal Header */}
+                  <div className="bg-gray-900 p-3 border-b border-gray-800 flex items-center gap-2">
+                    <Terminal className="w-5 h-5 text-green-400" />
+                    <span className="text-sm text-gray-300">Terminal - Build & Test</span>
+                  </div>
+
+                  {/* Terminal Content */}
+                  <div className="bg-black/50 p-6 font-mono text-sm h-64 overflow-auto">
+                    {terminalOutput.map((output, index) => (
+                      <motion.div
+                        key={index}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.3 }}
+                        className={`mb-2 ${getTerminalColor(output.type)}`}
+                      >
+                        {output.text}
+                      </motion.div>
+                    ))}
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Success State */}
+          <AnimatePresence>
+            {phase === 'conclusion' && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.8 }}
+                className="text-center"
+              >
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ type: "spring", stiffness: 260, damping: 20 }}
+                  className="mb-8"
+                >
+                  <CheckCircle className="w-24 h-24 text-green-400 mx-auto" />
+                </motion.div>
+                
+                <h2 className="text-3xl font-bold mb-4 text-gray-200">
+                  OHI Integration Complete!
+                </h2>
+                
+                <p className="text-xl text-gray-400 mb-8 max-w-2xl mx-auto">
+                  Your custom integration now bridges Kafka Share Groups metrics to New Relic's 
+                  Queues UI, providing native observability for your streaming infrastructure.
+                </p>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+                  {[
+                    { icon: <Package className="w-8 h-8" />, label: 'Ready to Deploy' },
+                    { icon: <Zap className="w-8 h-8" />, label: 'Real-time Metrics' },
+                    { icon: <GitBranch className="w-8 h-8" />, label: 'Version Controlled' }
+                  ].map((item, index) => (
+                    <motion.div
+                      key={index}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: index * 0.2 }}
+                      className="metric-card-v2 p-4"
+                    >
+                      <div className="text-blue-400 mb-2">{item.icon}</div>
+                      <div className="text-gray-300">{item.label}</div>
+                    </motion.div>
                   ))}
                 </div>
-              )}
-
-              {/* Code Editor */}
-              <div className="flex-1 bg-gray-900 p-6 overflow-auto">
-                <div className="font-mono text-sm">
-                  {codeLines.slice(0, currentLine).map((line, idx) => {
-                    const isImport = line.includes('import') || (idx > 2 && idx < 11);
-                    const isComment = line.trim().startsWith('//');
-                    const isString = line.includes('"');
-                    const isKeyword = ['package', 'import', 'const', 'func', 'if', 'for', 'return'].some(k => line.includes(k));
-                    
-                    return (
-                      <div key={idx} className="leading-relaxed">
-                        <span className="text-gray-600 mr-4 select-none">{String(idx + 1).padStart(2, ' ')}</span>
-                        <span className={
-                          isComment ? 'text-gray-500' :
-                          isImport ? 'text-blue-400' :
-                          isKeyword ? 'text-purple-400' :
-                          isString ? 'text-green-400' :
-                          'text-gray-300'
-                        }>
-                          {line || '\u00A0'}
-                        </span>
-                      </div>
-                    );
-                  })}
-                  {currentLine < codeLines.length && (
-                    <span className="text-gray-400 animate-pulse">|</span>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            {/* Terminal */}
-            {showTerminal && (
-              <div className="bg-black border-t border-gray-700 p-4 font-mono text-sm">
-                <div className="text-gray-400 mb-2">TERMINAL</div>
-                {terminalOutput.map((line, idx) => (
-                  <div 
-                    key={idx} 
-                    className={line.includes('✓') ? 'text-green-400' : line.startsWith('$') ? 'text-blue-400' : 'text-gray-300'}
-                    style={{
-                      opacity: Math.min((time - 11 - idx * 0.5) * 2, 1)
-                    }}
-                  >
-                    {line}
-                  </div>
-                ))}
-              </div>
+              </motion.div>
             )}
-          </div>
-        )}
-
-        {/* Success Overlay */}
-        {showSuccess && (
-          <div 
-            className="absolute inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm"
-            style={{
-              opacity: Math.min((time - 19) * 0.5, 1)
-            }}
-          >
-            <div className="bg-gray-900/90 rounded-2xl p-8 border border-green-500/50 text-center">
-              <div className="text-6xl mb-4">🎉</div>
-              <h2 className="text-3xl font-bold text-green-400 mb-4">OHI Successfully Built!</h2>
-              <p className="text-xl text-gray-300">Ready to collect Share Groups metrics</p>
-            </div>
-          </div>
-        )}
-
-        {/* Progress Bar */}
-        <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 w-96">
-          <div className="h-1 bg-gray-800 rounded-full overflow-hidden">
-            <div 
-              className="h-full bg-gradient-to-r from-indigo-600 to-purple-600 rounded-full transition-all duration-300"
-              style={{ width: `${progress}%` }}
-            />
-          </div>
+          </AnimatePresence>
         </div>
       </div>
-
-      <style>{`
-        @keyframes code-fall {
-          0% {
-            transform: translateY(-100vh);
-          }
-          100% {
-            transform: translateY(100vh);
-          }
-        }
-      `}</style>
     </div>
   );
 };

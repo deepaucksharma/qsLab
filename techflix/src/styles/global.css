@@ -1,3 +1,8 @@
+/* Import design systems */
+@import './techflix-design-system.css';
+@import './techflix-cinematic-v2.css';
+@import './soundControl.css';
+
 /* Global Styles */
 * {
   margin: 0;

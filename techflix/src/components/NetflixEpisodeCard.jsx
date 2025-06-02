@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Play, Download, Check, Volume2, VolumeX } from 'lucide-react';
+import { useAudio } from '@hooks/useAudio';
 
 const NetflixEpisodeCard = ({ 
   episode, 
@@ -12,6 +13,7 @@ const NetflixEpisodeCard = ({
   const [isMuted, setIsMuted] = useState(true);
   const videoRef = useRef(null);
   const hoverTimeoutRef = useRef(null);
+  const { playHover, playClick, playTransition } = useAudio();
 
   // Destructure episode data
   const {
@@ -68,7 +70,10 @@ const NetflixEpisodeCard = ({
     return (
       <div
         className="relative group cursor-pointer transform transition-all duration-300 hover:scale-105 hover:z-10"
-        onMouseEnter={() => setIsHovered(true)}
+        onMouseEnter={() => {
+          setIsHovered(true);
+          playHover();
+        }}
         onMouseLeave={() => setIsHovered(false)}
       >
         {/* Thumbnail Container */}
@@ -116,7 +121,11 @@ const NetflixEpisodeCard = ({
             {hasContent ? (
               <div className="flex items-center justify-center h-full">
                 <button
-                  onClick={() => onPlay(episode)}
+                  onClick={async (e) => {
+                    e.stopPropagation();
+                    await playClick();
+                    onPlay(episode);
+                  }}
                   className="bg-white text-black rounded-full p-3 hover:bg-gray-200 transition-colors"
                   aria-label="Play episode"
                 >
@@ -147,8 +156,9 @@ const NetflixEpisodeCard = ({
           {/* Volume Control for Preview */}
           {showPreview && previewVideo && (
             <button
-              onClick={(e) => {
+              onClick={async (e) => {
                 e.stopPropagation();
+                await playClick();
                 setIsMuted(!isMuted);
               }}
               className="absolute bottom-2 right-2 bg-black/60 text-white p-1.5 rounded-full hover:bg-black/80 transition-colors z-30"
@@ -180,7 +190,13 @@ const NetflixEpisodeCard = ({
       className={`flex gap-4 p-4 rounded-lg transition-colors duration-200 cursor-pointer ${
         isCurrentEpisode ? 'bg-gray-800' : 'hover:bg-gray-800/50'
       }`}
-      onClick={() => hasContent && onPlay(episode)}
+      onClick={async () => {
+        if (hasContent) {
+          await playClick();
+          onPlay(episode);
+        }
+      }}
+      onMouseEnter={() => playHover()}
     >
       {/* Episode Number */}
       <div className="flex-shrink-0 text-3xl font-bold text-gray-600 w-12 text-center">

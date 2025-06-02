@@ -5,6 +5,7 @@ import NetflixEpisodePlayer from '@components/NetflixEpisodePlayer';
 import LoadingScreen from '@components/LoadingScreen';
 import { ROUTES } from '../router';
 import logger from '@utils/logger';
+import { useEpisodeLoadSound } from '@hooks/useAudio';
 
 const EpisodePage = () => {
   const { seriesId, seasonId, episodeId } = useParams();
@@ -19,6 +20,10 @@ const EpisodePage = () => {
   
   const [episode, setEpisode] = useState(null);
   const [error, setError] = useState(null);
+  const [showPlayer, setShowPlayer] = useState(false);
+  
+  // Play ta-dum sound when episode loads
+  useEpisodeLoadSound(episode && !showPlayer);
 
   useEffect(() => {
     const loadEpisode = async () => {
@@ -36,6 +41,11 @@ const EpisodePage = () => {
         setEpisode(episodeData);
         setCurrentEpisode(episodeId);
         logger.info('Episode loaded successfully', { episodeId: episodeData.id });
+        
+        // Delay showing player for dramatic effect with sound
+        setTimeout(() => {
+          setShowPlayer(true);
+        }, 2500); // Match ta-dum duration
       } catch (err) {
         logger.error('Failed to load episode', err);
         setError('Failed to load episode');
@@ -71,6 +81,18 @@ const EpisodePage = () => {
 
   if (!episode) {
     return null;
+  }
+
+  // Show loading screen with ta-dum sound
+  if (!showPlayer) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-6xl font-bold text-netflix-red mb-4 animate-pulse">TECHFLIX</div>
+          <div className="text-white text-xl">Loading Episode...</div>
+        </div>
+      </div>
+    );
   }
 
   return (

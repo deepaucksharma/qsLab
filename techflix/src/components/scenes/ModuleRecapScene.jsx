@@ -1,183 +1,192 @@
-import React from 'react';
+import React, { useMemo } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { RefreshCw, BarChart3, Clock, AlertTriangle, Target, CheckCircle, BookOpen, ArrowRight } from 'lucide-react';
+import '../../styles/techflix-cinematic-v2.css';
 
 const ModuleRecapScene = ({ time, duration }) => {
   const progress = (time / duration) * 100;
   
+  // 5-phase storytelling structure
+  const phase = useMemo(() => {
+    if (time < 2) return 'intro';
+    if (time < 4.5) return 'phase2';
+    if (time < 7) return 'phase3';
+    if (time < 9.5) return 'phase4';
+    return 'conclusion';
+  }, [time]);
+
   const takeaways = [
     {
-      icon: '🔄',
+      icon: <RefreshCw className="w-8 h-8" />,
       title: 'Trade-offs Matter',
       description: 'Share Groups offer massive scalability but require new monitoring approaches',
-      color: 'from-purple-500 to-blue-500'
+      color: 'text-purple-400',
+      delay: 0
     },
     {
-      icon: '📊',
+      icon: <BarChart3 className="w-8 h-8" />,
       title: 'Monitor RecordsUnacked',
       description: 'The most critical metric for understanding Share Groups consumer health',
-      color: 'from-orange-500 to-red-500'
+      color: 'text-orange-400',
+      delay: 0.3
     },
     {
-      icon: '⏱️',
+      icon: <Clock className="w-8 h-8" />,
       title: 'Track Message Age',
       description: 'OldestUnackedMessageAgeMs reveals processing bottlenecks early',
-      color: 'from-blue-500 to-purple-500'
+      color: 'text-blue-400',
+      delay: 0.6
     },
     {
-      icon: '🚨',
+      icon: <AlertTriangle className="w-8 h-8" />,
       title: 'Beware Zero Lag',
       description: 'Traditional lag metrics can hide serious processing issues with Share Groups',
-      color: 'from-red-500 to-pink-500'
+      color: 'text-red-400',
+      delay: 0.9
     }
   ];
 
-  const getItemOpacity = (index) => {
-    const delay = 1.5 + index * 1.2;
-    return time > delay ? 1 : 0;
-  };
-
-  const getItemTransform = (index) => {
-    const delay = 1.5 + index * 1.2;
-    if (time <= delay) return 'translateY(30px) scale(0.9)';
-    const elapsed = time - delay;
-    if (elapsed < 0.5) {
-      const progress = elapsed / 0.5;
-      return `translateY(${30 - 30 * progress}px) scale(${0.9 + 0.1 * progress})`;
-    }
-    return 'translateY(0) scale(1)';
+  const shouldShowTakeaway = (index) => {
+    return time > 2 + (index * 0.5);
   };
 
   return (
-    <div className="w-full h-full bg-gradient-to-br from-gray-900 via-purple-900/20 to-black flex items-center justify-center p-8 relative overflow-hidden">
-      {/* Animated Background Grid */}
-      <div className="absolute inset-0 opacity-20">
-        <div className="absolute inset-0" style={{
-          backgroundImage: `
-            linear-gradient(rgba(147, 51, 234, 0.3) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(147, 51, 234, 0.3) 1px, transparent 1px)
-          `,
-          backgroundSize: '50px 50px',
-          animation: 'grid-move 20s linear infinite'
-        }} />
-      </div>
+    <div className="scene-container-v2">
+      <div className="scene-content">
+        <div className="flex flex-col items-center justify-center min-h-full py-12">
+          {/* Title */}
+          <AnimatePresence>
+            {phase === 'intro' && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.8 }}
+                className="text-center mb-12"
+              >
+                <h1 className="scene-title">Module Recap</h1>
+                <p className="scene-subtitle">Key Takeaways from Critical Metrics</p>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
-      {/* Floating Particles */}
-      <div className="absolute inset-0">
-        {[...Array(15)].map((_, i) => (
-          <div
-            key={i}
-            className="absolute w-1 h-1 bg-purple-400 rounded-full"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              animation: `float-up ${10 + Math.random() * 10}s linear infinite`,
-              animationDelay: `${Math.random() * 5}s`,
-              opacity: 0.3
-            }}
-          />
-        ))}
-      </div>
+          {/* Takeaways Grid */}
+          <AnimatePresence>
+            {(phase === 'phase2' || phase === 'phase3' || phase === 'phase4' || phase === 'conclusion') && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.8 }}
+                className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto w-full"
+              >
+                {takeaways.map((takeaway, index) => (
+                  shouldShowTakeaway(index) && (
+                    <motion.div
+                      key={index}
+                      initial={{ opacity: 0, y: 30 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ 
+                        duration: 0.8,
+                        delay: takeaway.delay
+                      }}
+                      className="metric-card-v2 p-6"
+                    >
+                      <div className="flex items-start gap-4">
+                        <div className={`${takeaway.color} flex-shrink-0`}>
+                          {takeaway.icon}
+                        </div>
+                        <div className="flex-1">
+                          <h3 className="text-lg font-bold mb-2 text-gray-200">
+                            {takeaway.title}
+                          </h3>
+                          <p className="text-gray-400 text-sm">
+                            {takeaway.description}
+                          </p>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )
+                ))}
+              </motion.div>
+            )}
+          </AnimatePresence>
 
-      <div className="relative z-10 max-w-5xl w-full">
-        {/* Title */}
-        <div className="text-center mb-12" style={{ opacity: Math.min(time * 0.5, 1) }}>
-          <h1 className="text-5xl font-black mb-4 bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent">
-            Module Recap
-          </h1>
-          <p className="text-2xl text-gray-300">Key Takeaways for Share Groups Monitoring</p>
-        </div>
-
-        {/* Takeaways Grid */}
-        <div className="grid grid-cols-2 gap-6">
-          {takeaways.map((takeaway, index) => (
-            <div
-              key={index}
-              className="relative group"
-              style={{
-                opacity: getItemOpacity(index),
-                transform: getItemTransform(index),
-                transition: 'all 0.5s ease-out'
-              }}
-            >
-              {/* Card Glow */}
-              <div className={`absolute inset-0 bg-gradient-to-r ${takeaway.color} opacity-0 group-hover:opacity-20 blur-xl transition-opacity duration-300`} />
-              
-              {/* Card Content */}
-              <div className="relative bg-gray-900/80 backdrop-blur-lg rounded-2xl p-6 border border-gray-700/50 hover:border-gray-600/70 transition-all duration-300">
-                <div className="flex items-start">
-                  {/* Icon */}
-                  <div className="text-4xl mr-4 flex-shrink-0">{takeaway.icon}</div>
-                  
-                  {/* Content */}
-                  <div className="flex-1">
-                    <h3 className={`text-xl font-bold mb-2 bg-gradient-to-r ${takeaway.color} bg-clip-text text-transparent`}>
-                      {takeaway.title}
-                    </h3>
-                    <p className="text-gray-400 leading-relaxed">
-                      {takeaway.description}
-                    </p>
+          {/* Module Progress */}
+          <AnimatePresence>
+            {phase === 'phase4' && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.8 }}
+                className="mt-12 max-w-3xl mx-auto w-full"
+              >
+                <div className="metric-card-v2 p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-lg font-bold text-gray-200">Module Progress</h3>
+                    <Target className="w-6 h-6 text-green-400" />
+                  </div>
+                  <div className="space-y-3">
+                    {[
+                      { label: 'Trade-offs Understanding', progress: 100 },
+                      { label: 'Critical Metrics Knowledge', progress: 100 },
+                      { label: 'Zero Lag Fallacy Awareness', progress: 100 }
+                    ].map((item, index) => (
+                      <div key={index}>
+                        <div className="flex justify-between text-sm mb-1">
+                          <span className="text-gray-400">{item.label}</span>
+                          <span className="text-green-400">{item.progress}%</span>
+                        </div>
+                        <div className="h-2 bg-gray-800 rounded-full overflow-hidden">
+                          <motion.div
+                            initial={{ width: 0 }}
+                            animate={{ width: `${item.progress}%` }}
+                            transition={{ duration: 1, delay: index * 0.2 }}
+                            className="h-full bg-gradient-to-r from-green-600 to-green-400 rounded-full"
+                          />
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
-              </div>
-            </div>
-          ))}
-        </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
-        {/* Final Message */}
-        {time > 7 && (
-          <div 
-            className="mt-12 text-center"
-            style={{
-              opacity: Math.min((time - 7) * 0.5, 1),
-              transform: `translateY(${Math.max(0, 20 - (time - 7) * 10)}px)`
-            }}
-          >
-            <div className="inline-block p-6 bg-gradient-to-r from-purple-900/30 to-blue-900/30 rounded-2xl border border-purple-500/30">
-              <p className="text-xl text-gray-200">
-                <span className="text-2xl mr-2">🎯</span>
-                Master these metrics to unlock Share Groups&apos; full potential
-              </p>
-            </div>
-          </div>
-        )}
-
-        {/* Progress Bar */}
-        <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 w-96">
-          <div className="h-1 bg-gray-800 rounded-full overflow-hidden">
-            <div 
-              className="h-full bg-gradient-to-r from-purple-600 to-pink-600 rounded-full transition-all duration-300"
-              style={{ width: `${progress}%` }}
-            />
-          </div>
+          {/* Next Steps */}
+          <AnimatePresence>
+            {phase === 'conclusion' && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.8 }}
+                className="mt-12 max-w-4xl mx-auto w-full text-center"
+              >
+                <div className="alert-box p-8">
+                  <CheckCircle className="w-12 h-12 text-green-400 mx-auto mb-4" />
+                  <h2 className="text-2xl font-bold mb-4 text-gray-200">
+                    Ready for Production Monitoring
+                  </h2>
+                  <p className="text-gray-300 mb-6">
+                    You now understand the critical metrics that matter for Share Groups monitoring. 
+                    Apply these insights to build robust observability for your Kafka 4.0 deployments.
+                  </p>
+                  <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                    <div className="flex items-center gap-2 text-blue-400">
+                      <BookOpen className="w-5 h-5" />
+                      <span>Continue Learning</span>
+                    </div>
+                    <ArrowRight className="w-5 h-5 text-gray-400" />
+                    <div className="text-gray-300">
+                      Next: Advanced Share Groups Patterns
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </div>
-
-      <style>{`
-        @keyframes grid-move {
-          0% {
-            transform: translate(0, 0);
-          }
-          100% {
-            transform: translate(50px, 50px);
-          }
-        }
-        
-        @keyframes float-up {
-          0% {
-            transform: translateY(100vh) translateX(0);
-            opacity: 0;
-          }
-          10% {
-            opacity: 0.3;
-          }
-          90% {
-            opacity: 0.3;
-          }
-          100% {
-            transform: translateY(-100vh) translateX(20px);
-            opacity: 0;
-          }
-        }
-      `}</style>
     </div>
   );
 };

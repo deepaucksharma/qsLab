@@ -2,7 +2,10 @@ import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { Play, Pause, ChevronLeft, Maximize2, Volume2, Settings, 
          SkipForward, SkipBack, Info } from 'lucide-react'
 import logger from '../utils/logger'
+import audioManager from '../utils/audioManager'
 import { useEpisodeProgress } from '../hooks/useEpisodeProgress'
+import { useVoiceOver } from '../hooks/useVoiceOver'
+import VoiceOverControls from './VoiceOverControls'
 
 // Import interactive components
 import InteractiveStateMachine from './interactive/InteractiveStateMachine'
@@ -16,6 +19,24 @@ const NetflixEpisodePlayer = ({ episodeData, onEpisodeEnd, onBack }) => {
   const [isPlaying, setIsPlaying] = useState(false)
   const [showControls, setShowControls] = useState(true)
   const [interactiveMode, setInteractiveMode] = useState(null)
+  const [voiceOverEnabled, setVoiceOverEnabled] = useState(() => audioManager.voiceOverEnabled)
+  
+  // Get episode and scene IDs for voice-over
+  const episodeId = episode ? `s${episode.metadata?.seasonNumber || 1}e${episode.metadata?.episodeNumber || 1}` : null
+  const currentScene = episode?.scenes[currentSceneIndex]
+  const sceneId = currentScene?.id
+  
+  // Use voice-over hook for current scene
+  const voiceOver = useVoiceOver(episodeId, sceneId, {
+    enabled: voiceOverEnabled && !interactiveMode && !isLoading,
+    autoPlay: isPlaying,
+    onEnd: () => {
+      logger.info('Scene voice-over completed', { episodeId, sceneId })
+    },
+    onError: (error) => {
+      logger.error('Voice-over error', { episodeId, sceneId, error })
+    }
+  })
   
   // Wrapper to maintain compatibility with old updateProgress signature
   const updateProgress = useCallback((seasonNumber, episodeNumber, timeWatched, duration) => {
@@ -47,6 +68,11 @@ const NetflixEpisodePlayer = ({ episodeData, onEpisodeEnd, onBack }) => {
   // Load episode data
   useEffect(() => {
     if (episodeData) {
+      logger.info('Episode data received', { 
+        hasMetadata: !!episodeData.metadata,
+        hasScenes: !!episodeData.scenes,
+        sceneCount: episodeData.scenes?.length 
+      });
       logger.logEpisodeEvent('EPISODE_LOAD_START', {
         episodeId: episodeData.metadata?.title,
         sceneCount: episodeData.scenes?.length
@@ -63,6 +89,8 @@ const NetflixEpisodePlayer = ({ episodeData, onEpisodeEnd, onBack }) => {
           loadTime
         })
       }, 1200)
+    } else {
+      logger.warn('No episode data received');
     }
   }, [episodeData])
 
@@ -180,6 +208,15 @@ const NetflixEpisodePlayer = ({ episodeData, onEpisodeEnd, onBack }) => {
     const newPlayState = !isPlaying
     setIsPlaying(newPlayState)
     setShowControls(true)
+    
+    // Handle voice-over play/pause
+    if (voiceOverEnabled && voiceOver) {
+      if (newPlayState) {
+        voiceOver.play()
+      } else {
+        voiceOver.pause()
+      }
+    }
     
     logger.info(`Playback ${newPlayState ? 'resumed' : 'paused'}`, {
       episodeId: episode?.metadata?.title,
@@ -314,6 +351,18 @@ const NetflixEpisodePlayer = ({ episodeData, onEpisodeEnd, onBack }) => {
                   <Volume2 className="w-6 h-6" />
                 </button>
               </div>
+              
+              {/* Voice-over controls */}
+              {voiceOver.hasVoiceOver && (
+                <VoiceOverControls
+                  {...voiceOver}
+                  onToggle={() => {
+                    const newEnabled = audioManager.toggleVoiceOver()
+                    setVoiceOverEnabled(newEnabled)
+                  }}
+                  mode="minimal"
+                />
+              )}
             </div>
 
             <div className="flex items-center gap-4">

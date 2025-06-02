@@ -106,12 +106,10 @@
   }
 }
 
-/* Particle System */
+/* Particle System - Disabled for cleaner experience */
 @keyframes floatParticle {
-  0% { transform: translate(0, 0) rotate(0deg); opacity: 0; }
-  10% { opacity: 1; }
-  90% { opacity: 1; }
-  100% { transform: translate(100px, -100vh) rotate(720deg); opacity: 0; }
+  /* Particles disabled - use static elements instead */
+  0%, 100% { opacity: 0; }
 }
 
 /* ========================================
@@ -127,19 +125,16 @@
   background: var(--gradient-dark);
 }
 
-/* Cinematic Backgrounds */
+/* Cinematic Backgrounds - Static for better focus */
 .bg-tech-grid {
   background-image: 
-    repeating-linear-gradient(0deg, transparent, transparent 49px, rgba(99, 102, 241, 0.1) 49px, rgba(99, 102, 241, 0.1) 50px),
-    repeating-linear-gradient(90deg, transparent, transparent 49px, rgba(99, 102, 241, 0.1) 49px, rgba(99, 102, 241, 0.1) 50px);
+    repeating-linear-gradient(0deg, transparent, transparent 49px, rgba(99, 102, 241, 0.05) 49px, rgba(99, 102, 241, 0.05) 50px),
+    repeating-linear-gradient(90deg, transparent, transparent 49px, rgba(99, 102, 241, 0.05) 49px, rgba(99, 102, 241, 0.05) 50px);
   background-size: 50px 50px;
-  animation: gridScroll 20s linear infinite;
+  /* Animation removed - static grid is less distracting */
 }
 
-@keyframes gridScroll {
-  from { background-position: 0 0; }
-  to { background-position: 50px 50px; }
-}
+/* Removed distracting scroll animation */
 
 .bg-code-rain {
   background: linear-gradient(0deg, rgba(0,0,0,0.8) 0%, transparent 100%);
