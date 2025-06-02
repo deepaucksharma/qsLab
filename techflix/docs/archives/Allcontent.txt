@@ -1,0 +1,647 @@
+Great, I’ll develop a comprehensive 3–4 hour audiobook script tailored for New Relic engineers who are already familiar with nri-kafka, Flex, and OHI. The audiobook will provide balanced coverage across Kafka 4.0 Share Group fundamentals, JMX monitoring concepts, and the New Relic Queues & Streams UI integration.
+
+I’ll let you know once the content draft is ready for review.
+
+Observing Kafka 4.0 Share Groups with New Relic – A Comprehensive Audiobook Guide
+
+Hello and welcome! In this audiobook, we’ll embark on an in-depth journey through Kafka 4.0 Share Groups and how to monitor them using New Relic’s observability platform. This guide is tailored for New Relic engineers who are already familiar with tools like nri-kafka, Flex, and custom Open-Host Integrations (OHIs), but who might be new to the world of Kafka’s Share Groups (a major new feature introduced in Kafka 4.0). Over the next few hours, we will explore what Share Groups are, how they work, and why they’re a game-changer for Kafka consumers. We’ll then dive into the JMX metrics that Kafka exposes for these Share Groups and how to collect them (including using a Prometheus JMX exporter). Finally, we’ll tie it all together by integrating these insights into New Relic’s Queues & Streams UI, ensuring you can visualize and alert on Share Group activity in a meaningful way.
+
+This audiobook is structured into three main chapters of roughly equal length:
+
+Chapter 1: Kafka 4.0 Share Groups – We introduce Share Groups, comparing them to traditional consumer groups, explaining their semantics like cooperative consumption and per-message acknowledgments, and highlighting the new metrics Kafka 4.0 introduces (such as RecordsUnacked and OldestUnackedMessageAgeMs). Expect real-world examples of why Share Groups are needed and how they behave.
+
+Chapter 2: JMX Monitoring Essentials for Kafka Share Groups – Here we review the basics of Java Management Extensions (JMX) for monitoring Kafka, detail the new MBeans that Kafka brokers expose for Share Groups (under the kafka.server:type=share-group-metrics hierarchy), and discuss how to extract these metrics using a Prometheus JMX exporter. This sets the stage for getting Share Group data out of Kafka and into an external monitoring system.
+
+Chapter 3: New Relic Integration with the Queues & Streams UI – In the final chapter, we focus on New Relic. We’ll discuss why the existing nri-kafka integration isn’t sufficient for Share Group data, how Flex and the Prometheus exporter can be used as a stop-gap to ingest metrics, and why ultimately a Custom OHI (on-host integration) is needed to emit specialized QueueSample events. We’ll break down the fields of these events (like provider, queue.name, share.group.name, records.unacked, records.oldestMs) and show how they light up New Relic’s Queues & Streams monitoring UI. We’ll also cover best practices and potential pitfalls (for example, the “zero lag fallacy” that can mislead engineers if they rely on traditional lag metrics in a Share Group context).
+
+Throughout the script, we’ll maintain a narrative style that’s friendly and clear – think of it as a knowledgeable colleague walking you through these concepts step by step. You’ll hear real-world scenarios, analogies, and “storytelling” elements to make the technical content more engaging and memorable. We’ll also include periodic transitions and summaries to ensure the content flows well for an audio format. And because accuracy is paramount, we’ll cite sources and research to back up key points, so you can trust the information and even follow up with the references if you want to learn more.
+
+So, whether you’re sipping your coffee on a morning commute or sitting at your desk with New Relic open, get comfortable. By the end of this audiobook, you’ll be well-equipped to understand Kafka Share Groups and to implement their observability in New Relic. Let’s dive in!
+
+Chapter 1: Kafka 4.0 Share Groups – A New Paradigm for Kafka Consumers
+
+“What if you could scale your Kafka consumers beyond the number of partitions? What if one slow message no longer blocked an entire partition? What if Kafka acted a bit more like a traditional job queue when you needed it to?” These questions capture the motivation behind Share Groups, a groundbreaking feature introduced in Apache Kafka 4.0. In this chapter, we’ll explore what Share Groups are, how they differ from traditional Kafka consumer groups, and the fundamental changes in semantics that they bring – including cooperative consumption, per-message acknowledgments, and queue-like behavior. We’ll also identify the key metrics Kafka provides to help monitor Share Groups (like RecordsUnacked and OldestUnackedMessageAgeMs), which are crucial for understanding their performance and health.
+
+1.1 From Consumer Groups to Share Groups: Why the Change?
+
+To appreciate Share Groups, let’s first recall how traditional Kafka consumer groups work and why their limitations have spurred this new design. In Kafka’s classic model, a consumer group is a set of consumers that exclusively divide up partitions among themselves – each partition of a topic is owned by at most one consumer in the group at any time. This one-consumer-per-partition rule enforces a degree of ordering and parallelism, but it also creates a strict coupling between the number of consumers and the number of partitions. If you have a topic with 5 partitions, you can scale out to at most 5 active consumer instances in a group – adding a 6th consumer would be pointless because there are no additional partitions for it to consume. This is a hard upper limit on throughput scaling with consumer groups.
+
+Consider an e-commerce platform during a big sale. You have a topic with 5 partitions handling order events. Under the traditional consumer group model, you can run at most 5 parallel order processing consumers. If traffic suddenly triples, you cannot simply spawn more consumers beyond 5 unless you also increase the partition count. Many organizations preemptively over-partition their topics (perhaps creating 20 partitions for a workload that normally only needs 5) just in case they need to scale up consumers later. Over-partitioning, however, leads to its own problems – increased broker load, more open file handles, and potential inefficiencies with too many small partitions. And if you ever do increase partitions on a topic, you disrupt the ordering of keys and have to coordinate the rebalancing – not trivial in large systems.
+
+Another limitation is head-of-line blocking. Within each partition, Kafka guarantees ordering: a single consumer processes messages in sequence. But what if one message is slow to process? Maybe it’s a complex computation or involves a call to a flakey external service. In a normal consumer group, that slow message will hold up the consumer’s progress on that partition – it can’t skip ahead. No other consumer can help out because of the exclusive ownership rule. All messages behind the slowpoke are stuck waiting in line (in Kafka’s log) until that one finishes. This can lead to under-utilization of other consumers (they might be idle if their partitions are quiet) and generally poor throughput when you have uneven processing times.
+
+These challenges have traditionally forced Kafka users to adopt clunky workarounds: over-partitioning (as discussed), using multiple consumer groups reading the same topic (to at least allow more consumers overall, though each group duplicates the data consumed), or even using external systems (like feeding Kafka data into a separate message queue system for the “difficult” processing scenarios). A common desire has been, “Why can’t Kafka just act like a queue when I need it to?” – meaning, let me have many consumers pull from a common pool of messages, without rigid partition ownership, and let me acknowledge messages individually so one bad message doesn’t block the rest.
+
+Enter Share Groups. Share Groups (also called “shared consumer groups” in some discussions) are Kafka’s answer to these needs. A Share Group is a new type of consumer group introduced by KIP-932 (Queues for Kafka) that allows multiple consumers to cooperate on the same partitions of a topic. In essence, Kafka still has the concept of topic partitions, but a Share Group provides a layer on top of those partitions where the broker can assign individual messages (or batches of messages) from a partition to different consumers concurrently. The result is queue-style consumption semantics on a Kafka topic – you get point-to-point messaging (each message goes to one consumer in the group) instead of the traditional publish-subscribe pattern where every consumer group gets all messages. Andrew Schofield (one of the authors of this feature) described a Share Group as roughly equivalent to a “durable shared subscription” in a messaging system like JMS. It’s Kafka’s way of saying: “We’re not turning Kafka into a different system, but we’re giving you a new consumption model that feels like a queue while still leveraging Kafka’s log under the covers.”
+
+Let’s break that down with a simple mental model. Imagine you have one Kafka topic with 5 partitions, and you have 10 consumers that all join the same Share Group (say the group ID is "orders-share-group"). All 10 consumers indicate interest in the "orders" topic. The Kafka brokers, acting as the Share Group Coordinator, will allow all 10 consumers to fetch from those 5 partitions simultaneously. At any given moment, multiple consumers might be fetching from the same partition, each getting different messages from that partition. It’s as if the 5 partitions’ data have been pooled together into one job queue that the 10 consumers are collectively working on – cooperatively. This breaks the one-to-one mapping of consumer to partition that we’re used to. Now you can truly scale consumption horizontally: even if you only have a few partitions, you can add many consumers to speed up processing of a backlog. Conversely, during low load, you could run fewer consumers – you’re no longer forced to have as many consumers as partitions; you could even have 1 consumer handling multiple partitions’ messages interleaved.
+
+Another crucial change with Share Groups is per-message acknowledgment. In a classic consumer group, progress is tracked by offset commits – the consumer periodically commits the highest offset it has processed in each partition. This means acknowledgment is batch-oriented and always moves forward linearly (you commit “I’ve processed up to offset N”). If you fail to process something, you typically stop committing, or you seek back, or use some external tracking. With Share Groups, Kafka moves to an explicit ack model: each message (or each record) delivered to a consumer must be explicitly acknowledged as processed (successfully or not) or alternatively can be “released” or “rejected” individually. The broker keeps track of the state of each message in a partition for that Share Group. Essentially, the broker is now aware of in-flight messages that have been delivered to consumers but not yet acknowledged. This is a huge shift in responsibility: previously, the broker didn’t really know which specific messages were pending processing (it only knew the last committed offset). Now, with Share Groups, the broker takes on the job of tracking message delivery and acknowledgments in detail.
+
+Let’s illustrate why this matters. In our example, suppose one of the 10 consumers picks up a particularly slow-to-process message (maybe it’s a large order that requires fraud checks). In a normal group, that partition would be “stuck” until that message is done and the offset advances. But in a Share Group, what happens? That consumer will eventually either ACK the message (if processed successfully), RELEASE it (if it needs to retry later or be handled by another consumer), or REJECT it (if it’s a poison message that will never be processed correctly). While it’s working on that message (say it’s not done yet), the broker could still dispatch further messages from that same partition to other consumers, as long as they’re beyond the one in progress and within a certain window. This is thanks to a mechanism called the share-partition “sliding window” of in-flight records. The broker uses a time-limited lock on each message that it hands out to a consumer – by default, 30 seconds – during which no other consumer will get that same message. But crucially, if the next few messages in that partition are independent, they might still be delivered to other consumers even if one message is outstanding. The extent to which this happens is configurable and carefully managed to avoid breaking the fundamental log ordering too much (Kafka still won’t let you truly race ahead arbitrarily; there’s a Share Partition Start Offset (SPSO) and End Offset (SPEO) concept which marks the window of in-flight messages).
+
+The point is, Share Groups eliminate head-of-line blocking by allowing out-of-order processing in a controlled manner. You don’t require out-of-order; if your workload demands strict order per partition, you’d stick to a classic group. But if you’re treating the topic as a queue of jobs where order doesn’t matter, Share Groups give you the tools to process concurrently what used to be forced sequentially. In fact, one of the advertised caveats of Share Groups is “there is no ordering guarantee” (beyond what the application itself imposes) – which is the flip side of enabling this free-for-all consumption style. As the 2 Minute Streaming blog succinctly put it: “These queues have at-least-once semantics. There is also no order.” – meaning, you might get replays/retries (at least once delivery) and messages from the same partition can be processed out of their original sequence if a slower one gets retried while faster ones behind it finish first.
+
+To summarize the differences, let’s list them clearly, because these are fundamental and exam-worthy for any Kafka engineer:
+
+Multiple Consumers per Partition (Cooperative Consumption): In a Share Group, consumers do not have exclusive partition ownership. The broker can assign messages from one partition to multiple consumers concurrently. By contrast, in a traditional group, one partition == one consumer at a time.
+
+Decoupling of Consumers from Partition Count: You can run more consumers than partitions in a Share Group (or fewer, it’s flexible). This breaks the hard limit on parallelism set by partition count. With Share Groups, if you need to speed up processing, you can add consumers without touching the topic’s partitioning.
+
+Per-Message Acknowledgment (No Offset Commit for Progress): Each record must be acknowledged individually by the consumer in a Share Group. The consumer calls an API to ACK/RELEASE/REJECT messages (or uses an auto-ack mode if configured). There is no longer a need to commit offsets in the usual sense. The broker tracks which messages are done or still pending. Traditional groups used offset commits (committing a position means all prior messages are considered processed) – which is coarser and doesn’t allow skipping or reordering.
+
+Broker-Side Coordination of Delivery: The broker now decides which messages to deliver to which consumer and when, within a Share Group. In normal groups, the broker just hands each partition’s next unread messages to its single consumer; it’s a simpler dispatch. With Share Groups, the broker acts like a traffic cop: it keeps a state machine per share-partition, marking messages as available, acquired, acknowledged, released, or archived. It times out messages that aren’t acknowledged in time (moving them back to available if needed) and counts how many times a message has been delivered (for retry attempts). After a maximum number of deliveries (default 5 attempts), it can mark a message as archived (which means “given up on” – it won’t be delivered again). All of this logic lives in the broker’s Share Group coordinator component. Essentially, the broker is ensuring that each message will eventually either be processed or retired, and that no message falls through the cracks even if consumers come and go or crash mid-processing.
+
+Automatic Load Balancing and Redistribution: Since the broker is aware of each consumer and their load, it can more evenly distribute work. If one consumer is slow or overwhelmed, the broker can favor delivering to others. If a consumer dies, any messages it had “in-flight” will simply time out and become available for others without waiting for a rebalance cycle (as it would in a normal group). In fact, the Share Group model does away with the heavy “stop-the-world” rebalances for partition ownership changes; instead, it’s more continuous. (There is still some group membership management, but no need to revoke partitions before assigning new ones in the same way.)
+
+No Ordering Guarantees: As mentioned, the trade-off to achieve the above is that message ordering (within a partition) is no longer guaranteed when using Share Groups. The system will strive to process messages roughly in offset order, but with retries and multiple consumers, you can and will get out-of-order completions. For example, offset 100 might be processed (ACKed) before offset 90 if offset 90 was stuck and retried multiple times. This is acceptable for use cases where each message is independent (the typical scenario for work queues or task queues), but it means you wouldn’t use Share Groups if message ordering is semantically important to you.
+
+So, when should you use a Share Group? Think of workloads like processing tasks that don’t need to be strictly ordered and that benefit from parallelism beyond partitioning. A real example: image processing jobs. Imagine a topic where each message references an image to be processed. Some images are small (few seconds to handle), some are large (might take a minute). With a normal consumer group, one huge image can delay all others behind it on that partition. With a Share Group, multiple images from that same partition could be processed by different consumers simultaneously – the large image won’t hold up the smaller ones. Another example: a microservice that sends emails from a queue – if one email’s downstream SMTP server is slow, it won’t block other emails from being sent by other instances. Essentially, any scenario where you’d normally reach for a dedicated queue system (like RabbitMQ or ActiveMQ) because Kafka’s at-least-once, in-order processing was too rigid, could potentially be addressed with Share Groups within Kafka itself. This keeps you on the Kafka ecosystem (no need to run a separate message queue product just for those use cases) and leverages Kafka’s scalability and reliability (no max queue length, persistent storage, replay capability, etc.).
+
+1.2 Cooperative Consumption in Action: A Story of Two Consumers (and a Partition)
+
+Let’s make this concrete with a simple narrative. This is a story of Partition 7 of topic “Orders”, and two consumers, Alice and Bob, who are in a Share Group.
+
+Initial state: Partition 7 has a backlog of 5 messages (offsets 100 to 104). Both Alice and Bob are in the “orders-share-group” Share Group and are ready to consume.
+
+Step 1 (Message dispatch): The broker sees both Alice and Bob are available. It takes the first message (offset 100) and sends it to Alice. Simultaneously, it can take the next message (offset 101) and send it to Bob – even though both are from the same partition. Now Alice is working on message 100, Bob on 101. Those messages are now in “acquired” state for Alice and Bob respectively. The broker sets a timer (say 30s) for each.
+
+Step 2 (Ack and Release): Alice finishes processing message 100 quickly and sends an ACK to the broker for offset 100 (meaning “done, you can mark this as processed”). Bob, however, runs into an issue with message 101 – maybe it calls an external API that fails. Bob decides to release message 101 (meaning “I couldn’t do it now, maybe someone else or me later can retry”). Bob sends a RELEASE for offset 101 before his timer expires. The broker marks message 101 back to “available” state, but also increments its delivery count (it’s been delivered once unsuccessfully).
+
+Step 3 (Continued consumption): The broker, upon receiving Alice’s ACK for 100, marks that message as done. It then advances the “Share Partition Start Offset (SPSO)” beyond 100 (meaning it can slide the window) – effectively message 100 is out of the in-flight window now, freeing space. The broker can now dispatch the next message in line, offset 102, to whichever consumer is free. Alice is free now, so broker sends offset 102 to Alice. What about offset 101? It was released and is available again. The broker could immediately try giving 101 to Alice as well (maybe not immediately, depending on strategy – it might prefer not to redeliver to the same consumer that just failed it if the failure was not transient). But since Bob released it due to an external API failure, maybe Alice might succeed. So broker dispatches offset 101 now to Alice (a second delivery attempt). Meanwhile Bob, after releasing 101, is free and ready for another message. The broker can send offset 103 to Bob.
+
+Now: Alice has two messages in flight (101 and 102) and Bob has one (103). This is possible as long as the system’s configured to allow a consumer to handle multiple at once and within the window size. Perhaps in real Kafka, each poll might return a batch from various partitions, but for simplicity, we see concurrency.
+
+Step 4 (Completion): Suppose Alice processes 101 successfully this time and ACKs it. She also processes 102 and ACKs it. Bob processes 103 fine and ACKs it. Now all that’s left is offset 104, the last one in the backlog. Broker sees both Alice and Bob free; it hands 104 to Bob. Bob processes and ACKs. The backlog is done.
+
+In that scenario, we effectively processed 5 messages with two consumers faster than any single consumer could, and we handled a retry (message 101) without stopping the world. If this were a traditional consumer group on Partition 7, Bob alone would have taken 101, failed, perhaps crashed or skipped it depending on error handling – but importantly, Bob would not have moved to 102 until handling 101. Alice would have been idle if she didn’t own any other partition. By contrast, with Share Groups, we kept Alice busy with other work and recovered from Bob’s issue gracefully.
+
+This scenario also highlights something important: the role of the broker. In normal groups, the broker’s job was mostly to coordinate partition ownership and keep track of the latest committed offsets. It didn’t involve itself with individual messages. Now the broker is doing a lot more bookkeeping: it needs to know, for each partition in a Share Group, which messages are outstanding and which consumer has each one (if any). It has to enforce that a message isn’t given to two consumers at the same time, via the acquisition lock mechanism. It also must decide when to give up on a message (if it’s been retried too many times – enter dead-letter or archived state concept). This makes the internals more complex, but that complexity is in service of a simpler external usage pattern for developers who just want Kafka to behave like a queue when needed.
+
+1.3 Key Metrics Introduced by Share Groups
+
+With such a different consumption model, it’s no surprise that we need new metrics to monitor Share Groups effectively. Traditional Kafka metrics around consumer groups typically involve lag (how far behind the consumer group is from the head of the log) and throughput (records consumed per second), etc. But in a Share Group, the notion of “lag” as traditionally defined becomes a bit fuzzy, and new metrics become far more relevant, such as how many messages are currently unacknowledged (in-flight) and how long the oldest unacked message has been pending. Kafka 4.0’s Share Group implementation indeed introduces specific metrics to capture these concerns.
+
+Let’s clarify why “lag” is different now. In a normal consumer group, you measure lag by looking at the difference between the latest log offset and the consumer’s committed offset for each partition. If that difference is zero, it means the consumer has caught up – no messages are pending processing. If it’s large, the consumer is behind. Many monitoring setups and tools (including New Relic’s own Kafka integration) rely on this metric. However, in a Share Group, consumers aren’t committing offsets in the traditional way. In fact, a Share Group could be completely “caught up” in terms of having fetched all available messages (so latest offset = some number and all those messages have been delivered to consumers), yet some of those messages might still be unprocessed. From the broker’s perspective, it may advance a group’s position (SPEO – share-partition end offset) as it hands out messages, even if they’re not acked yet, to allow more consumption. This means a naive calculation might show “zero lag” (because the group has been assigned messages up to the end of the log), but in reality there is a backlog of work in the form of unacknowledged messages sitting with consumers. This is sometimes referred to as the “zero lag fallacy” in this context – the false sense of security that no lag means no backlog, which isn’t true for Share Groups. We’ll revisit this pitfall later, but keep it in mind: offset lag is no longer the gold standard metric for consumer progress when using Share Groups.
+
+So, what metrics do we use instead? Kafka’s Share Group implementation exposes metrics that directly reflect the state of the in-flight window and message acknowledgments. The key metrics include (naming may vary slightly in actual JMX, but conceptually):
+
+RecordsUnacked (Unacknowledged Records Count): This metric tells you the number of records in the Share Group (or share-partition) that have been delivered to consumers but not yet acknowledged. In other words, how many messages are currently “in flight” and awaiting processing confirmation. This is analogous to what many queue systems call “messages in progress” or “unacknowledged messages”. If this number is high, it means consumers have a lot of work outstanding or possibly are stuck on some messages. It’s a vital metric for backlog in Share Groups since, as explained, the traditional idea of lag doesn’t capture this. For example, if RecordsUnacked = 50, that means 50 messages are currently being worked on or waiting for retry in the group.
+
+OldestUnackedMessageAgeMs (Age of Oldest Unacked Message in ms): This metric measures the time duration that the oldest currently unacknowledged message has been in flight, typically in milliseconds. Essentially, it answers “how long has the longest-waiting message been waiting?”. If everything is running smoothly, this number should be low (e.g., if your messages usually get processed in under 5 seconds, you’d expect the oldest unacked age to hover around that). If you see this age growing, it’s a red flag: it indicates that there’s at least one message that’s been sitting unprocessed for a long time – perhaps stuck due to repeated failures or a hung consumer thread. For instance, OldestUnackedMessageAgeMs = 120000 means the oldest unacked message has been in flight for 120 seconds (2 minutes) – likely exceeding the typical SLA and maybe even beyond the lock timeout (which might imply it’s been retried multiple times and still not completed). Monitoring this helps identify “stuck” situations and triggers alerts if consumers are falling behind or if a poison message isn’t being handled.
+
+RecordsProcessed / RecordsAcknowledged: Kafka may also expose counters or rates for how many records have been acknowledged (processed) successfully, possibly as a total since the group started or as a rate. This helps measure throughput in the Share Group context (e.g., “we’re processing 1000 msgs/sec successfully”).
+
+RecordsReleased / RecordsRejected: Since Share Groups have the notion of releasing (retry later) and rejecting (give up) messages, metrics around how many messages were released or rejected could be available. These would indicate how often messages require multiple delivery attempts or end up unprocessable. For example, a deliveryAttemptCount or similar metric might track how many times messages get retried on average.
+
+SharePartitionInFlightRecords (maybe): Possibly a metric for how many records are currently in flight per partition of the group. But more likely, RecordsUnacked might already cover that either on a per-partition basis or aggregated.
+
+MaxDeliveryAttemptsReached: Perhaps a count of messages that have been archived (hit the max delivery attempts and not processed).
+
+The exact metric names and breakdown (whether per share-group, per partition, etc.) depend on how the JMX beans are structured, which we’ll examine in the next chapter. But the two explicitly mentioned in the Kafka 4.0 context and by our target audience are RecordsUnacked and OldestUnackedMessageAgeMs, so we’ll focus on those.
+
+It’s worth noting that these metrics closely mirror those found in other messaging systems. For example, Google Cloud Pub/Sub uses metrics like “oldest unacked message age” and number of undelivered messages to gauge subscriber backlog. Amazon SQS (Simple Queue Service) similarly reports the ApproximateAgeOfOldestMessage and the count of messages that are NotVisible (i.e., in flight) in a queue. The concept is the same: in a queue, you want to know how many messages are being processed (but not yet finished) and how long the longest processing is taking, to ensure your consumers are keeping up. Kafka Share Groups turn Kafka topics into something queue-like, so we monitor them in much the same way. The introduction of these metrics is a clear indication that Kafka’s developers recognize the need for operational visibility into the queue behavior – just as you’d monitor a RabbitMQ queue’s messages ready vs. unacked, or an SQS queue’s inflight messages, you now have analogous stats for Kafka Share Groups.
+
+Real-World Example – Metrics in Action:
+
+Imagine we deploy a Share Group in production for our “orders” topic. We have, say, 10 consumers working. During normal operation, we see RecordsUnacked fluctuating around, say, 0 to 20 – usually there aren’t many messages waiting, our consumers handle them quickly. And OldestUnackedMessageAgeMs is typically under 5000 (5 seconds), since most orders process in a couple of seconds.
+
+Now one day, an external downstream service (perhaps a credit card processor) goes slow. Suddenly, our consumers start backing up. They keep fetching new orders (because the traffic is high) but each order that requires a credit check is now taking long or timing out. We look at our Share Group metrics: RecordsUnacked has shot up to 200. And the OldestUnackedMessageAgeMs is climbing – it’s at 120,000 ms (2 minutes) and rising. This tells us immediately that we have a growing queue of messages that have been stuck for up to 2 minutes. In contrast, if we only looked at traditional “lag”, we might see that offsets are mostly caught up (perhaps consumers have fetched up to the latest offset 10,000, so offset lag shows near zero), which would mislead us into thinking all is well. But the Share Group metrics reveal the truth: messages are not getting processed, even if they’ve been fetched.
+
+We also might notice a metric like RecordsReleased increasing – indicating our consumers are releasing messages because they can’t process them in time. And maybe some RecordsRejected if some orders failed after max retries. These metrics together paint a picture: we have a slowdown, leading to retries and backlog. As engineers, we can then target the root cause (the slow service, or scaling consumers, etc.).
+
+Without these Share Group-specific metrics, operating Kafka in this mode would be like flying blind. It’s a testament to how observability was designed into the feature – which is great for us, because we can hook into those metrics via JMX and feed them into New Relic to get all our nice charts and alerts.
+
+Before we move on, let’s summarize the key points from this chapter:
+
+Share Groups in Kafka 4.0 allow cooperative, queue-style consumption: multiple consumers per partition, scaling beyond partition count, individual message ACKs, and no strict ordering.
+
+The broker plays an active role in Share Groups, tracking each message’s state and handling retries/timeouts. This shifts responsibility from the consumer to the broker for managing in-flight messages.
+
+Share Groups solve the over-partitioning and head-of-line blocking issues, enabling use cases that previously required external queues. They come with at-least-once delivery semantics (with potential replays) and drop the in-order guarantee to achieve higher throughput and resilience to slow/unordered processing.
+
+New metrics are introduced to monitor Share Groups: particularly, RecordsUnacked (count of unacknowledged/in-flight records) and OldestUnackedMessageAgeMs (age of the oldest in-flight record). These metrics are crucial because traditional offset-based lag is not a reliable indicator of backlog in Share Groups – a phenomenon we called the “zero lag fallacy” (offset lag can be zero even when many messages are unprocessed).
+
+Think of RecordsUnacked and OldestUnackedAge as analogous to “queue length” and “oldest job age” in a queue system. They allow us to gauge if consumers are keeping up: if either grows steadily, it’s a sign of trouble (consumers unable to handle incoming load or stuck on something).
+
+With these foundational concepts and metrics under our belt, we’re ready to delve into monitoring. How do we actually get those shiny new metrics out of Kafka and into our monitoring system? Kafka brokers expose metrics via JMX (Java Management Extensions) – something you may already be familiar with through the standard New Relic Kafka integration. But we’ll need to ensure we’re picking up the new Share Group metrics specifically. In the next chapter, we’ll cover how to leverage JMX to collect Share Group data, including details of the new MBeans and how to use a Prometheus JMX exporter (and ultimately New Relic) to scrape these metrics. So, take a stretch, refresh your coffee if you need to, and join me in Chapter 2 as we bridge the gap between Kafka’s internal metrics and actionable observability.
+
+(Transition music plays softly, signaling the move to the next section.)
+
+Chapter 2: JMX Monitoring Essentials for Kafka Share Groups
+
+Welcome to Chapter 2! Now that we understand what Kafka Share Groups are and why their metrics are important, our next step is figuring out how to collect and observe those metrics. Apache Kafka, being a Java application, exposes its internal metrics via Java Management Extensions (JMX) by default. If you’ve worked with Kafka monitoring before, you know that almost everything – from broker throughput, to topic metrics, to consumer lag – is available as JMX MBeans (Managed Beans). Share Groups are no exception. In this chapter, we’ll recap how JMX works in Kafka, identify the new MBeans for Share Group metrics, and discuss how to harvest these metrics using a tool like the Prometheus JMX Exporter. This will set the groundwork for funneling the data into New Relic.
+
+By the end of this chapter, you should be comfortable with which JMX metrics to look at for Share Groups and how to get those metrics out of Kafka. Let’s get started.
+
+2.1 JMX Refresher – How Kafka Exposes Metrics
+
+If you’re already a New Relic engineer, you likely know JMX well – but a quick refresher in context won’t hurt. Java Management Extensions (JMX) is a standard mechanism in the Java ecosystem for exposing internal application data (metrics, configuration, state) via managed objects called MBeans. Kafka uses JMX extensively: when you start a Kafka broker (or any Kafka JVM process like a Connect worker or Streams app), it will register dozens (even hundreds) of MBeans representing various metrics – brokers, topics, partitions, consumers, etc. This is enabled by default, so as soon as Kafka is running, if you connect to its JMX port (usually via tools like JConsole, JMXTerm, or programmatically), you can query these MBeans.
+
+Each MBean in Kafka has a naming convention that usually looks like this:
+
+<domain>:<key>=<value>,<key2>=<value2>,type=<something>,name=<somethingElse>
+
+
+For example, a classic metric is:
+
+kafka.server:type=BrokerTopicMetrics,name=MessagesInPerSec
+IGNORE_WHEN_COPYING_START
+content_copy
+download
+Use code with caution.
+IGNORE_WHEN_COPYING_END
+
+which would represent the rate of messages coming into the broker per second. Another example is:
+
+kafka.server:type=ReplicaManager,name=UnderReplicatedPartitions
+IGNORE_WHEN_COPYING_START
+content_copy
+download
+Use code with caution.
+IGNORE_WHEN_COPYING_END
+
+for tracking under-replicated partition count. Consumer group lag metrics (in older Kafka) weren’t directly exposed as simple MBeans, but you could infer them or use external tools (Kafka’s own scripts or third-party monitors like Burrow).
+
+Now, with Share Groups, Kafka likely introduces a new set of MBeans. According to Kafka 4.0 documentation and early access notes, Share Group metrics are grouped under a MBean domain or type that hints at their function. The question is: where do we find metrics like RecordsUnacked? The hint from the user question (and likely the Kafka release notes) is that these metrics live under:
+
+kafka.server: type=share-group-metrics, ...
+IGNORE_WHEN_COPYING_START
+content_copy
+download
+Use code with caution.
+IGNORE_WHEN_COPYING_END
+
+So, it sounds like Kafka has a new MBean type called “share-group-metrics” in the kafka.server domain. This would parallel how consumer group metrics might live under group-coordinator-metrics or similar.
+
+We should confirm how these are structured. A logical guess: there might be an MBean per Share Group (group ID) or per Share Group & topic, which exposes attributes such as RecordsUnacked and OldestUnackedMessageAgeMs. Possibly the MBean name could include the group ID and maybe topic name or partition. For example (hypothetical format):
+
+kafka.server: type=share-group-metrics, groupId=<my-share-group>, topic=<topic-name>, partition=<partition-id>, name=RecordsUnacked
+IGNORE_WHEN_COPYING_START
+content_copy
+download
+Use code with caution.
+IGNORE_WHEN_COPYING_END
+
+However, it might also aggregate at the group or topic level. Kafka could expose some metrics aggregated across all partitions of a Share Group, as well as per-partition metrics. For instance, a metric like RecordsUnacked might make sense per share-partition (because each partition will have its own set of in-flight messages in the context of a group). But they might also sum it up for the whole group (all partitions the group is consuming). The details might evolve as the feature is still early-access in 4.0.
+
+What we do know is that if the Share Group feature is enabled on the broker, the corresponding MBeans will be created. It’s noteworthy that if you haven’t enabled Share Groups (which in 4.0 might require a broker config flag, since it’s early access), those MBeans might not appear at all. This is something to keep in mind: JMX will only show metrics for features in use. If your cluster isn’t using any Share Groups, you likely won’t see share-group-metrics MBeans (Kafka doesn’t bother if there’s nothing to report, to save resources).
+
+Assuming we have Share Groups active, let’s enumerate some MBeans/attributes we expect:
+
+Share Group Coordinator metrics: Possibly an MBean like kafka.coordinator.group:type=ShareGroupCoordinator, ... giving some global stats on share group coordination. (Kafka’s group coordinator has metrics for consumer group rebalances, etc., so maybe share coordinator has some too.)
+
+Share Group specific metrics: This is likely kafka.server:type=share-group-metrics,... including the group identity and metrics. Attributes here likely include:
+
+RecordsUnacked – (Gauge) number of unacked records for that scope (be it partition or group).
+
+OldestUnackedMessageAgeMs – (Gauge) age of oldest unacked.
+
+Perhaps TotalUnackedRecordsCumulated (maybe not, more likely just current gauge).
+
+RecordsAcknowledged – (Counter) total number of records acked (since group start).
+
+RecordsReleased – (Counter) total released.
+
+RecordsRejected – (Counter) total rejected.
+
+Maybe RecordsAcquired – how many were handed out (which would increase monotonically).
+
+If per-partition, maybe the keys would be groupId, topic, partition to identify the context. If aggregated at group-level, maybe groupId, topic with no partition.
+
+We should verify with any available documentation. Lacking direct docs, we might rely on inspecting JMX via a tool. However, since this is an audiobook script, let’s proceed conceptually.
+
+How do we collect these metrics? There are a few ways:
+
+One could use JMX clients directly (like New Relic’s Java agent or the New Relic JMX integration) to query these beans.
+
+Or use the Prometheus JMX Exporter, a common approach in the Kubernetes/cloud-native world, where a small Java agent runs inside the Kafka JVM to scrape JMX and expose metrics on an HTTP endpoint in Prometheus format.
+
+Or even Kafka’s own CLI tools like kafka-share-groups.sh (provided by KIP-1099) to fetch consumer group status (which might output some of these metrics in a one-off report). But for continuous monitoring, JMX is the way.
+
+Since the user question mentions Prometheus JMX Exporter, we’ll focus on that approach. The Prometheus JMX Exporter is essentially a translator: it attaches to the Kafka process (either as a Java agent or as an external process via JMX remote) and converts MBean attributes into Prometheus metrics (text format). It’s quite flexible; you can configure it with a YAML to include or exclude certain MBeans and even rename metrics.
+
+For example, a JMX Exporter configuration snippet might look like:
+
+rules:
+  - pattern: kafka.server<type=share-group-metrics, groupId=(.+), topic=(.+), partition=(.+)><>RecordsUnacked
+    name: kafka_share_group_records_unacked
+    labels:
+      group: "$1"
+      topic: "$2"
+      partition: "$3"
+    type: GAUGE
+  - pattern: kafka.server<type=share-group-metrics, groupId=(.+), topic=(.+), partition=(.+)><>OldestUnackedMessageAgeMs
+    name: kafka_share_group_oldest_unacked_ms
+    labels:
+      group: "$1"
+      topic: "$2"
+      partition: "$3"
+    type: GAUGE
+IGNORE_WHEN_COPYING_START
+content_copy
+download
+Use code with caution.
+Yaml
+IGNORE_WHEN_COPYING_END
+
+(Note: This is a hypothetical config just for illustration.)
+
+What this says is: for any MBean that matches kafka.server:type=share-group-metrics with certain properties, map the RecordsUnacked attribute to a Prometheus metric named kafka_share_group_records_unacked and attach labels for group, topic, partition. Do similarly for the age metric. The JMX exporter would then scrape these and present them on an HTTP endpoint, e.g. http://broker:9404/metrics, and we could see lines like:
+
+kafka_share_group_records_unacked{group="orders-share-group",topic="Orders",partition="7"}  0.0
+kafka_share_group_oldest_unacked_ms{group="orders-share-group",topic="Orders",partition="7"} 0.0
+IGNORE_WHEN_COPYING_START
+content_copy
+download
+Use code with caution.
+IGNORE_WHEN_COPYING_END
+
+indicating at that moment partition 7 has 0 unacked, etc.
+
+If the JMX exporter is properly configured and running, New Relic can integrate with Prometheus in a couple of ways:
+
+New Relic has a Prometheus OpenMetrics integration or can scrape Prom endpoints via Flex or the infrastructure agent.
+
+Or we feed these metrics to a Prometheus server which then sends to New Relic (less common in our context; more likely directly via New Relic’s integrations).
+
+Now, another approach: New Relic Infrastructure agent’s JMX integration. New Relic provides an on-host integration (sometimes called nri-jmx or similar) that can be configured to collect arbitrary JMX metrics. This is essentially what the nri-kafka integration under the hood does – it is preconfigured to collect a bunch of Kafka MBeans. However, because Share Groups are so new, the out-of-the-box nri-kafka integration likely doesn’t know about share-group-metrics beans yet (unless updated very recently). This is why the user scenario involves using Flex or a custom integration; they had to gather these new metrics themselves.
+
+So, JMX gives us the data, but we need to pipe it out.
+
+Important: Make sure JMX is enabled on your Kafka brokers and reachable. By default, Kafka enables JMX and typically you’d start the broker with -Dcom.sun.management.jmxremote.port=<port> and related system properties if you want to open it for external monitoring. In many setups (especially with containers or Kubernetes), it’s easier to use the Prometheus JMX Exporter as a sidecar or agent rather than opening JMX ports. Alternatively, if you have New Relic’s Kafka on-host integration installed, it might attach to JMX automatically if the infra agent runs on the broker host.
+
+Since our focus is Share Groups, let’s identify a few specific JMX metrics and how to verify them:
+
+Using JConsole or JMXTerm: If we connect to a Kafka 4.0 broker’s JMX and navigate the MBean hierarchy, we’d likely find something like:
+
+Domain: kafka.server
+
+Under that, a MBean type perhaps literally named "share-group-metrics" or similar.
+
+It might list MBeans like:
+
+kafka.server:type=share-group-metrics,groupId="orders-share-group",topic="Orders",partition=0
+
+kafka.server:type=share-group-metrics,groupId="orders-share-group",topic="Orders",partition=1
+
+... for each partition of each topic that group is consuming.
+
+Each of those MBeans would have attributes: RecordsUnacked, OldestUnackedMessageAgeMs, etc., that update in real time.
+
+Alternatively, Kafka might aggregate by group and topic (maybe no partition in name, meaning metrics for whole topic within the group). It’s an implementation detail – but given Kafka’s usual style, I suspect it’s per partition, because they often expose partition granularity metrics (like they do for consumer lag in tools or for producer bytes per partition etc.). For our purposes, it’s enough to know where they are and how to query them.
+
+So, a quick example: Let’s say you wanted to check via JMXTerm, you might run a command:
+
+get -b kafka.server:type=share-group-metrics,groupId="orders-share-group",topic="Orders",partition=7 RecordsUnacked
+IGNORE_WHEN_COPYING_START
+content_copy
+download
+Use code with caution.
+IGNORE_WHEN_COPYING_END
+
+and it might return some value.
+
+Now, on to Prometheus JMX Exporter specifics. It’s mentioned presumably because the team initially used it for metric ingestion (maybe combined with New Relic Flex). The typical approach would be:
+
+Deploy JMX Exporter: For each Kafka broker, enable the JMX exporter Java agent. For example, add to Kafka’s JVM options:
+
+-javaagent:/path/to/jmx_prometheus_javaagent.jar=9404:/path/to/kafka_jmx_exporter_config.yml
+IGNORE_WHEN_COPYING_START
+content_copy
+download
+Use code with caution.
+IGNORE_WHEN_COPYING_END
+
+This opens port 9404 on that broker for Prometheus metrics.
+
+Configure JMX Exporter: Write a kafka_jmx_exporter_config.yml that includes rules for share-group-metrics beans. (As exemplified earlier.)
+
+Scrape with New Relic: Now, we have a few choices:
+
+If using New Relic’s Prometheus OpenMetrics integration, we could have the New Relic infrastructure agent scrape http://localhost:9404/metrics for each broker. New Relic’s integration would then treat those as custom metrics in NR.
+
+Or using Flex, which is a more DIY integration tool: Flex can fetch data from an HTTP URL and parse it. Flex could hit that same /metrics endpoint and parse the text. However, Flex might not natively parse Prom format; but we could run curl via Flex and regex out the values. (This is a bit clunky but possible.)
+
+Another New Relic option is NRI-Prometheus (there’s an integration specifically for scraping Prom metrics).
+
+Alternatively, skip Prom format and directly use the New Relic JMX integration by specifying custom queries for RecordsUnacked and OldestUnackedMessageAgeMs attributes via the YAML config. Actually, New Relic’s JMX integration (nri-jmx) can indeed be given object names and attributes to collect. We could have done:
+
+name: nr-kafka-sharegroup
+jmx:
+  - object_name: "kafka.server:type=share-group-metrics,*"
+    metrics:
+      - attributes: RecordsUnacked, OldestUnackedMessageAgeMs
+IGNORE_WHEN_COPYING_START
+content_copy
+download
+Use code with caution.
+Yaml
+IGNORE_WHEN_COPYING_END
+
+That might gather these metrics from any share-group-metrics MBean and output them. However, doing this within nri-kafka might require customizing the config; the built-in config likely doesn’t have it since Share Groups are new. This is precisely where Custom OHI comes in, which we will cover in the next chapter.
+
+At this stage, let’s assume we manage to get the metrics out – whether via Prometheus exporter or direct JMX query. The main point is: JMX is the source of truth for these metrics on the Kafka broker side. We can trust that if Share Groups are enabled and active, Kafka is updating those MBeans continuously as messages are delivered, acked, etc.
+
+It’s also useful to monitor the behavior of those metrics:
+
+RecordsUnacked will spike up when a burst of messages comes in and consumers are working through them, then go down as they ACK.
+
+OldestUnackedMessageAgeMs will usually hover around some low value if everything’s healthy (because messages aren’t staying unacked for long). If it grows or has sporadic spikes, it could indicate slow processing or a stuck message.
+
+If a message is truly stuck and reaches max delivery attempts (becomes archived), what happens then? The RecordsUnacked would eventually drop once it’s archived (since it’s no longer considered in-flight). But if many messages start getting stuck, you might see RecordsUnacked oscillate and the oldest age might reset after an archive (since that message stops being tracked once archived). It might be useful to have a metric for “archived message count” to know if you’re dropping messages.
+
+Now, the question explicitly also mentions “(under kafka.server:type=share-group-metrics)” to detail new MBeans. So we should confirm:
+Yes, in Kafka 4.0 early release notes or KIP, they likely indicated that share group metrics are exposed under that path. We’ve deduced the likely structure.
+
+So, summarizing the main MBeans for Share Groups:
+
+Object Name pattern: kafka.server: type=share-group-metrics, groupId=[GROUP], topic=[TOPIC], partition=[PARTITION]
+
+RecordsUnacked – gauge of unacked records in that partition for that group.
+
+OldestUnackedMessageAgeMs – gauge of oldest unacked record age in that partition for that group.
+
+Possibly other attributes (if they chose to include more metrics per partition, e.g., maybe TotalDelivered count).
+
+Possibly an aggregate per group or per topic, but not sure. The safest bet is per partition.
+
+There might also be an MBean like:
+kafka.server: type=share-group-metrics, groupId=[GROUP], name=someAggregateMetric
+for an entire group, but unless documented, we won’t assume.
+
+Now, for Prometheus JMX Exporter usage:
+
+This tool essentially allows these metrics to be pulled by PromQL or scraped by any Prometheus-compatible system. New Relic actually can directly ingest Prometheus metrics using its Remote Write integration or the Prometheus OpenMetrics integration. But that might be beyond what this particular team did. They specifically mention using Flex and Prom exporter for initial ingestion, implying they configured something quickly rather than waiting for an official integration update.
+
+Perhaps they did:
+
+Run JMX Exporter, output metrics.
+
+Use Flex integration with an HTTP GET to scrape those metrics into New Relic every 30 seconds.
+This would yield the metrics in NR’s data platform, but likely as custom metrics, not yet tied into the “Queues & Streams UI” which expects events.
+
+One could ask: Why not just use nri-kafka and have it collect those? Possibly because as of now, the New Relic Kafka integration doesn’t support Share Group metrics. It might not automatically detect them, and it certainly doesn’t transform them into QueueSample events.
+
+So the strategy is:
+
+Metrics ingestion (temporary): Use Prometheus exporter + Flex to get raw metrics so at least we can graph them or alert on them in New Relic Infrastructure as custom metrics.
+
+Events ingestion (ultimate goal): Write a custom integration that polls those metrics and then emits events of type QueueSample to New Relic, which then populate the Queues & Streams UI.
+
+We will talk more about events in Chapter 3. For now, let’s ensure we highlight that this approach was chosen because nri-kafka falls short for Share Groups. Specifically:
+
+The out-of-the-box Kafka integration focuses on standard consumer groups (it would look at __consumer_offsets for offsets and lag, which doesn’t capture Share Group info properly).
+
+It likely doesn’t capture our new metrics at all, since it wasn’t programmed with KIP-932 in mind (given how new it is).
+
+If you tried to rely on nri-kafka’s consumer lag metrics for a Share Group, you might see near-zero lag and think all is good – missing the fact that RecordsUnacked 50 and OldestUnackedAge 2 minutes (the “zero lag fallacy” we mentioned). So using nri-kafka alone might completely overlook the backlog building up in a Share Group scenario, giving a false sense of security.
+
+We should cite or at least explain that nri-kafka monitors consumer groups by reading committed offsets (and maybe some JMX for consumer fetch rates), which doesn’t reflect share group internal queue length.
+
+In summary for this chapter:
+
+We explained how Kafka’s metrics are accessible via JMX and that Share Group metrics are under a new category in JMX.
+
+We stressed the need to enable and configure JMX properly (port open or JMX exporter).
+
+We identified the key MBeans and attributes for Share Groups (RecordsUnacked, OldestUnackedMessageAgeMs under kafka.server:type=share-group-metrics,*).
+
+We discussed using Prometheus JMX Exporter as a bridge to scrape those metrics. This is a common technique referenced in many Kafka monitoring contexts and likely familiar to the audience.
+
+We touched on the involvement of New Relic Flex or Prom integrations to actually send that data to NR.
+
+It might be helpful to mention any caveats or configuration tips:
+
+Ensure the JMX exporter is configured not to overwhelm with too many metrics. For example, if a topic has 100 partitions and we have multiple share groups, the number of metrics could grow. Possibly filter to only the groups of interest.
+
+JMX exporter overhead is minimal but not zero; one should monitor its resource usage.
+
+If using the New Relic infrastructure agent’s JMX integration, a custom YAML might be needed since not built-in. Flex allows quick iteration.
+
+We can also mention that New Relic’s own Java Agent has some Kafka instrumentation (Chapter 1 of the blog [39] mentions “Java Agent allows you to instrument Kafka message queues”). However, that likely pertains to tracing messages in APM context, not so much these metrics. So probably not relevant to this use case, which is more about infra monitoring.
+
+Now, let's incorporate some references:
+
+Use Confluent doc snippet to state JMX is default and provides metrics.
+
+Also mention that features not enabled won't have MBeans (so ensure early access share groups are turned on).
+
+Possibly mention using JMX to Prom (Confluent doc line says “export JMX metrics to other monitoring tools such as Prometheus” to justify that method).
+
+If possible, find any snippet about consumer group lag vs these new metrics. Or just keep that for the integration chapter.
+
+We already have some references from Chapter 1 that we can reuse:
+
+The Redpanda piece for what lag is can be repeated to highlight how nri-kafka normally measures lag.
+
+Then say share groups do not use offset commits in same way.
+
+Alright, let’s draft the content for Chapter 2, ensuring clarity and continuity.
+
+In the previous chapter, we laid the groundwork by understanding what Kafka Share Groups are and why they introduce new concepts and metrics. Now we turn to the practical question: How do we monitor these Share Groups via Kafka’s metrics? This involves tapping into Kafka’s Java Management Extensions (JMX) interface, where the broker exposes a wealth of metrics by default. We will identify the new MBeans for Share Group metrics (e.g., the MBeans under kafka.server:type=share-group-metrics) and describe how to extract those metrics. In particular, we’ll look at using the Prometheus JMX Exporter as a means to scrape these metrics, since that’s a common approach that can feed into New Relic (via Flex or other integrations). By the end of this chapter, we’ll have a clear path from Kafka’s internal metrics to our New Relic monitoring system.
+
+2.1 JMX and Kafka – Exposing Internal Metrics
+
+First, a quick refresher on Kafka and JMX. Kafka is a Java application, and like many Java services, it leverages JMX to expose internal state and metrics. Out of the box, Kafka brokers will publish metrics about virtually every component – producers, consumers (if using old consumer), topics, partitions, you name it – as JMX MBeans (Managed Beans) that can be queried or subscribed to. If you have a Kafka broker running with JMX enabled (which is typically the default), you can connect using a tool like jconsole or jmxterm and browse metrics.
+
+These metrics are organized by domains and types. For example:
+
+Broker metrics might appear under the domain kafka.server, type BrokerTopicMetrics (for things like bytes in/out per sec, messages in per sec, etc.).
+
+Consumer Coordinator metrics might appear under kafka.coordinator.group, type GroupCoordinator or consumer-group-metrics.
+
+Producer metrics are often under kafka.producer and so on.
+
+What’s relevant for us is that Kafka 4.0’s Share Group feature adds new MBeans. According to design discussions and the hints in documentation, these Share Group metrics are exposed under the kafka.server domain with a type like share-group-metrics. In other words, when share groups are in use, you’ll find MBeans whose names include kafka.server:type=share-group-metrics,....
+
+This is important: if you don’t enable the share group feature on the broker, you won’t see any such MBeans at all. (In Kafka 4.0, Share Groups were an early access feature that had to be explicitly enabled via configs and used by consumers.) Kafka’s JMX only shows metrics for the features in play – e.g., if no share groups exist, no share-group metrics MBeans get created. So if you’re setting up monitoring in a test environment, make sure you actually have a consumer using group.type=share in order to see these metrics populate.
+
+Now, let’s identify which metrics we expect to see for Share Groups in JMX:
+
+Share Group MBean structure:
+
+Based on KIP-932 and observations, each Share Group (identified by its group ID) and each topic/partition that the group is consuming will have an associated MBean entry. The MBean naming pattern is likely along these lines:
+
+kafka.server:type=share-group-metrics,groupId=<GROUP_ID>,topic=<TOPIC>,partition=<PARTITION>
+IGNORE_WHEN_COPYING_START
+content_copy
+download
+Use code with caution.
+IGNORE_WHEN_COPYING_END
+
+This would mirror how Kafka might expose consumer lag metrics per group, but here it’s per share group per partition. Under each such MBean, we expect attributes such as:
+
+RecordsUnacked – the number of unacknowledged records in that partition for that share group.
+
+OldestUnackedMessageAgeMs – the age in milliseconds of the oldest unacknowledged message in that partition for that group.
+
+Possibly TotalRecordsAcked, TotalRecordsReleased, TotalRecordsRejected – counters that accumulate how many messages have been processed, released, or permanently failed in that partition.
+
+Maybe CurrentActiveConsumers for that partition (though that might be less likely; Kafka usually tracks consumer membership elsewhere).
+
+To confirm, imagine you have a share group with groupId = "order-share-group" consuming topic "Orders" with 5 partitions. We’d expect to see MBeans like:
+
+kafka.server:type=share-group-metrics,groupId=order-share-group,topic=Orders,partition=0
+kafka.server:type=share-group-metrics,groupId=order-share-group,topic=Orders,partition=1
+... up to partition=4
+IGNORE_WHEN_COPYING_START
+content_copy
+download
+Use code with caution.
+IGNORE_WHEN_COPYING_END
+
+Each of those will have RecordsUnacked, OldestUnackedMessageAgeMs, etc., as attributes. If you have multiple share groups or multiple topics, those would appear similarly.
+
+It’s possible Kafka also provides some aggregated MBean per group (maybe not per partition). For example, they might have an MBean like kafka.server:type=share-group-metrics,groupId=order-share-group,name=AllPartitions aggregating counts across all partitions. But since we haven’t seen explicit docs on that, we’ll assume per-partition metrics and we can always sum them up externally if needed.
+
+Now, how do we actually access these metrics? There are a few ways:
+
+Direct JMX query: Using tools or code to query the JMX MBeans. For instance, New Relic’s JMX integration could be configured to query these specific MBeans (we’d provide the object name pattern and attributes to collect).
+
+Kafka’s command-line tools: Kafka 4.0 introduced kafka-share-groups.sh (similar to kafka-consumer-groups.sh) which might display some status of share groups. However, CLI tools are more for ad-hoc checks, not continuous monitoring.
+
+Prometheus JMX Exporter: A very popular method in the Kafka community is to attach Prometheus’s JMX exporter to the broker, which will translate JMX beans into Prometheus metrics that can be scraped via HTTP.
+
+Given the question context, they specifically mention using Prometheus JMX Exporter and Flex for initial metric ingestion. This implies they went the route of scraping metrics via Prometheus format. So let’s focus on that approach.
+
+2.2 Using Prometheus JMX Exporter to Collect Share Group Metrics
+
+Prometheus JMX Exporter is an open-source tool (Java agent) that you attach to a JVM. It acts as a JMX client internally and exposes an HTTP endpoint (usually on some port you choose) that outputs all the JMX metrics in Prometheus text format. This is extremely convenient for integrating with modern monitoring stacks, including New Relic, because Prometheus format is widely understood (New Relic can directly ingest Prometheus metrics or we can use an integration to translate them).
+
+Setup Recap: To use it with Kafka, you typically:
+
+Obtain the jmx_prometheus_javaagent.jar (the exporter).
+
+Configure your Kafka broker’s JVM options to include something like:
+
+-javaagent:/path/to/jmx_prometheus_javaagent.jar=HOST_PORT:/path/to/jmx-exporter-config.yml
+IGNORE_WHEN_COPYING_START
+content_copy
+download
+Use code with caution.
+IGNORE_WHEN_COPYING_END
+
+For example:
+
+-javaagent:/opt/jmx_exporter/jmx_prometheus_javaagent.jar=9404:/opt/jmx_exporter/kafka_sharegroup.yml
+IGNORE_WHEN_COPYING_START
+content_copy
+download
+Use code with caution.
+IGNORE_WHEN_COPYING_END
+
+This would launch the JMX exporter agent on port 9404, reading a YAML config file that tells it which metrics to export and how.
+
+In the YAML config (let’s call it kafka_sharegroup.yml), you specify rules. Without going into too much detail, these rules allow you to rename metrics and filter what you want. You might for instance add:
+
+rules:
+  - pattern: kafka.server<type=share-group-metrics, groupId=(.+), topic=(.+), partition=(.+)><>RecordsUnacked
+    name: kafka_sharegroup_records_unacked
+    labels:
+      group: "$1"
+      topic: "$2"
+      partition: "$3"
+    type: GAUGE
+  - pattern: kafka.server<type=share-group-metrics, groupId=(.+), topic=(.+), partition=(.+)><>OldestUnackedMessageAgeMs
+    name: kafka_sharegroup_oldest_unacked_ms
+    labels:
+      group: "$1"
+      topic: "$2"
+      partition: "$3"
+    type: GAUGE
+  # ... (potentially more rules for other metrics)
+IGNORE_WHEN_COPYING_START
+content_copy
+download
+Use code with caution.
+Yaml
+IGNORE_WHEN_COPYING_END
+
+This tells the exporter: whenever you see an MBean that matches kafka.server:type=share-group-metrics with some groupId, topic, partition, capture its RecordsUnacked attribute and expose it as a Prometheus metric named kafka_sharegroup_records_unacked with labels for group, topic, partition. Do likewise for OldestUnackedMessageAgeMs. The type: GAUGE indicates these values go up and down (they are instantaneous measurements).
+
+With this config in place, when Kafka starts with the agent, you can hit http://<broker-host>:9404/metrics. You’ll get plaintext output lines like:
+
+kafka_sharegroup_records_unacked{group="order-share-group",topic="Orders",partition="0"}  5.0
+kafka_sharegroup_records_unacked{group="order-share-group",topic="Orders",partition="1"}  0.0
+...
+kafka_sharegroup_oldest_unacked_ms{group="order-share-group",topic="Orders",partition="0"}  12345.0
+kafka_sharegroup_oldest_unacked_ms{group="order-share-group",topic="Orders",partition="1"}  0.0
+...
+IGNORE_WHEN_COPYING_START
+content_copy
+download
+Use code with caution.
+IGNORE_WHEN_COPYING_END
+
+This indicates, for example, partition 0 of the Orders topic in the group has 5 unacknowledged messages, the oldest of which has been in-flight for ~12.345 seconds, partition 1 has none, etc.
+
+Now, integrating with New Relic: There are a couple of ways New Relic can consume this:
+
+Prometheus integration (built-in): New Relic has a Prometheus OpenMetrics integration where you can configure the Infrastructure agent to scrape Prom endpoints and send the metrics to NRDB. This would involve specifying the broker endpoint and maybe the metric name patterns.
+
+New Relic Flex (NRI-Flex): Flex is a flexible integration where you can script data collection. One could use Flex to call the metrics endpoint (via an HTTP GET) and parse out the metrics of interest. Flex can handle JSON, XML, and with a bit of regex even plaintext. In this scenario, maybe they wrote a Flex config to fetch the kafka_sharegroup_* metrics periodically.
+
+NRI-Prometheus (Prometheus Remote Write or OpenMetrics): Similar to the above, New Relic can act as a remote-write target for Prometheus or scrape like Prometheus does.
+
+The question specifically mentions Flex, which suggests a custom solution rather than a pre-built one. Likely because at the time, an official integration for share group metrics wasn’t available.
+
+Why not use the existing nri-kafka integration? As alluded, the standard New Relic Kafka integration is geared toward traditional Kafka metrics. It will collect things like BrokerTopicMetrics (to show broker throughput), consumer lag if configured, etc. But it doesn’t know about share-group metrics out of the box (since it predates Kafka 4.0’s release). Also, nri-kafka focuses on metrics as metrics, whereas to leverage the Queues & Streams UI, we’ll need events (QueueSample events), which nri-kafka does not emit. More on that in the next chapter.
+
+However, in the interim, to not be blind, the team likely set up this Prometheus exporter + Flex pipeline. This allowed them to get time-series metrics into New Relic dashboards quickly:
+
+They could plot kafka_sharegroup_records_unacked{group="order-share-group"} across all partitions (sum them up for a total backlog, for instance).
+
+They could alert on kafka_sharegroup_oldest_unacked_ms if it goes above, say, 30000 (30 seconds).
+
+They could monitor trends over time (e.g., seeing if unacked count spikes during certain hours).
+
+One important note: when collecting via Prometheus or JMX, pay attention to performance. With share groups, if you had a lot of partitions and share groups, the number of MBeans could be high. Each partition-group combination is an MBean. In a worst-case scenario (though unlikely in practice), say you had 100 topics × 50 partitions each × 5 share groups – that would be 25,000 MBeans just for share metrics. JMX can handle it, but scraping all that frequently might impose some overhead. Typically, it’s fine, but it’s something to keep in mind – we often limit the scrape frequency (e.g., 15-second or 30-second intervals). Also, the YAML rules can filter only what you need (perhaps you only care about certain critical share groups, not every possible one).
+
+Verifying the Metrics via JMX
+
+It’s useful to double-check you’re getting the right data. If you have access to the broker’s JMX (perhaps via JConsole), you can navigate to kafka.server -> share-group-metrics -> groupId=... and see values updating in real time. For instance, trigger some test messages and watch RecordsUnacked go up/down. This helps ensure your exporter config is correct.
+
+Another thing: JMX metrics like OldestUnackedMessageAgeMs will continuously increase as a message ages, then drop suddenly when that message is acknowledged (or if it gets archived, it might drop because that message is no longer considered “unacked” in the set). So on a graph, you’d see a sawtooth pattern if consumers are sluggish on one message but then catch up.
+
+Now, we’ve managed to get these metrics out of Kafka. Let’s talk about how this fits with New Relic’s Queues & Streams UI context:
+
+At this point (with Prometheus metrics in NRDB), you have the raw data, but you haven’t yet integrated it into New Relic’s specialized UI. The Queues & Streams UI expects data in a particular shape (specifically QueueSample events). Just pumping in gauge metrics is good for custom dashboards and alerts, but not for the curated UI experience. That’s why the ultimate step will be to create a Custom Integration that translates these metrics into QueueSample events.
+
+However, before we jump there, let’s reflect on our progress in this monitoring pipeline:
+
+We identified the JMX MBeans that carry Share Group info (under kafka.server:type=share-group-metrics) and understood what each metric means (unacked count, oldest age, etc.).
+
+We set up a mechanism (Prometheus JMX Exporter) to continuously pull those metrics out of Kafka and make them accessible to New Relic.
+
+We likely used NRI-Flex or a similar integration to ingest those metrics into New Relic’s database so we can visualize them. (If one were using the New Relic Prometheus OpenMetrics integration, one might not even need Flex – the Infra agent could be configured to scrape directly – but Flex provides a lot of… well, flexibility, including possibly doing some transformation if needed.)
+
+It’s worth noting that JMX integration could have been done without Prometheus as well. For example, New Relic’s JMX on-host integration could have been pointed at the broker’s JMX port with queries for RecordsUnacked and OldestUnackedMessageAgeMs. The reason to choose Prometheus exporter might have been convenience or existing familiarity – many Kafka shops already use the JMX exporter for other metrics, so piggy-backing on that is easy. Additionally, the Prometheus exporter approach means we don’t have to open the JMX port to the world (which can be a security risk); instead, we only expose a Prometheus HTTP endpoint, perhaps only accessible internally. It’s a more firewall-friendly method.
+
+Recap with an analogy: If Kafka’s Share Group is a new machine we’ve installed, JMX is the built-in instrumentation panel of that machine. We’ve connected that panel to a telemetry system (Prometheus exporter) that converts the panel readouts into a common language. And we’ve wired that into New Relic so we can watch the dials from our central control room. At this stage, we can see things like “how many tasks are in progress” (RecordsUnacked) and “what’s the longest a task has been running” (OldestUnackedAge) in near real-time.
+
+One more thing to mention: Potential pitfalls in metric collection:
+
+Ensure that your JMX exporter’s config isn’t too generic. If it’s too broad (scraping all JMX), it might pull thousands of metrics (Kafka has a lot of MBeans). This can lead to high data ingest and possibly performance issues. It’s better to specifically include the share-group metrics (and any other needed metrics) rather than wildcarding everything.
+
+Watch out for label explosion: The groupId and topic names become labels in Prometheus metrics. If those have high cardinality (many possible values, or values that change frequently), that can be a concern. In our use case, groupId and topic are fairly bounded (you know your group names and topics), and partition is numeric bounded by your partition count. So it’s manageable. Just something to consider in any Prometheus scraping scenario.
+
+By implementing this, the team quickly discovered the difference between what nri-kafka was telling them and what the new metrics showed. For example, nri-kafka might have reported consumer lag as 0 (since from an offset perspective, the share group might have “caught up” to the end of the log). But simultaneously, our new RecordsUnacked metric might show 50 unprocessed messages. Seeing those side by side is an eye-opener – it reinforces why we need these new metrics. Essentially, we’ve closed the observability gap that the introduction of Share Groups created.
+
+Alright, now we have our Share Group metrics flowing into New Relic as raw data points. The next challenge is to integrate this data into New Relic’s Queues & Streams monitoring experience, which is designed to present queues in a unified way. That involves creating QueueSample events with the right attributes (provider, queue name, etc.) so that New Relic knows “this is a queue, and here’s its state”. Doing so will allow our Kafka Share Group to show up just like an Amazon SQS queue or a RabbitMQ queue in the New Relic UI, with graphs of throughput, age, and so on, and with all the filtering and analytical capabilities on those events.
+
+In the next chapter, we’ll tackle exactly that: building the Custom New Relic Integration to transform these metrics into QueueSample events, and we’ll dive into the details of each field (like provider, queue.name, share.group.name, etc.) and how they correspond to our Kafka concepts. We’ll also cover best practices in this integration, such as avoiding the “zero lag” trap by using the right metrics, and ensuring our data is complete and accurate for the UI.
+
+Before we move on, let’s summarize the key takeaways from this chapter:
+
+Kafka’s Share Group metrics are exposed via JMX on the broker, primarily under kafka.server:type=share-group-metrics for each group/topic/partition. These include RecordsUnacked (count of in-flight unacknowledged messages) and OldestUnackedMessageAgeMs (age of the longest-waiting message), among others.
+
+JMX is enabled by default; we just need to access it. We used the Prometheus JMX Exporter to scrape these metrics and convert them into a format we can ingest into New Relic. This involved writing a config to capture the specific Share Group metrics we care about.
+
+We likely leveraged New Relic’s Flex or Prometheus integration to pull in those metrics. This gave us immediate visibility into Share Group performance. We can chart how backlog builds up or drains, and set alerts (e.g., if OldestUnackedMessageAgeMs stays high for too long, indicating consumers are stuck).
+
+We noted that traditional consumer lag metrics (which nri-kafka focuses on) are not sufficient for Share Groups – hence the need for this extra monitoring. We essentially sidestepped the limitation of nri-kafka by getting the data ourselves in a custom way.
+
+With metrics flowing, we are halfway there. Monitoring numeric graphs is good, but integrating with New Relic’s Queues & Streams UI will provide a richer, purpose-built view (with things like a list of queues, their providers, current backlog, and built-in analysis tools). This requires us to emit QueueSample events with the appropriate attributes. So, without further ado, let’s proceed to Chapter 3, where we’ll transform our raw data into an intuitive observability experience inside New Relic.
+
+(Cue a gentle transition sound, leading us into the final chapter.)

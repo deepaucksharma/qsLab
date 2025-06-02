@@ -1,17 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Rocket, BookOpen, Users, Code, ArrowRight, Star, CheckCircle2 } from 'lucide-react';
-import {
-  CinematicTitle,
-  SceneTransition,
-  ParticleBackground
-} from '../StorytellingComponents';
-import {
-  getTextRevealStyle,
-  getTimeBasedValue,
-  getCameraTransform
-} from '../../utils/animationHelpers';
-import { getStaggeredDelay } from '../../utils/storytellingHelpers';
+import '../../styles/techflix-cinematic-v2.css';
 
 const CallToActionScene = ({ time, duration }) => {
   // Scene phases
@@ -25,7 +15,6 @@ const CallToActionScene = ({ time, duration }) => {
   
   const [showConfetti, setShowConfetti] = useState(false);
   const [achievementScore, setAchievementScore] = useState(0);
-  const progress = (time / duration) * 100;
   
   // Resources data
   const resources = [
@@ -63,9 +52,9 @@ const CallToActionScene = ({ time, duration }) => {
   useEffect(() => {
     if (time >= phases.success.start) {
       const targetScore = 98;
-      const currentScore = Math.floor(
-        getTimeBasedValue(time, phases.success.start, 3, 0, targetScore, 'easeOutExpo')
-      );
+      const elapsed = time - phases.success.start;
+      const progress = Math.min(elapsed / 3, 1);
+      const currentScore = Math.floor(progress * targetScore);
       setAchievementScore(currentScore);
     }
   }, [time, phases.success.start]);
@@ -77,14 +66,10 @@ const CallToActionScene = ({ time, duration }) => {
     }
   }, [time, phases.celebration.start, showConfetti]);
   
-  // Camera movements
-  const cameraMovements = [
-    { start: 0, end: 3, fromX: 0, toX: 0, fromY: 50, toY: 0, fromScale: 0.8, toScale: 1 },
-    { start: 12, end: 14, fromX: 0, toX: 0, fromY: 0, toY: 0, fromScale: 1, toScale: 1.1 },
-    { start: 16, end: 18, fromX: 0, toX: 0, fromY: 0, toY: 0, fromScale: 1.1, toScale: 1 }
-  ];
-  
-  const cameraTransform = getCameraTransform(time, cameraMovements);
+  // Determine current phase
+  const currentPhase = Object.entries(phases).find(([_, phase]) => 
+    time >= phase.start && time < phase.start + phase.duration
+  )?.[0] || 'celebration';
   
   // Confetti component
   const Confetti = () => (
@@ -127,342 +112,304 @@ const CallToActionScene = ({ time, duration }) => {
   );
   
   return (
-    <div className="scene-container">
-      {/* Dynamic Background */}
-      <motion.div 
-        className="absolute inset-0"
-        animate={{ 
-          background: [
-            'radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.3) 0%, transparent 50%)',
-            'radial-gradient(circle at 30% 70%, rgba(139, 92, 246, 0.3) 0%, transparent 50%)',
-            'radial-gradient(circle at 70% 30%, rgba(245, 158, 11, 0.3) 0%, transparent 50%)',
-          ]
-        }}
-        transition={{ duration: 10, repeat: Infinity, repeatType: "reverse" }}
-      />
-      
-      {/* Success rings animation */}
-      <div className="absolute inset-0">
-        {time >= phases.success.start && [...Array(5)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border-2"
-            style={{
-              width: 200 + i * 150,
-              height: 200 + i * 150,
-              borderColor: `rgba(16, 185, 129, ${0.3 - i * 0.05})`
-            }}
-            initial={{ scale: 0, opacity: 0 }}
-            animate={{ 
-              scale: [0, 1.2, 1],
-              opacity: [0, 0.5, 0]
-            }}
-            transition={{
-              duration: 3,
-              delay: i * 0.3,
-              repeat: Infinity,
-              repeatDelay: 2
-            }}
-          />
-        ))}
-      </div>
-      
-      {/* Particles */}
-      <ParticleBackground 
-        particleCount={80} 
-        colors={['#10b981', '#8b5cf6', '#f59e0b', '#ec4899']} 
-      />
-      
-      {/* Confetti overlay */}
-      <AnimatePresence>
-        {showConfetti && <Confetti />}
-      </AnimatePresence>
-      
-      {/* Content with camera transform */}
-      <div 
-        className="relative z-10 h-full flex items-center justify-center p-8"
-        style={{ transform: cameraTransform }}
-      >
-        <div className="w-full max-w-7xl">
+    <div className="scene-container-v2">
+      <div className="scene-content">
+        <div className="flex flex-col items-center justify-center min-h-full py-12">
+          
+          {/* Confetti overlay */}
+          <AnimatePresence>
+            {showConfetti && <Confetti />}
+          </AnimatePresence>
           
           {/* Phase 1: Introduction */}
-          <SceneTransition isActive={time >= phases.intro.start && time < phases.success.start}>
-            <CinematicTitle
-              title="Mission Accomplished!"
-              subtitle="Your Kafka Share Groups Journey"
-              time={time}
-              startTime={phases.intro.start}
-            />
-          </SceneTransition>
-          
-          {/* Phase 2: Success Message */}
-          <SceneTransition isActive={time >= phases.success.start && time < phases.resources.start}>
-            <div className="text-center space-y-8">
+          <AnimatePresence>
+            {currentPhase === 'intro' && (
               <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ type: "spring", damping: 10 }}
-              >
-                <div className="inline-block relative">
-                  <motion.div
-                    className="text-9xl"
-                    animate={{ rotate: [0, -5, 5, -5, 0] }}
-                    transition={{ duration: 0.5, delay: 0.5 }}
-                  >
-                    🎉
-                  </motion.div>
-                  
-                  {/* Achievement score */}
-                  <motion.div
-                    className="absolute -bottom-4 -right-4 bg-green-500 text-white rounded-full w-20 h-20 flex items-center justify-center font-bold text-2xl"
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    transition={{ delay: 1, type: "spring", damping: 10 }}
-                  >
-                    {achievementScore}%
-                  </motion.div>
-                </div>
-              </motion.div>
-              
-              <motion.h2 
-                className="text-5xl font-bold bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent"
-                style={getTextRevealStyle(time, phases.success.start + 1, 1)}
-              >
-                Observability Excellence Achieved!
-              </motion.h2>
-              
-              <motion.p
-                className="text-2xl text-gray-300 max-w-3xl mx-auto"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.8 }}
+                className="text-center"
               >
-                You&apos;ve mastered the complete journey from understanding Kafka Share Groups 
-                to implementing production-grade observability with New Relic.
-              </motion.p>
-              
-              {/* Skills acquired */}
-              <motion.div
-                className="flex justify-center gap-4 flex-wrap max-w-2xl mx-auto"
+                <h1 className="scene-title">Mission Accomplished!</h1>
+                <p className="scene-subtitle">Your Kafka Share Groups Journey</p>
+              </motion.div>
+            )}
+          </AnimatePresence>
+          
+          {/* Phase 2: Success Message */}
+          <AnimatePresence>
+            {currentPhase === 'success' && (
+              <motion.div 
+                className="text-center space-y-8"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ delay: 1 }}
+                exit={{ opacity: 0 }}
               >
-                {['Share Groups Mastery', 'JMX Expertise', 'Custom OHI', 'Production Ready'].map((skill, i) => (
-                  <motion.div
-                    key={skill}
-                    className="bg-gray-900/60 backdrop-blur-lg rounded-full px-4 py-2 border border-green-500/30 flex items-center gap-2"
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    transition={{ delay: 1.2 + i * 0.1, type: "spring", damping: 10 }}
-                  >
-                    <CheckCircle2 className="w-4 h-4 text-green-400" />
-                    <span className="text-sm">{skill}</span>
-                  </motion.div>
-                ))}
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ type: "spring", damping: 10 }}
+                >
+                  <div className="inline-block relative">
+                    <motion.div
+                      className="text-9xl"
+                      animate={{ rotate: [0, -5, 5, -5, 0] }}
+                      transition={{ duration: 0.5, delay: 0.5 }}
+                    >
+                      🎉
+                    </motion.div>
+                    
+                    {/* Achievement score */}
+                    <motion.div
+                      className="absolute -bottom-4 -right-4 bg-green-500 text-white rounded-full w-20 h-20 flex items-center justify-center font-bold text-2xl"
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ delay: 1, type: "spring", damping: 10 }}
+                    >
+                      {achievementScore}%
+                    </motion.div>
+                  </div>
+                </motion.div>
+                
+                <motion.h2 
+                  className="text-5xl font-bold bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3 }}
+                >
+                  Observability Excellence Achieved!
+                </motion.h2>
+                
+                <motion.p
+                  className="text-2xl text-gray-300 max-w-3xl mx-auto"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.5 }}
+                >
+                  You&apos;ve mastered the complete journey from understanding Kafka Share Groups 
+                  to implementing production-grade observability with New Relic.
+                </motion.p>
+                
+                {/* Skills acquired */}
+                <motion.div
+                  className="flex justify-center gap-4 flex-wrap max-w-2xl mx-auto"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 1 }}
+                >
+                  {['Share Groups Mastery', 'JMX Expertise', 'Custom OHI', 'Production Ready'].map((skill, i) => (
+                    <motion.div
+                      key={skill}
+                      className="bg-gray-900/60 backdrop-blur-lg rounded-full px-4 py-2 border border-green-500/30 flex items-center gap-2"
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ delay: 1.2 + i * 0.1, type: "spring", damping: 10 }}
+                    >
+                      <CheckCircle2 className="w-4 h-4 text-green-400" />
+                      <span className="text-sm">{skill}</span>
+                    </motion.div>
+                  ))}
+                </motion.div>
               </motion.div>
-            </div>
-          </SceneTransition>
+            )}
+          </AnimatePresence>
           
           {/* Phase 3: Resources */}
-          <SceneTransition isActive={time >= phases.resources.start && time < phases.cta.start}>
-            <div className="space-y-8">
-              <motion.h2 
-                className="text-4xl font-bold text-center mb-12"
-                style={getTextRevealStyle(time, phases.resources.start, 1)}
+          <AnimatePresence>
+            {currentPhase === 'resources' && (
+              <motion.div 
+                className="space-y-8 w-full max-w-6xl"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
               >
-                Continue Your Journey
-              </motion.h2>
-              
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                {resources.map((resource, i) => {
-                  const Icon = resource.icon;
-                  
-                  return (
-                    <motion.div
-                      key={resource.title}
-                      className="group relative"
-                      initial={{ y: 50, opacity: 0 }}
-                      animate={{ y: 0, opacity: 1 }}
-                      transition={{ 
-                        delay: getStaggeredDelay(i, 0.2),
-                        type: "spring",
-                        damping: 20
-                      }}
-                    >
+                <motion.h2 
+                  className="scene-title text-center mb-12"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                >
+                  Continue Your Journey
+                </motion.h2>
+                
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                  {resources.map((resource, i) => {
+                    const Icon = resource.icon;
+                    
+                    return (
                       <motion.div
-                        className="bg-gray-900/60 backdrop-blur-lg rounded-2xl p-6 border border-gray-700/50 h-full hover:border-purple-500/50 transition-all duration-300"
-                        whileHover={{ scale: 1.05, y: -5 }}
+                        key={resource.title}
+                        className="group relative"
+                        initial={{ y: 50, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        transition={{ 
+                          delay: i * 0.2,
+                          type: "spring",
+                          damping: 20
+                        }}
                       >
-                        {/* Icon with gradient background */}
                         <motion.div
-                          className={`w-16 h-16 rounded-xl bg-gradient-to-r ${resource.color} flex items-center justify-center mb-4`}
-                          whileHover={{ rotate: 360 }}
-                          transition={{ type: "spring", damping: 10 }}
+                          className="metric-card-v2 p-6 h-full hover:border-purple-500/50 transition-all duration-300"
+                          whileHover={{ scale: 1.05, y: -5 }}
                         >
-                          <Icon className="w-8 h-8 text-white" />
-                        </motion.div>
-                        
-                        <h3 className="font-bold mb-2">{resource.title}</h3>
-                        <p className="text-sm text-gray-400 mb-3">{resource.description}</p>
-                        
-                        <motion.div
-                          className="text-xs text-purple-400 flex items-center gap-1"
-                          initial={{ opacity: 0 }}
-                          whileHover={{ opacity: 1 }}
-                        >
-                          <span>{resource.link}</span>
-                          <ArrowRight className="w-3 h-3" />
+                          {/* Icon with gradient background */}
+                          <motion.div
+                            className={`w-16 h-16 rounded-xl bg-gradient-to-r ${resource.color} flex items-center justify-center mb-4`}
+                            whileHover={{ rotate: 360 }}
+                            transition={{ type: "spring", damping: 10 }}
+                          >
+                            <Icon className="w-8 h-8 text-white" />
+                          </motion.div>
+                          
+                          <h3 className="font-bold mb-2">{resource.title}</h3>
+                          <p className="text-sm text-gray-400 mb-3">{resource.description}</p>
+                          
+                          <motion.div
+                            className="text-xs text-purple-400 flex items-center gap-1"
+                            initial={{ opacity: 0 }}
+                            whileHover={{ opacity: 1 }}
+                          >
+                            <span>{resource.link}</span>
+                            <ArrowRight className="w-3 h-3" />
+                          </motion.div>
                         </motion.div>
                       </motion.div>
-                      
-                      {/* Hover glow */}
-                      <motion.div
-                        className="absolute inset-0 rounded-2xl pointer-events-none"
-                        initial={{ opacity: 0 }}
-                        whileHover={{ opacity: 1 }}
-                        style={{
-                          background: `radial-gradient(circle at 50% 50%, ${resource.color.split(' ')[1].split('-')[1]}-500/20 0%, transparent 70%)`
-                        }}
-                      />
-                    </motion.div>
-                  );
-                })}
-              </div>
-            </div>
-          </SceneTransition>
+                    );
+                  })}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
           
           {/* Phase 4: Call to Action */}
-          <SceneTransition isActive={time >= phases.cta.start && time < phases.celebration.start}>
-            <motion.div 
-              className="text-center space-y-8"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 1 }}
-            >
-              <h2 className="text-5xl font-bold mb-6">Ready to Implement?</h2>
-              
-              <p className="text-2xl text-purple-300 max-w-3xl mx-auto mb-8">
-                Join thousands of engineers building the future of event streaming
-                with production-grade observability
-              </p>
-              
-              {/* Main CTA button */}
-              <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
+          <AnimatePresence>
+            {currentPhase === 'cta' && (
+              <motion.div 
+                className="text-center space-y-8 w-full max-w-4xl"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 1 }}
+              >
+                <h2 className="scene-title mb-6">Ready to Implement?</h2>
+                
+                <p className="scene-subtitle mb-8">
+                  Join thousands of engineers building the future of event streaming
+                  with production-grade observability
+                </p>
+                
+                {/* Main CTA button */}
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ type: "spring", damping: 10 }}
+                >
+                  <motion.a
+                    href="#"
+                    className="inline-flex items-center gap-3 px-12 py-6 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-full text-xl font-bold text-white hover:from-purple-700 hover:to-indigo-700 transition-all duration-300"
+                    whileHover={{ scale: 1.05 }}
+                    animate={{
+                      boxShadow: [
+                        "0 0 20px rgba(147, 51, 234, 0.3)",
+                        "0 0 40px rgba(147, 51, 234, 0.5)",
+                        "0 0 20px rgba(147, 51, 234, 0.3)"
+                      ]
+                    }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                  >
+                    <span>Explore nr.com/kafka-sg-observe</span>
+                    <ArrowRight className="w-6 h-6" />
+                  </motion.a>
+                </motion.div>
+                
+                {/* Additional resources */}
+                <motion.div
+                  className="mt-12 metric-card-v2 p-8 max-w-2xl mx-auto"
+                  initial={{ y: 30, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.5 }}
+                >
+                  <div className="flex items-center justify-center gap-8">
+                    <div className="text-center">
+                      <Star className="w-8 h-8 text-yellow-400 mx-auto mb-2" />
+                      <div className="text-2xl font-bold">4.9/5</div>
+                      <div className="text-sm text-gray-400">Developer Rating</div>
+                    </div>
+                    <div className="text-center">
+                      <Users className="w-8 h-8 text-blue-400 mx-auto mb-2" />
+                      <div className="text-2xl font-bold">50K+</div>
+                      <div className="text-sm text-gray-400">Active Users</div>
+                    </div>
+                    <div className="text-center">
+                      <Rocket className="w-8 h-8 text-green-400 mx-auto mb-2" />
+                      <div className="text-2xl font-bold">99.9%</div>
+                      <div className="text-sm text-gray-400">Uptime SLA</div>
+                    </div>
+                  </div>
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+          
+          {/* Phase 5: Final Celebration */}
+          <AnimatePresence>
+            {currentPhase === 'celebration' && (
+              <motion.div 
+                className="text-center space-y-6"
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ opacity: 0 }}
                 transition={{ type: "spring", damping: 10 }}
               >
-                <motion.a
-                  href="#"
-                  className="inline-flex items-center gap-3 px-12 py-6 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-full text-xl font-bold text-white hover:from-purple-700 hover:to-indigo-700 transition-all duration-300"
-                  whileHover={{ scale: 1.05 }}
+                <motion.h2 
+                  className="text-7xl font-black bg-gradient-to-r from-green-400 via-blue-400 to-purple-400 bg-clip-text text-transparent"
                   animate={{
-                    boxShadow: [
-                      "0 0 20px rgba(147, 51, 234, 0.3)",
-                      "0 0 40px rgba(147, 51, 234, 0.5)",
-                      "0 0 20px rgba(147, 51, 234, 0.3)"
-                    ]
+                    backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"]
+                  }}
+                  transition={{ duration: 5, repeat: Infinity }}
+                  style={{ backgroundSize: "200% 200%" }}
+                >
+                  Thank You for Watching!
+                </motion.h2>
+                
+                <motion.p
+                  className="text-3xl text-gray-300"
+                  animate={{
+                    opacity: [0.5, 1, 0.5]
                   }}
                   transition={{ duration: 2, repeat: Infinity }}
                 >
-                  <span>Explore nr.com/kafka-sg-observe</span>
-                  <ArrowRight className="w-6 h-6" />
-                </motion.a>
-              </motion.div>
-              
-              {/* Additional resources */}
-              <motion.div
-                className="mt-12 p-8 bg-gradient-to-r from-purple-900/20 to-indigo-900/20 rounded-2xl border border-purple-500/20 max-w-2xl mx-auto"
-                initial={{ y: 30, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.5 }}
-              >
-                <div className="flex items-center justify-center gap-8">
-                  <div className="text-center">
-                    <Star className="w-8 h-8 text-yellow-400 mx-auto mb-2" />
-                    <div className="text-2xl font-bold">4.9/5</div>
-                    <div className="text-sm text-gray-400">Developer Rating</div>
-                  </div>
-                  <div className="text-center">
-                    <Users className="w-8 h-8 text-blue-400 mx-auto mb-2" />
-                    <div className="text-2xl font-bold">50K+</div>
-                    <div className="text-sm text-gray-400">Active Users</div>
-                  </div>
-                  <div className="text-center">
-                    <Rocket className="w-8 h-8 text-green-400 mx-auto mb-2" />
-                    <div className="text-2xl font-bold">99.9%</div>
-                    <div className="text-sm text-gray-400">Uptime SLA</div>
-                  </div>
+                  See you in the next episode! 🚀
+                </motion.p>
+                
+                {/* Floating stars */}
+                <div className="relative h-20">
+                  {[...Array(5)].map((_, i) => (
+                    <motion.div
+                      key={i}
+                      className="absolute"
+                      style={{
+                        left: `${20 + i * 15}%`,
+                        top: '50%'
+                      }}
+                      animate={{
+                        y: [-10, 10, -10],
+                        rotate: [0, 180, 360]
+                      }}
+                      transition={{
+                        duration: 3,
+                        delay: i * 0.2,
+                        repeat: Infinity
+                      }}
+                    >
+                      <Star className="w-8 h-8 text-yellow-400 fill-current" />
+                    </motion.div>
+                  ))}
                 </div>
               </motion.div>
-            </motion.div>
-          </SceneTransition>
-          
-          {/* Phase 5: Final Celebration */}
-          <SceneTransition isActive={time >= phases.celebration.start}>
-            <motion.div 
-              className="text-center space-y-6"
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ type: "spring", damping: 10 }}
-            >
-              <motion.h2 
-                className="text-7xl font-black bg-gradient-to-r from-green-400 via-blue-400 to-purple-400 bg-clip-text text-transparent"
-                animate={{
-                  backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"]
-                }}
-                transition={{ duration: 5, repeat: Infinity }}
-                style={{ backgroundSize: "200% 200%" }}
-              >
-                Thank You for Watching!
-              </motion.h2>
-              
-              <motion.p
-                className="text-3xl text-gray-300"
-                animate={{
-                  opacity: [0.5, 1, 0.5]
-                }}
-                transition={{ duration: 2, repeat: Infinity }}
-              >
-                See you in the next episode! 🚀
-              </motion.p>
-              
-              {/* Floating stars */}
-              <div className="relative h-20">
-                {[...Array(5)].map((_, i) => (
-                  <motion.div
-                    key={i}
-                    className="absolute"
-                    style={{
-                      left: `${20 + i * 15}%`,
-                      top: '50%'
-                    }}
-                    animate={{
-                      y: [-10, 10, -10],
-                      rotate: [0, 180, 360]
-                    }}
-                    transition={{
-                      duration: 3,
-                      delay: i * 0.2,
-                      repeat: Infinity
-                    }}
-                  >
-                    <Star className="w-8 h-8 text-yellow-400 fill-current" />
-                  </motion.div>
-                ))}
-              </div>
-            </motion.div>
-          </SceneTransition>
+            )}
+          </AnimatePresence>
         </div>
-      </div>
-      
-      {/* Progress Indicator */}
-      <div className="progress-story">
-        <motion.div 
-          className="progress-story-fill bg-gradient-to-r from-green-500 to-emerald-500"
-          style={{ width: `${progress}%` }}
-        />
       </div>
     </div>
   );

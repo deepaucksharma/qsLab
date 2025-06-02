@@ -1,13 +1,5 @@
 import { motion } from 'framer-motion';
-import {
-  CinematicTitle,
-  ParticleBackground,
-  SceneTransition
-} from '../StorytellingComponents';
-import {
-  getTextRevealStyle,
-  getTimeBasedValue
-} from '../../utils/animationHelpers';
+import '../../styles/techflix-cinematic-v2.css';
 
 const CinematicOpeningScene = ({ time, duration }) => {
   // Scene phases
@@ -18,46 +10,23 @@ const CinematicOpeningScene = ({ time, duration }) => {
     transition: { start: 10, duration: 2 }
   };
   
-  const progress = (time / duration) * 100;
-  
-  // Calculate dynamic effects
-  const glowIntensity = getTimeBasedValue(time, phases.title.start, 3, 0, 1, 'easeOutExpo');
-  const scaleEffect = getTimeBasedValue(time, phases.intro.start, phases.intro.duration, 0.8, 1, 'easeOutBack');
+  // Determine current phase
+  const currentPhase = Object.entries(phases).find(([_, phase]) => 
+    time >= phase.start && time < phase.start + phase.duration
+  )?.[0] || 'transition';
   
   return (
-    <div className="scene-container">
-      {/* Dynamic Background */}
-      <motion.div 
-        className="absolute inset-0"
-        animate={{ 
-          background: [
-            'radial-gradient(circle at 50% 50%, rgba(99, 102, 241, 0.3) 0%, transparent 50%)',
-            'radial-gradient(circle at 30% 70%, rgba(139, 92, 246, 0.3) 0%, transparent 50%)',
-            'radial-gradient(circle at 70% 30%, rgba(59, 130, 246, 0.3) 0%, transparent 50%)',
-          ]
-        }}
-        transition={{ duration: 10, repeat: Infinity, repeatType: "reverse" }}
-      />
-      
-      {/* Tech Grid Background */}
-      <div className="absolute inset-0 bg-tech-grid opacity-20" />
-      
-      {/* Particles */}
-      <ParticleBackground 
-        particleCount={60} 
-        colors={['#4338ca', '#8b5cf6', '#3b82f6', '#10b981']} 
-      />
-      
-      {/* Content */}
-      <div className="relative z-10 h-full flex items-center justify-center p-8">
-        <div className="text-center max-w-5xl">
+    <div className="scene-container-v2">
+      <div className="scene-content">
+        <div className="flex flex-col items-center justify-center min-h-full py-12">
           
           {/* Phase 1: Opening Animation */}
-          <SceneTransition isActive={time >= phases.intro.start && time < phases.title.start}>
+          {currentPhase === 'intro' && (
             <motion.div
               initial={{ scale: 0 }}
-              animate={{ scale: scaleEffect }}
+              animate={{ scale: 1 }}
               transition={{ type: "spring", damping: 10 }}
+              className="text-center"
             >
               <motion.div
                 className="w-32 h-32 mx-auto mb-8"
@@ -84,39 +53,48 @@ const CinematicOpeningScene = ({ time, duration }) => {
                 TechFlix Presents
               </motion.p>
             </motion.div>
-          </SceneTransition>
+          )}
           
           {/* Phase 2: Main Title */}
-          <SceneTransition isActive={time >= phases.title.start && time < phases.tagline.start}>
-            <div>
-              <CinematicTitle
-                title="Kafka Share Groups"
-                subtitle="A Technical Revolution"
-                time={time}
-                startTime={phases.title.start}
-              />
-              
-              {/* Glow Effect */}
-              <motion.div
-                className="absolute inset-0 pointer-events-none"
-                style={{
-                  background: `radial-gradient(circle at 50% 50%, rgba(99, 102, 241, ${glowIntensity * 0.4}) 0%, transparent 70%)`,
-                  filter: `blur(${glowIntensity * 40}px)`
-                }}
-              />
-            </div>
-          </SceneTransition>
+          {currentPhase === 'title' && (
+            <motion.div 
+              className="text-center"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+            >
+              <motion.h1 
+                className="scene-title text-6xl md:text-8xl mb-6"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 1, ease: "easeOut" }}
+              >
+                Kafka Share Groups
+              </motion.h1>
+              <motion.p 
+                className="scene-subtitle"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5, duration: 0.8 }}
+              >
+                A Technical Revolution
+              </motion.p>
+            </motion.div>
+          )}
           
           {/* Phase 3: Tagline */}
-          <SceneTransition isActive={time >= phases.tagline.start && time < phases.transition.start}>
+          {currentPhase === 'tagline' && (
             <motion.div
               initial={{ opacity: 0, y: 50 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1, ease: "easeOut" }}
+              className="text-center max-w-4xl"
             >
               <motion.h2 
-                className="text-4xl md:text-5xl font-bold mb-8"
-                style={getTextRevealStyle(time, phases.tagline.start, 1)}
+                className="scene-title text-4xl md:text-5xl mb-8"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.8 }}
               >
                 Breaking the Partition Barrier
               </motion.h2>
@@ -124,8 +102,8 @@ const CinematicOpeningScene = ({ time, duration }) => {
               <motion.div
                 className="space-y-4 max-w-3xl mx-auto"
                 initial={{ opacity: 0 }}
-                animate={{ opacity: time > phases.tagline.start + 1 ? 1 : 0 }}
-                transition={{ duration: 0.8 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.5, duration: 0.8 }}
               >
                 <p className="text-xl text-gray-300">
                   Discover how Kafka 4.0 revolutionizes stream processing
@@ -135,7 +113,8 @@ const CinematicOpeningScene = ({ time, duration }) => {
                 <motion.div
                   className="flex justify-center gap-8 mt-8"
                   initial={{ opacity: 0 }}
-                  animate={{ opacity: time > phases.tagline.start + 2 ? 1 : 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 1 }}
                 >
                   <div className="text-center">
                     <div className="text-3xl font-bold text-blue-400">10x</div>
@@ -152,10 +131,10 @@ const CinematicOpeningScene = ({ time, duration }) => {
                 </motion.div>
               </motion.div>
             </motion.div>
-          </SceneTransition>
+          )}
           
           {/* Phase 4: Transition Out */}
-          <SceneTransition isActive={time >= phases.transition.start}>
+          {currentPhase === 'transition' && (
             <motion.div
               initial={{ scale: 1, opacity: 1 }}
               animate={{ 
@@ -163,12 +142,14 @@ const CinematicOpeningScene = ({ time, duration }) => {
                 opacity: 0
               }}
               transition={{ duration: 1, ease: "easeInOut" }}
+              className="text-center"
             >
               <div className="text-6xl font-black bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
                 Let&apos;s Begin...
               </div>
             </motion.div>
-          </SceneTransition>
+          )}
+          
         </div>
       </div>
       
@@ -185,14 +166,6 @@ const CinematicOpeningScene = ({ time, duration }) => {
         animate={{ y: time > phases.transition.start ? 0 : 100 }}
         transition={{ duration: 0.5 }}
       />
-      
-      {/* Progress Indicator */}
-      <div className="progress-story">
-        <motion.div 
-          className="progress-story-fill"
-          style={{ width: `${progress}%` }}
-        />
-      </div>
     </div>
   );
 };

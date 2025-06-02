@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechFlix - Netflix for Technology</title>
+    
+    <!-- React & React DOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'netflix-red': '#e50914',
+                        'netflix-dark': '#141414',
+                        'netflix-gray': '#808080'
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body {
+            background-color: #141414;
+            color: white;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .netflix-button {
+            background-color: #e50914;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.25rem;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .netflix-button:hover {
+            background-color: #f40612;
+        }
+        
+        .episode-card {
+            background-color: #1a1a1a;
+            border-radius: 0.5rem;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .episode-card:hover {
+            transform: scale(1.05);
+        }
+        
+        .episode-card.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .episode-card.disabled:hover {
+            transform: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    
+    <script type="text/javascript">
+        const { useState, useEffect, useRef, useContext, createContext } = React;
+        
+        // Create App Context
+        const AppContext = createContext();
+        
+        // Simple Header Component
+        const Header = () => {
+            return React.createElement('header', { 
+                className: 'bg-netflix-dark p-4 fixed top-0 w-full z-50' 
+            },
+                React.createElement('div', { className: 'container mx-auto flex justify-between items-center' },
+                    React.createElement('h1', { 
+                        className: 'text-3xl font-bold text-netflix-red cursor-pointer',
+                        onClick: () => window.location.reload()
+                    }, 'TechFlix'),
+                    React.createElement('nav', { className: 'flex gap-4' },
+                        React.createElement('a', { href: '#', className: 'hover:text-gray-300' }, 'Home'),
+                        React.createElement('a', { href: '#', className: 'hover:text-gray-300' }, 'Series'),
+                        React.createElement('a', { href: '#', className: 'hover:text-gray-300' }, 'My List')
+                    )
+                )
+            );
+        };
+        
+        // Hero Section Component
+        const HeroSection = () => {
+            return React.createElement('section', { 
+                className: 'relative h-96 bg-gradient-to-r from-purple-900 to-blue-900 mt-16' 
+            },
+                React.createElement('div', { className: 'container mx-auto h-full flex items-center px-4' },
+                    React.createElement('div', { className: 'max-w-2xl' },
+                        React.createElement('h2', { className: 'text-5xl font-bold mb-4' }, 
+                            'Master Kafka Share Groups'),
+                        React.createElement('p', { className: 'text-xl mb-6' }, 
+                            'Learn how Apache Kafka 4.0 revolutionizes event streaming with Share Groups'),
+                        React.createElement('button', { className: 'netflix-button' }, 
+                            'Start Learning')
+                    )
+                )
+            );
+        };
+        
+        // Episode Card Component
+        const EpisodeCard = ({ episode }) => {
+            const { setCurrentEpisode, setIsPlayerActive } = useContext(AppContext);
+            
+            const handlePlay = () => {
+                if (episode.hasContent && episode.episodeData) {
+                    setCurrentEpisode(episode.episodeData);
+                    setIsPlayerActive(true);
+                }
+            };
+            
+            return React.createElement('div', {
+                className: `episode-card p-4 ${!episode.hasContent ? 'disabled' : ''}`,
+                onClick: episode.hasContent ? handlePlay : undefined
+            },
+                React.createElement('div', { className: 'aspect-video bg-gray-800 mb-2 flex items-center justify-center' },
+                    React.createElement('span', { className: 'text-4xl' }, episode.number)
+                ),
+                React.createElement('h3', { className: 'font-semibold mb-1' }, 
+                    `Episode ${episode.number}: ${episode.title}`),
+                React.createElement('p', { className: 'text-sm text-gray-400 mb-2' }, episode.description),
+                React.createElement('div', { className: 'flex gap-2 text-xs' },
+                    React.createElement('span', { className: 'bg-gray-700 px-2 py-1 rounded' }, episode.duration),
+                    React.createElement('span', { className: 'bg-gray-700 px-2 py-1 rounded' }, episode.level)
+                )
+            );
+        };
+        
+        // Episodes Section Component
+        const EpisodesSection = () => {
+            const { currentSeason, setCurrentSeason, seasons } = useContext(AppContext);
+            const season = seasons.find(s => s.number === currentSeason);
+            
+            if (seasons.length === 0) {
+                return React.createElement('div', { className: 'container mx-auto px-4 py-8' },
+                    React.createElement('p', null, 'No episodes available')
+                );
+            }
+            
+            return React.createElement('section', { className: 'container mx-auto px-4 py-8' },
+                React.createElement('div', { className: 'mb-4' },
+                    React.createElement('select', {
+                        className: 'bg-gray-800 text-white p-2 rounded',
+                        value: currentSeason,
+                        onChange: (e) => setCurrentSeason(parseInt(e.target.value))
+                    },
+                        seasons.map(s => 
+                            React.createElement('option', { key: s.number, value: s.number }, s.title)
+                        )
+                    )
+                ),
+                React.createElement('div', { className: 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4' },
+                    season?.episodes.map((episode, index) =>
+                        React.createElement(EpisodeCard, { 
+                            key: `s${season.number}-e${episode.number}`, 
+                            episode: episode 
+                        })
+                    )
+                )
+            );
+        };
+        
+        // Simple Episode Player
+        const EpisodePlayer = ({ episodeData, onBack }) => {
+            const [currentSceneIndex, setCurrentSceneIndex] = useState(0);
+            const [sceneTime, setSceneTime] = useState(0);
+            const [isPlaying, setIsPlaying] = useState(true);
+            
+            const currentScene = episodeData.scenes[currentSceneIndex];
+            
+            useEffect(() => {
+                if (!isPlaying) return;
+                
+                const interval = setInterval(() => {
+                    setSceneTime(prev => {
+                        const newTime = prev + 0.1;
+                        if (newTime >= currentScene.duration) {
+                            if (currentSceneIndex < episodeData.scenes.length - 1) {
+                                setCurrentSceneIndex(i => i + 1);
+                                return 0;
+                            } else {
+                                setIsPlaying(false);
+                                return currentScene.duration;
+                            }
+                        }
+                        return newTime;
+                    });
+                }, 100);
+                
+                return () => clearInterval(interval);
+            }, [isPlaying, currentSceneIndex, currentScene, episodeData.scenes.length]);
+            
+            const progress = (sceneTime / currentScene.duration) * 100;
+            
+            return React.createElement('div', { className: 'fixed inset-0 bg-black z-50 flex flex-col' },
+                // Header
+                React.createElement('div', { className: 'p-4 flex items-center justify-between' },
+                    React.createElement('button', {
+                        onClick: onBack,
+                        className: 'text-white hover:text-gray-300'
+                    }, '← Back'),
+                    React.createElement('h2', { className: 'text-xl font-semibold' }, 
+                        episodeData.metadata.title)
+                ),
+                
+                // Content Area
+                React.createElement('div', { className: 'flex-grow flex items-center justify-center p-8' },
+                    React.createElement('div', { className: 'text-center max-w-4xl' },
+                        React.createElement('h3', { className: 'text-3xl font-bold mb-4' }, 
+                            currentScene.title),
+                        React.createElement('p', { className: 'text-xl mb-8' }, 
+                            `Scene ${currentSceneIndex + 1} of ${episodeData.scenes.length}`),
+                        React.createElement('div', { className: 'text-6xl mb-8' }, 
+                            Math.floor(sceneTime) + 's')
+                    )
+                ),
+                
+                // Controls
+                React.createElement('div', { className: 'p-4' },
+                    React.createElement('div', { className: 'mb-2' },
+                        React.createElement('div', { className: 'h-1 bg-gray-700 rounded' },
+                            React.createElement('div', {
+                                className: 'h-full bg-netflix-red rounded transition-all',
+                                style: { width: `${progress}%` }
+                            })
+                        )
+                    ),
+                    React.createElement('div', { className: 'flex justify-center gap-4' },
+                        React.createElement('button', {
+                            onClick: () => setIsPlaying(!isPlaying),
+                            className: 'netflix-button'
+                        }, isPlaying ? 'Pause' : 'Play')
+                    )
+                )
+            );
+        };
+        
+        // Episode data
+        const EPISODE_DATA = {
+            partitionBarrier: {
+                metadata: {
+                    title: 'Breaking the Partition Barrier',
+                    runtime: 45
+                },
+                scenes: [
+                    { id: 'intro', title: 'Introduction', duration: 10 },
+                    { id: 'problem', title: 'The Problem', duration: 15 },
+                    { id: 'solution', title: 'The Solution', duration: 20 }
+                ]
+            },
+            criticalMetrics: {
+                metadata: {
+                    title: 'Critical Metrics Mastery',
+                    runtime: 38
+                },
+                scenes: [
+                    { id: 'metrics-intro', title: 'Why Metrics Matter', duration: 10 },
+                    { id: 'key-metrics', title: 'Key Metrics', duration: 15 }
+                ]
+            },
+            kafkaShareGroups: {
+                metadata: {
+                    title: 'Kafka Share Groups: The Future',
+                    runtime: 32
+                },
+                scenes: [
+                    { id: 'evolution', title: 'Evolution of Kafka', duration: 8 },
+                    { id: 'bottleneck', title: 'The Bottleneck', duration: 8 },
+                    { id: 'share-groups', title: 'Share Groups', duration: 10 },
+                    { id: 'impact', title: 'Real-World Impact', duration: 6 }
+                ]
+            }
+        };
+        
+        // Series data
+        const SERIES_DATA = {
+            seasons: [
+                {
+                    number: 1,
+                    title: "Season 1: Foundations",
+                    episodes: [
+                        {
+                            number: 1,
+                            title: "Breaking the Partition Barrier",
+                            description: "Discover how Kafka Share Groups revolutionize message consumption.",
+                            duration: "45m",
+                            level: "Advanced",
+                            hasContent: true,
+                            episodeData: EPISODE_DATA.partitionBarrier
+                        },
+                        {
+                            number: 2,
+                            title: "Performance Metrics Deep Dive",
+                            description: "Master the art of system observation with advanced monitoring.",
+                            duration: "38m",
+                            level: "Intermediate",
+                            hasContent: true,
+                            episodeData: EPISODE_DATA.criticalMetrics
+                        },
+                        {
+                            number: 3,
+                            title: "Microservices Architecture",
+                            description: "Design resilient distributed systems with modern patterns.",
+                            duration: "52m",
+                            level: "Advanced",
+                            hasContent: false
+                        }
+                    ]
+                },
+                {
+                    number: 2,
+                    title: "Season 2: Advanced Topics",
+                    episodes: [
+                        {
+                            number: 1,
+                            title: "Kafka Share Groups: The Future",
+                            description: "Explore Apache Kafka 4.0's revolutionary Share Groups feature.",
+                            duration: "32m",
+                            level: "Advanced",
+                            hasContent: true,
+                            episodeData: EPISODE_DATA.kafkaShareGroups
+                        }
+                    ]
+                }
+            ]
+        };
+        
+        // Main App Component
+        const App = () => {
+            const [currentSeason, setCurrentSeason] = useState(1);
+            const [isPlayerActive, setIsPlayerActive] = useState(false);
+            const [currentEpisode, setCurrentEpisode] = useState(null);
+            const [seasons] = useState(SERIES_DATA.seasons);
+            
+            const contextValue = {
+                currentSeason,
+                setCurrentSeason,
+                isPlayerActive,
+                setIsPlayerActive,
+                currentEpisode,
+                setCurrentEpisode,
+                seasons
+            };
+            
+            return React.createElement(AppContext.Provider, { value: contextValue },
+                isPlayerActive && currentEpisode ?
+                    React.createElement(EpisodePlayer, {
+                        episodeData: currentEpisode,
+                        onBack: () => {
+                            setIsPlayerActive(false);
+                            setCurrentEpisode(null);
+                        }
+                    }) :
+                    React.createElement('div', null,
+                        React.createElement(Header),
+                        React.createElement(HeroSection),
+                        React.createElement(EpisodesSection)
+                    )
+            );
+        };
+        
+        // Render the app
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(React.createElement(App));
+    </script>
+</body>
+</html>

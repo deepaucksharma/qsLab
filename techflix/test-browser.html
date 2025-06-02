@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Browser Test</title>
+</head>
+<body>
+    <h1>Open browser console to see errors</h1>
+    <iframe src="http://localhost:3000" width="100%" height="600" id="testFrame"></iframe>
+    
+    <script>
+        window.addEventListener('message', (event) => {
+            console.log('Message from iframe:', event.data);
+        });
+        
+        setTimeout(() => {
+            const iframe = document.getElementById('testFrame');
+            console.log('Iframe loaded:', iframe.contentDocument?.body?.innerHTML || 'Cannot access');
+        }, 3000);
+    </script>
+</body>
+</html>

@@ -1,56 +1,61 @@
 # TechFlix Documentation
 
-Welcome to the TechFlix documentation. This directory contains all technical documentation for the TechFlix platform.
+Welcome to the TechFlix documentation. This directory contains all project documentation organized by category.
 
-## 📚 Documentation Structure
+## 📚 Guides
+Step-by-step guides for working with TechFlix:
 
-### Core Documentation
-- [`/README.md`](../README.md) - Main project documentation and quick start guide
-- [`/CHANGELOG.md`](../CHANGELOG.md) - Project history and version updates
-- [`/PROJECT_STRUCTURE.md`](../PROJECT_STRUCTURE.md) - Directory structure and organization
+- [Components Guide](guides/components.md) - Component development patterns
+- [Debugging Guide](guides/debugging.md) - Debugging tools and techniques
+- [Development Guide](guides/development.md) - Development workflow and best practices
+- [Episodes Guide](guides/episodes.md) - Creating and managing episodes
+- [Sound Effects Guide](guides/sound-effects.md) - Working with sound effects
+- [Voiceovers Guide](guides/voiceovers.md) - Voiceover implementation
+- [S2E1 Audio Setup](guides/s2e1-audio-setup.md) - Episode-specific audio setup
 
-### Development Guides
-Located in [`guides/`](guides/):
-- [`development.md`](guides/development.md) - Development setup, workflow, and best practices
-- [`episodes.md`](guides/episodes.md) - Episode creation and structure guide
-- [`components.md`](guides/components.md) - Component reference and usage
-- [`debugging.md`](guides/debugging.md) - Debugging tools and techniques
-- [`voiceovers.md`](guides/voiceovers.md) - Voice-over generation and integration
-- [`sound-effects.md`](guides/sound-effects.md) - Sound effects and audio system
+## 🏗️ Architecture
+Technical architecture and design documents:
 
-### Technical References
-Located in [`reference/`](reference/):
-- [`api.md`](reference/api.md) - API documentation for all modules
+- [Audio Migration Guide](architecture/AUDIO_MIGRATION_GUIDE.md) - Migrating to the new audio system
+- [Audio System Summary](architecture/AUDIO_SYSTEM_SUMMARY.md) - Audio system architecture overview
+- [Cleanup Analysis](architecture/CLEANUP_ANALYSIS.md) - Codebase cleanup analysis
+- [Cleanup Checklist](architecture/CLEANUP_CHECKLIST.md) - Tasks for code cleanup
+- [Reorganization Action Plan](architecture/REORGANIZATION_ACTION_PLAN.md) - Project reorganization steps
 
-### Archives
-Located in [`archives/`](archives/):
-- Historical documents and deprecated guides
-- Legacy implementation details
-- Previous design iterations
+## 📖 API Reference
+API documentation and references:
+
+- [API Documentation](reference/api.md) - Complete API reference
+
+## 🗄️ Archives
+Older documentation and implementation summaries:
+
+The [archives](archives/) directory contains:
+- Previous implementation summaries
+- Deprecated guides
+- Historical documentation
+- Backup files
 
 ## 🚀 Quick Links
 
-### Getting Started
-- [Quick Start Guide](../README.md#-quick-start)
-- [Development Setup](guides/development.md#initial-setup)
-- [Project Structure](../PROJECT_STRUCTURE.md)
+- [Main README](../README.md) - Project overview and setup
+- [Changelog](../CHANGELOG.md) - Version history and updates
+- [Contributing Guidelines](../CONTRIBUTING.md) - How to contribute (if exists)
 
-### Development
-- [Creating Episodes](guides/episodes.md)
-- [Component Reference](guides/components.md)
-- [Debugging Guide](guides/debugging.md)
-- [API Reference](reference/api.md)
+## 📝 Documentation Standards
 
-### Best Practices
-- [Code Organization](guides/development.md#code-organization)
-- [Performance Tips](guides/development.md#performance-best-practices)
-- [Testing Guidelines](guides/development.md#testing)
+When adding new documentation:
+1. Place guides in the `guides/` directory
+2. Place architecture docs in the `architecture/` directory
+3. Place API docs in the `reference/` directory
+4. Archive old docs in the `archives/` directory
+5. Use clear, descriptive filenames
+6. Include a table of contents for long documents
+7. Keep documentation up-to-date with code changes
 
-## 📖 Documentation Standards
+## 🔍 Finding Information
 
-When contributing documentation:
-1. Use clear, concise language
-2. Include code examples where relevant
-3. Keep guides up-to-date with code changes
-4. Follow Markdown best practices
-5. Add to appropriate category/folder
+- **New to TechFlix?** Start with the [Development Guide](guides/development.md)
+- **Building episodes?** See the [Episodes Guide](guides/episodes.md)
+- **Working with audio?** Check the [Audio System Summary](architecture/AUDIO_SYSTEM_SUMMARY.md)
+- **Debugging issues?** Read the [Debugging Guide](guides/debugging.md)
