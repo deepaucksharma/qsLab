@@ -24,7 +24,7 @@ techflix/
 src/
 ├── main.jsx                    # React application entry
 ├── App.jsx                     # Main application component
-├── router.jsx                  # Route definitions
+├── router/index.jsx            # Route definitions
 │
 ├── components/                 # Reusable React components
 │   ├── Header.jsx             # Navigation header
@@ -69,7 +69,7 @@ src/
 ├── utils/                     # Utility functions
 │   ├── logger.js             # Logging system
 │   ├── time.js               # Time formatting
-│   └── debug.js              # Debug utilities
+│   └── errorTracking.js      # Error tracking utilities
 │
 ├── data/                      # Static data
 │   ├── seriesData.js         # Series/episode metadata
