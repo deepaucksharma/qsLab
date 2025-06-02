@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechFlix Sound Effects Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #1a1a1a;
+            color: #fff;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #e50914;
+        }
+        button {
+            background: #e50914;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        button:hover {
+            background: #b20710;
+        }
+        .sound-group {
+            margin: 20px 0;
+            padding: 20px;
+            background: #2a2a2a;
+            border-radius: 8px;
+        }
+        .status {
+            margin-top: 20px;
+            padding: 10px;
+            background: #333;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <h1>TechFlix Sound Effects Generator</h1>
+    <p>Generate placeholder sound effects using Web Audio API. Click buttons to generate and download sounds.</p>
+
+    <div class="sound-group">
+        <h2>Ambient Sounds</h2>
+        <button onclick="generateSound('tech-atmosphere')">Tech Atmosphere</button>
+        <button onclick="generateSound('data-flow')">Data Flow</button>
+    </div>
+
+    <div class="sound-group">
+        <h2>Transition Sounds</h2>
+        <button onclick="generateSound('scene-transition')">Scene Transition</button>
+        <button onclick="generateSound('timeline-whoosh')">Timeline Whoosh</button>
+        <button onclick="generateSound('reveal')">Reveal</button>
+    </div>
+
+    <div class="sound-group">
+        <h2>UI Sounds</h2>
+        <button onclick="generateSound('partition-appear')">Partition Appear</button>
+        <button onclick="generateSound('consumer-connect')">Consumer Connect</button>
+        <button onclick="generateSound('message-process')">Message Process</button>
+        <button onclick="generateSound('error-buzz')">Error Buzz</button>
+        <button onclick="generateSound('success-chime')">Success Chime</button>
+    </div>
+
+    <div class="sound-group">
+        <h2>Dramatic Sounds</h2>
+        <button onclick="generateSound('crisis-alarm')">Crisis Alarm</button>
+        <button onclick="generateSound('breakthrough')">Breakthrough</button>
+        <button onclick="generateSound('impact-boom')">Impact Boom</button>
+    </div>
+
+    <div class="status" id="status">Ready to generate sounds...</div>
+
+    <script>
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        
+        function updateStatus(message) {
+            document.getElementById('status').innerText = message;
+        }
+
+        async function generateSound(soundName) {
+            updateStatus(`Generating ${soundName}...`);
+            
+            let buffer;
+            switch(soundName) {
+                case 'tech-atmosphere':
+                    buffer = generateTechAtmosphere();
+                    break;
+                case 'data-flow':
+                    buffer = generateDataFlow();
+                    break;
+                case 'scene-transition':
+                    buffer = generateSceneTransition();
+                    break;
+                case 'timeline-whoosh':
+                    buffer = generateTimelineWhoosh();
+                    break;
+                case 'reveal':
+                    buffer = generateReveal();
+                    break;
+                case 'partition-appear':
+                    buffer = generatePartitionAppear();
+                    break;
+                case 'consumer-connect':
+                    buffer = generateConsumerConnect();
+                    break;
+                case 'message-process':
+                    buffer = generateMessageProcess();
+                    break;
+                case 'error-buzz':
+                    buffer = generateErrorBuzz();
+                    break;
+                case 'success-chime':
+                    buffer = generateSuccessChime();
+                    break;
+                case 'crisis-alarm':
+                    buffer = generateCrisisAlarm();
+                    break;
+                case 'breakthrough':
+                    buffer = generateBreakthrough();
+                    break;
+                case 'impact-boom':
+                    buffer = generateImpactBoom();
+                    break;
+                default:
+                    updateStatus('Unknown sound type');
+                    return;
+            }
+            
+            // Play the sound
+            const source = audioContext.createBufferSource();
+            source.buffer = buffer;
+            source.connect(audioContext.destination);
+            source.start();
+            
+            // Download the sound
+            downloadSound(buffer, soundName);
+            updateStatus(`Generated and playing ${soundName}`);
+        }
+
+        function generateTechAtmosphere() {
+            const duration = 60;
+            const sampleRate = audioContext.sampleRate;
+            const buffer = audioContext.createBuffer(2, sampleRate * duration, sampleRate);
+            
+            for (let channel = 0; channel < 2; channel++) {
+                const data = buffer.getChannelData(channel);
+                for (let i = 0; i < data.length; i++) {
+                    // Low frequency hum with slight variation
+                    const t = i / sampleRate;
+                    data[i] = Math.sin(2 * Math.PI * 50 * t) * 0.05 +
+                             Math.sin(2 * Math.PI * 60 * t) * 0.03 +
+                             (Math.random() - 0.5) * 0.01;
+                }
+            }
+            return buffer;
+        }
+
+        function generateDataFlow() {
+            const duration = 30;
+            const sampleRate = audioContext.sampleRate;
+            const buffer = audioContext.createBuffer(2, sampleRate * duration, sampleRate);
+            
+            for (let channel = 0; channel < 2; channel++) {
+                const data = buffer.getChannelData(channel);
+                for (let i = 0; i < data.length; i++) {
+                    const t = i / sampleRate;
+                    // Flowing water-like sound
+                    data[i] = (Math.random() - 0.5) * 0.1 * 
+                             Math.sin(2 * Math.PI * 0.5 * t) *
+                             (1 + Math.sin(2 * Math.PI * 0.1 * t));
+                }
+            }
+            return buffer;
+        }
+
+        function generateSceneTransition() {
+            const duration = 2;
+            const sampleRate = audioContext.sampleRate;
+            const buffer = audioContext.createBuffer(2, sampleRate * duration, sampleRate);
+            
+            for (let channel = 0; channel < 2; channel++) {
+                const data = buffer.getChannelData(channel);
+                for (let i = 0; i < data.length; i++) {
+                    const t = i / sampleRate;
+                    const envelope = Math.exp(-t * 2);
+                    
+                    // Sweep from high to low
+                    const freq = 2000 * Math.exp(-t * 3);
+                    data[i] = Math.sin(2 * Math.PI * freq * t) * envelope * 0.5;
+                }
+            }
+            return buffer;
+        }
+
+        function generateTimelineWhoosh() {
+            const duration = 1.5;
+            const sampleRate = audioContext.sampleRate;
+            const buffer = audioContext.createBuffer(2, sampleRate * duration, sampleRate);
+            
+            for (let channel = 0; channel < 2; channel++) {
+                const data = buffer.getChannelData(channel);
+                for (let i = 0; i < data.length; i++) {
+                    const t = i / sampleRate;
+                    // White noise with envelope
+                    const envelope = Math.sin(Math.PI * t / duration);
+                    data[i] = (Math.random() - 0.5) * envelope * 0.3;
+                }
+            }
+            return buffer;
+        }
+
+        function generateReveal() {
+            const duration = 1.8;
+            const sampleRate = audioContext.sampleRate;
+            const buffer = audioContext.createBuffer(2, sampleRate * duration, sampleRate);
+            
+            for (let channel = 0; channel < 2; channel++) {
+                const data = buffer.getChannelData(channel);
+                for (let i = 0; i < data.length; i++) {
+                    const t = i / sampleRate;
+                    // Rising frequency with shimmer
+                    const freq = 200 + 800 * (t / duration);
+                    const shimmer = Math.sin(2 * Math.PI * 20 * t);
+                    data[i] = Math.sin(2 * Math.PI * freq * t) * 0.3 * (1 + shimmer * 0.2);
+                }
+            }
+            return buffer;
+        }
+
+        function generatePartitionAppear() {
+            const duration = 0.5;
+            const sampleRate = audioContext.sampleRate;
+            const buffer = audioContext.createBuffer(2, sampleRate * duration, sampleRate);
+            
+            for (let channel = 0; channel < 2; channel++) {
+                const data = buffer.getChannelData(channel);
+                for (let i = 0; i < data.length; i++) {
+                    const t = i / sampleRate;
+                    const envelope = 1 - t / duration;
+                    // Pop sound
+                    data[i] = Math.sin(2 * Math.PI * 800 * t) * envelope * 0.4;
+                }
+            }
+            return buffer;
+        }
+
+        function generateConsumerConnect() {
+            const duration = 0.8;
+            const sampleRate = audioContext.sampleRate;
+            const buffer = audioContext.createBuffer(2, sampleRate * duration, sampleRate);
+            
+            for (let channel = 0; channel < 2; channel++) {
+                const data = buffer.getChannelData(channel);
+                for (let i = 0; i < data.length; i++) {
+                    const t = i / sampleRate;
+                    // Connection sound: low to high
+                    const freq = 200 + 600 * (t / duration);
+                    data[i] = Math.sin(2 * Math.PI * freq * t) * 0.3;
+                }
+            }
+            return buffer;
+        }
+
+        function generateMessageProcess() {
+            const duration = 0.3;
+            const sampleRate = audioContext.sampleRate;
+            const buffer = audioContext.createBuffer(2, sampleRate * duration, sampleRate);
+            
+            for (let channel = 0; channel < 2; channel++) {
+                const data = buffer.getChannelData(channel);
+                for (let i = 0; i < data.length; i++) {
+                    const t = i / sampleRate;
+                    // Quick blip
+                    const envelope = Math.exp(-t * 20);
+                    data[i] = Math.sin(2 * Math.PI * 1000 * t) * envelope * 0.3;
+                }
+            }
+            return buffer;
+        }
+
+        function generateErrorBuzz() {
+            const duration = 1;
+            const sampleRate = audioContext.sampleRate;
+            const buffer = audioContext.createBuffer(2, sampleRate * duration, sampleRate);
+            
+            for (let channel = 0; channel < 2; channel++) {
+                const data = buffer.getChannelData(channel);
+                for (let i = 0; i < data.length; i++) {
+                    const t = i / sampleRate;
+                    // Harsh buzz
+                    data[i] = (Math.sin(2 * Math.PI * 100 * t) + 
+                              Math.sin(2 * Math.PI * 101 * t)) * 0.2;
+                }
+            }
+            return buffer;
+        }
+
+        function generateSuccessChime() {
+            const duration = 1.2;
+            const sampleRate = audioContext.sampleRate;
+            const buffer = audioContext.createBuffer(2, sampleRate * duration, sampleRate);
+            
+            for (let channel = 0; channel < 2; channel++) {
+                const data = buffer.getChannelData(channel);
+                for (let i = 0; i < data.length; i++) {
+                    const t = i / sampleRate;
+                    const envelope = Math.exp(-t * 2);
+                    // Major chord arpeggio
+                    const note = t < 0.4 ? 523.25 : t < 0.8 ? 659.25 : 783.99;
+                    data[i] = Math.sin(2 * Math.PI * note * t) * envelope * 0.3;
+                }
+            }
+            return buffer;
+        }
+
+        function generateCrisisAlarm() {
+            const duration = 3;
+            const sampleRate = audioContext.sampleRate;
+            const buffer = audioContext.createBuffer(2, sampleRate * duration, sampleRate);
+            
+            for (let channel = 0; channel < 2; channel++) {
+                const data = buffer.getChannelData(channel);
+                for (let i = 0; i < data.length; i++) {
+                    const t = i / sampleRate;
+                    // Alternating tones
+                    const freq = Math.floor(t * 2) % 2 === 0 ? 800 : 600;
+                    data[i] = Math.sin(2 * Math.PI * freq * t) * 0.4;
+                }
+            }
+            return buffer;
+        }
+
+        function generateBreakthrough() {
+            const duration = 2.5;
+            const sampleRate = audioContext.sampleRate;
+            const buffer = audioContext.createBuffer(2, sampleRate * duration, sampleRate);
+            
+            for (let channel = 0; channel < 2; channel++) {
+                const data = buffer.getChannelData(channel);
+                for (let i = 0; i < data.length; i++) {
+                    const t = i / sampleRate;
+                    // Epic rising sound
+                    const freq = 100 + 400 * (t / duration);
+                    const envelope = t < 2 ? t / 2 : 2 - t;
+                    data[i] = Math.sin(2 * Math.PI * freq * t) * envelope * 0.5;
+                }
+            }
+            return buffer;
+        }
+
+        function generateImpactBoom() {
+            const duration = 1.5;
+            const sampleRate = audioContext.sampleRate;
+            const buffer = audioContext.createBuffer(2, sampleRate * duration, sampleRate);
+            
+            for (let channel = 0; channel < 2; channel++) {
+                const data = buffer.getChannelData(channel);
+                for (let i = 0; i < data.length; i++) {
+                    const t = i / sampleRate;
+                    // Deep boom
+                    const envelope = Math.exp(-t * 3);
+                    const freq = 50 + 20 * Math.sin(2 * Math.PI * 5 * t);
+                    data[i] = Math.sin(2 * Math.PI * freq * t) * envelope * 0.6;
+                }
+            }
+            return buffer;
+        }
+
+        function downloadSound(buffer, filename) {
+            // Convert buffer to WAV
+            const wav = audioBufferToWav(buffer);
+            const blob = new Blob([wav], { type: 'audio/wav' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${filename}.wav`;
+            a.click();
+            
+            URL.revokeObjectURL(url);
+        }
+
+        // Convert AudioBuffer to WAV format
+        function audioBufferToWav(buffer) {
+            const numChannels = buffer.numberOfChannels;
+            const sampleRate = buffer.sampleRate;
+            const format = 1; // PCM
+            const bitDepth = 16;
+            
+            const bytesPerSample = bitDepth / 8;
+            const blockAlign = numChannels * bytesPerSample;
+            
+            const data = [];
+            for (let i = 0; i < buffer.length; i++) {
+                for (let channel = 0; channel < numChannels; channel++) {
+                    const sample = buffer.getChannelData(channel)[i];
+                    const value = sample < 0 ? sample * 0x8000 : sample * 0x7FFF;
+                    data.push(value);
+                }
+            }
+            
+            const length = data.length * bytesPerSample;
+            const arrayBuffer = new ArrayBuffer(44 + length);
+            const view = new DataView(arrayBuffer);
+            
+            // WAV header
+            const writeString = (offset, string) => {
+                for (let i = 0; i < string.length; i++) {
+                    view.setUint8(offset + i, string.charCodeAt(i));
+                }
+            };
+            
+            writeString(0, 'RIFF');
+            view.setUint32(4, 36 + length, true);
+            writeString(8, 'WAVE');
+            writeString(12, 'fmt ');
+            view.setUint32(16, 16, true);
+            view.setUint16(20, format, true);
+            view.setUint16(22, numChannels, true);
+            view.setUint32(24, sampleRate, true);
+            view.setUint32(28, sampleRate * blockAlign, true);
+            view.setUint16(32, blockAlign, true);
+            view.setUint16(34, bitDepth, true);
+            writeString(36, 'data');
+            view.setUint32(40, length, true);
+            
+            // Write samples
+            let offset = 44;
+            for (const sample of data) {
+                view.setInt16(offset, sample, true);
+                offset += 2;
+            }
+            
+            return arrayBuffer;
+        }
+    </script>
+</body>
+</html>

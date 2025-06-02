@@ -1,124 +1,305 @@
-import React, { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import {
+  CinematicTitle,
+  Timeline,
+  ParticleBackground,
+  SceneTransition
+} from '../StorytellingComponents';
+import {
+  getTextRevealStyle,
+  getTimeBasedValue
+} from '../../utils/animationHelpers';
+import { getStaggeredDelay } from '../../utils/storytellingHelpers';
 
 const EvolutionTimelineScene = ({ time, duration }) => {
-  const [timelineProgress, setTimelineProgress] = useState(0);
+  // Scene phases for storytelling
+  const phases = {
+    intro: { start: 0, duration: 3 },
+    timeline: { start: 3, duration: 20 },
+    conclusion: { start: 23, duration: 7 }
+  };
+  
   const progress = (time / duration) * 100;
   
+  // Kafka evolution milestones with enhanced storytelling
   const milestones = [
-    { year: '2011', version: 'Kafka 0.1', desc: 'Initial Release', color: 'bg-blue-600', icon: '🚀' },
-    { year: '2014', version: 'Kafka 0.8', desc: 'Consumer Groups', color: 'bg-green-600', icon: '👥' },
-    { year: '2018', version: 'Kafka 2.0', desc: 'Exactly-once', color: 'bg-purple-600', icon: '🛡️' },
-    { year: '2023', version: 'Kafka 3.4', desc: 'KRaft Mode', color: 'bg-yellow-600', icon: '⚙️' },
-    { year: '2025', version: 'Kafka 4.0', desc: 'Share Groups', color: 'bg-red-600', icon: '⭐' }
+    {
+      date: '2011',
+      title: 'The Beginning',
+      description: 'LinkedIn creates Kafka to handle 1 billion events/day',
+      icon: '🌱',
+      version: '0.6',
+      impact: 'Birth of distributed streaming',
+      color: 'from-blue-600 to-blue-400'
+    },
+    {
+      date: '2014',
+      title: 'Going Mainstream',
+      description: 'Kafka becomes Apache top-level project',
+      icon: '🚀',
+      version: '0.8',
+      impact: 'Enterprise adoption begins',
+      color: 'from-purple-600 to-purple-400'
+    },
+    {
+      date: '2017',
+      title: 'Streaming Revolution',
+      description: 'Kafka Streams and exactly-once semantics',
+      icon: '⚡',
+      version: '1.0',
+      impact: 'Real-time processing unleashed',
+      color: 'from-green-600 to-green-400'
+    },
+    {
+      date: '2022',
+      title: 'Cloud Native Era',
+      description: 'KRaft consensus protocol replaces ZooKeeper',
+      icon: '☁️',
+      version: '3.0',
+      impact: 'Simplified operations at scale',
+      color: 'from-orange-600 to-orange-400'
+    },
+    {
+      date: '2025',
+      title: 'Share Groups Launch',
+      description: 'Revolutionary concurrent consumption within partitions',
+      icon: '🎯',
+      version: '4.0',
+      impact: 'The future of streaming is here',
+      color: 'from-red-600 to-pink-400'
+    }
   ];
-
-  // Animate timeline progress
-  useEffect(() => {
-    if (time > 2) {
-      const targetProgress = Math.min(((time - 2) / 5) * 100, 100);
-      setTimelineProgress(targetProgress);
-    }
-  }, [time]);
-
-  const getMilestoneVisibility = (index) => {
-    const delay = index * 1.5;
-    return time > delay ? 1 : 0;
-  };
-
-  const getMilestoneScale = (index) => {
-    const delay = index * 1.5;
-    if (time <= delay) return 0.3;
-    const elapsed = time - delay;
-    if (elapsed < 0.5) {
-      return 0.3 + (elapsed / 0.5) * 0.7;
-    }
-    return 1;
-  };
-
-  return (
-    <div className="w-full h-full bg-gradient-to-br from-gray-900 via-black to-gray-900 flex items-center justify-center p-8">
-      <div className="w-full max-w-7xl">
-        {/* Title */}
-        <div className="text-center mb-16" style={{ opacity: Math.min(time * 0.5, 1) }}>
-          <h1 className="text-6xl font-black mb-4 bg-gradient-to-r from-red-500 to-orange-500 bg-clip-text text-transparent">
-            The Evolution of Apache Kafka
-          </h1>
-          <p className="text-2xl text-gray-400">From Consumer Groups to Share Groups Revolution</p>
-        </div>
-
-        {/* Timeline Container */}
-        <div className="relative">
-          {/* Timeline Bar */}
-          <div className="h-1 bg-gray-700 rounded-full mb-24 overflow-hidden">
-            <div 
-              className="h-full bg-gradient-to-r from-blue-600 via-purple-600 to-red-600 rounded-full transition-all duration-1000 ease-out"
-              style={{ 
-                width: `${timelineProgress}%`,
-                boxShadow: '0 0 20px rgba(229, 9, 20, 0.6)'
-              }}
-            />
-          </div>
-
-          {/* Milestones */}
-          <div className="grid grid-cols-5 gap-8">
-            {milestones.map((milestone, index) => (
-              <div 
-                key={index} 
-                className="text-center"
-                style={{
-                  opacity: getMilestoneVisibility(index),
-                  transform: `scale(${getMilestoneScale(index)})`,
-                  transition: 'all 0.5s ease-out'
-                }}
-              >
-                {/* Node */}
-                <div className={`w-24 h-24 ${milestone.color} rounded-2xl mx-auto mb-4 flex items-center justify-center shadow-2xl transform hover:scale-110 transition-transform`}>
-                  <span className="text-3xl">{milestone.icon}</span>
-                </div>
-                
-                {/* Info */}
-                <div className="space-y-1">
-                  <div className="text-lg font-bold text-white">{milestone.year}</div>
-                  <div className="text-xl font-black text-gray-200">{milestone.version}</div>
-                  <div className="text-sm text-gray-500">{milestone.desc}</div>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Breakthrough Callout */}
-          {time > 8 && (
-            <div 
-              className="absolute top-0 right-0 bg-black/80 backdrop-blur-lg rounded-2xl p-6 border border-red-600/30 max-w-xs"
-              style={{
-                opacity: Math.min((time - 8) * 0.5, 1),
-                transform: `translateY(${Math.max(0, 10 - (time - 8) * 5)}px)`
-              }}
+  
+  // Calculate active milestone based on time
+  const activeMilestoneIndex = Math.floor(
+    getTimeBasedValue(time, phases.timeline.start, phases.timeline.duration, 0, milestones.length)
+  );
+  
+  // Milestone Card Component
+  const MilestoneCard = ({ milestone, index, isActive, isPast }) => {
+    const cardDelay = phases.timeline.start + index * 3;
+    const isVisible = time >= cardDelay;
+    
+    return (
+      <motion.div
+        className="relative"
+        initial={{ opacity: 0, x: index % 2 === 0 ? -100 : 100 }}
+        animate={{ 
+          opacity: isVisible ? 1 : 0,
+          x: isVisible ? 0 : (index % 2 === 0 ? -100 : 100)
+        }}
+        transition={{ duration: 0.8, type: "spring", damping: 20 }}
+      >
+        {/* Connection Line */}
+        {index < milestones.length - 1 && (
+          <motion.div
+            className="absolute top-1/2 left-1/2 w-full h-0.5 -translate-y-1/2"
+            style={{ left: index % 2 === 0 ? '50%' : 'auto', right: index % 2 === 1 ? '50%' : 'auto' }}
+            initial={{ scaleX: 0 }}
+            animate={{ scaleX: isPast || isActive ? 1 : 0 }}
+            transition={{ duration: 1, delay: 0.5 }}
+          >
+            <div className={`h-full bg-gradient-to-r ${milestone.color}`} />
+          </motion.div>
+        )}
+        
+        {/* Milestone Node */}
+        <motion.div
+          className={`relative z-10 bg-gray-900/80 backdrop-blur-lg rounded-2xl p-8 border-2 transition-all duration-500 ${
+            isActive ? 'border-white scale-105' : isPast ? 'border-gray-600' : 'border-gray-800'
+          }`}
+          whileHover={{ scale: 1.05, boxShadow: '0 20px 40px rgba(0,0,0,0.4)' }}
+        >
+          {/* Year Badge */}
+          <motion.div
+            className={`absolute -top-4 ${index % 2 === 0 ? '-left-4' : '-right-4'} px-4 py-2 rounded-full bg-gradient-to-r ${milestone.color} text-white font-bold`}
+            animate={isActive ? { scale: [1, 1.1, 1] } : {}}
+            transition={{ duration: 2, repeat: Infinity }}
+          >
+            {milestone.date}
+          </motion.div>
+          
+          {/* Content */}
+          <div className="space-y-4">
+            <motion.div 
+              className="text-5xl"
+              animate={isActive ? { rotate: [0, -10, 10, -10, 0] } : {}}
+              transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
             >
-              <div className="flex items-center mb-3">
-                <span className="text-2xl mr-3">💡</span>
-                <div className="font-bold text-red-500">Game Changer</div>
+              {milestone.icon}
+            </motion.div>
+            
+            <div>
+              <h3 className="text-2xl font-bold mb-1">{milestone.title}</h3>
+              <p className="text-gray-400 mb-2">{milestone.description}</p>
+              
+              <div className="flex items-center gap-4 mt-4">
+                <span className={`px-3 py-1 rounded-full text-sm font-semibold bg-gradient-to-r ${milestone.color} text-white`}>
+                  v{milestone.version}
+                </span>
+                <span className="text-sm text-gray-500">{milestone.impact}</span>
               </div>
-              <p className="text-sm text-gray-300">
-                Share Groups solve the fundamental scalability constraint that has limited Kafka for over a decade.
-              </p>
             </div>
+          </div>
+          
+          {/* Active Indicator */}
+          {isActive && (
+            <motion.div
+              className="absolute inset-0 rounded-2xl pointer-events-none"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: [0, 0.3, 0] }}
+              transition={{ duration: 2, repeat: Infinity }}
+            >
+              <div className={`w-full h-full rounded-2xl bg-gradient-to-r ${milestone.color}`} />
+            </motion.div>
           )}
+        </motion.div>
+      </motion.div>
+    );
+  };
+  
+  return (
+    <div className="scene-container">
+      {/* Dynamic Background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-indigo-900 via-black to-purple-900" />
+      <div className="absolute inset-0 bg-tech-grid opacity-10" />
+      <ParticleBackground 
+        particleCount={40} 
+        colors={['#4338ca', '#8b5cf6', '#3b82f6']} 
+      />
+      
+      {/* Content */}
+      <div className="relative z-10 h-full flex items-center justify-center p-8">
+        <div className="w-full max-w-7xl">
+          
+          {/* Phase 1: Introduction */}
+          <SceneTransition isActive={time >= phases.intro.start && time < phases.timeline.start}>
+            <div className="text-center">
+              <CinematicTitle
+                title="The Evolution of Kafka"
+                subtitle="From Message Queue to Streaming Platform"
+                time={time}
+                startTime={phases.intro.start}
+              />
+              
+              <motion.div
+                className="mt-8 max-w-3xl mx-auto"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: time > 1.5 ? 1 : 0, y: time > 1.5 ? 0 : 20 }}
+                transition={{ duration: 0.8 }}
+              >
+                <p className="text-xl text-gray-300">
+                  Join us on a journey through time as we explore how Apache Kafka transformed
+                  from a simple messaging system into the backbone of modern data infrastructure
+                </p>
+              </motion.div>
+            </div>
+          </SceneTransition>
+          
+          {/* Phase 2: Timeline Journey */}
+          <SceneTransition isActive={time >= phases.timeline.start && time < phases.conclusion.start}>
+            <div className="space-y-16">
+              <motion.h2 
+                className="text-4xl font-bold text-center mb-12"
+                style={getTextRevealStyle(time, phases.timeline.start, 1)}
+              >
+                A Decade of Innovation
+              </motion.h2>
+              
+              {/* Timeline Container */}
+              <div className="relative">
+                {/* Timeline Path */}
+                <motion.div
+                  className="absolute left-1/2 top-0 bottom-0 w-1 bg-gradient-to-b from-blue-600 via-purple-600 to-red-600 -translate-x-1/2"
+                  initial={{ scaleY: 0 }}
+                  animate={{ scaleY: 1 }}
+                  transition={{ duration: 2, ease: "easeInOut" }}
+                  style={{ transformOrigin: 'top' }}
+                />
+                
+                {/* Milestones */}
+                <div className="space-y-24">
+                  {milestones.map((milestone, index) => (
+                    <div
+                      key={milestone.date}
+                      className={`flex ${index % 2 === 0 ? 'justify-start' : 'justify-end'}`}
+                    >
+                      <div className="w-5/12">
+                        <MilestoneCard
+                          milestone={milestone}
+                          index={index}
+                          isActive={index === activeMilestoneIndex}
+                          isPast={index < activeMilestoneIndex}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </SceneTransition>
+          
+          {/* Phase 3: Conclusion */}
+          <SceneTransition isActive={time >= phases.conclusion.start}>
+            <motion.div 
+              className="text-center space-y-8"
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ type: "spring", damping: 10 }}
+            >
+              <motion.div
+                animate={{ 
+                  scale: [1, 1.05, 1],
+                  rotate: [0, 1, -1, 0]
+                }}
+                transition={{ duration: 4, repeat: Infinity }}
+              >
+                <h2 className="text-6xl font-black bg-gradient-to-r from-blue-400 via-purple-400 to-red-400 bg-clip-text text-transparent">
+                  14 Years of Excellence
+                </h2>
+              </motion.div>
+              
+              <p className="text-2xl text-gray-300 max-w-3xl mx-auto">
+                From handling billions to trillions of events, Kafka continues to push the boundaries
+                of what's possible in distributed systems
+              </p>
+              
+              <motion.div
+                className="pt-8"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.5 }}
+              >
+                <div className="inline-flex items-center gap-8">
+                  <div className="text-center">
+                    <div className="text-4xl font-bold text-blue-400">80%</div>
+                    <div className="text-sm text-gray-400">Fortune 100</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-4xl font-bold text-purple-400">7T+</div>
+                    <div className="text-sm text-gray-400">Messages/Day</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-4xl font-bold text-red-400">∞</div>
+                    <div className="text-sm text-gray-400">Possibilities</div>
+                  </div>
+                </div>
+              </motion.div>
+            </motion.div>
+          </SceneTransition>
         </div>
-
-        {/* Progress Bar */}
-        <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 w-96">
-          <div className="h-1 bg-gray-800 rounded-full overflow-hidden">
-            <div 
-              className="h-full bg-gradient-to-r from-red-600 to-orange-600 rounded-full transition-all duration-300"
-              style={{ width: `${progress}%` }}
-            />
-          </div>
-          <div className="flex justify-between mt-2 text-xs text-gray-500">
-            <span>Scene Progress</span>
-            <span>{Math.round(progress)}%</span>
-          </div>
-        </div>
+      </div>
+      
+      {/* Progress Indicator */}
+      <div className="progress-story">
+        <motion.div 
+          className="progress-story-fill"
+          style={{ width: `${progress}%` }}
+          initial={{ width: 0 }}
+          animate={{ width: `${progress}%` }}
+          transition={{ duration: 0.3 }}
+        />
       </div>
     </div>
   );

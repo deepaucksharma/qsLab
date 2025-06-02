@@ -1,5 +1,6 @@
 import React from 'react'
 import { Info } from 'lucide-react'
+import logger from '../utils/logger'
 
 class EpisodeErrorBoundary extends React.Component {
   constructor(props) {
@@ -12,6 +13,13 @@ class EpisodeErrorBoundary extends React.Component {
   }
 
   componentDidCatch(error, errorInfo) {
+    logger.error('Episode playback error caught by boundary', {
+      error: error.toString(),
+      errorMessage: error.message,
+      errorStack: error.stack,
+      componentStack: errorInfo.componentStack
+    })
+    
     console.error('Episode Error:', error, errorInfo)
     this.setState({
       error,

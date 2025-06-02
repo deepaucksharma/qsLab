@@ -52,7 +52,7 @@ const InteractiveStateMachine = ({ onComplete }) => {
         <div 
           className="inline-block text-5xl font-bold p-8 rounded-2xl"
           style={{ 
-            backgroundColor: states[currentState].color + '20',
+            backgroundColor: `${states[currentState].color  }20`,
             color: states[currentState].color,
             border: `3px solid ${states[currentState].color}`
           }}
@@ -69,7 +69,7 @@ const InteractiveStateMachine = ({ onComplete }) => {
             onClick={() => handleTransition(nextState)}
             className="px-6 py-3 rounded-lg font-semibold transition-all"
             style={{
-              backgroundColor: states[nextState].color + '20',
+              backgroundColor: `${states[nextState].color  }20`,
               color: states[nextState].color,
               border: `2px solid ${states[nextState].color}`
             }}
@@ -87,7 +87,7 @@ const InteractiveStateMachine = ({ onComplete }) => {
               key={idx}
               className="px-3 py-1 rounded text-sm"
               style={{ 
-                backgroundColor: states[state].color + '30',
+                backgroundColor: `${states[state].color  }30`,
                 color: states[state].color
               }}
             >

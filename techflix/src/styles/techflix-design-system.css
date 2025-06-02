@@ -1,0 +1,481 @@
+/* TechFlix Design System - Cinematic Technical Storytelling */
+
+/* ========================================
+   1. CSS VARIABLES & DESIGN TOKENS
+   ======================================== */
+
+:root {
+  /* Brand Colors */
+  --techflix-red: #e50914;
+  --techflix-black: #141414;
+  --techflix-white: #ffffff;
+  --techflix-gray: #808080;
+  
+  /* Semantic Colors for Technical Content */
+  --color-problem: #ef4444;
+  --color-solution: #10b981;
+  --color-neutral: #6366f1;
+  --color-warning: #f59e0b;
+  --color-info: #3b82f6;
+  --color-code: #818cf8;
+  
+  /* Gradient Presets */
+  --gradient-epic: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --gradient-tech: linear-gradient(135deg, #4338ca 0%, #3b82f6 50%, #06b6d4 100%);
+  --gradient-success: linear-gradient(135deg, #10b981 0%, #46d369 100%);
+  --gradient-danger: linear-gradient(135deg, #ef4444 0%, #f59e0b 100%);
+  --gradient-dark: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  
+  /* Typography Scale */
+  --text-hero: clamp(3rem, 8vw, 6rem);
+  --text-title: clamp(2rem, 5vw, 4rem);
+  --text-subtitle: clamp(1.5rem, 3vw, 2.5rem);
+  --text-body: clamp(1rem, 2vw, 1.25rem);
+  --text-small: 0.875rem;
+  
+  /* Spacing System */
+  --space-xs: 0.5rem;
+  --space-sm: 1rem;
+  --space-md: 2rem;
+  --space-lg: 4rem;
+  --space-xl: 8rem;
+  
+  /* Animation Timing */
+  --ease-out-expo: cubic-bezier(0.19, 1, 0.22, 1);
+  --ease-in-out-expo: cubic-bezier(0.87, 0, 0.13, 1);
+  --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  
+  /* Scene Transitions */
+  --scene-fade: 0.5s;
+  --element-appear: 0.8s;
+  --text-reveal: 1s;
+  --particle-float: 3s;
+}
+
+/* ========================================
+   2. STORYTELLING ANIMATION PRIMITIVES
+   ======================================== */
+
+/* Text Reveal Animations */
+@keyframes textReveal {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+    filter: blur(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
+@keyframes typewriter {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+@keyframes glitch {
+  0%, 100% { transform: translate(0); }
+  20% { transform: translate(-2px, 2px); }
+  40% { transform: translate(-2px, -2px); }
+  60% { transform: translate(2px, 2px); }
+  80% { transform: translate(2px, -2px); }
+}
+
+/* Visual Effect Animations */
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 20px rgba(99, 102, 241, 0.6); }
+  50% { box-shadow: 0 0 40px rgba(99, 102, 241, 0.8), 0 0 60px rgba(99, 102, 241, 0.4); }
+}
+
+@keyframes dataFlow {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 1;
+  }
+}
+
+@keyframes circuitPath {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Particle System - Disabled for cleaner experience */
+@keyframes floatParticle {
+  /* Particles disabled - use static elements instead */
+  0%, 100% { opacity: 0; }
+}
+
+/* ========================================
+   3. SCENE COMPOSITION CLASSES
+   ======================================== */
+
+/* Scene Container */
+.scene-container {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  background: var(--gradient-dark);
+}
+
+/* Cinematic Backgrounds - Static for better focus */
+.bg-tech-grid {
+  background-image: 
+    repeating-linear-gradient(0deg, transparent, transparent 49px, rgba(99, 102, 241, 0.05) 49px, rgba(99, 102, 241, 0.05) 50px),
+    repeating-linear-gradient(90deg, transparent, transparent 49px, rgba(99, 102, 241, 0.05) 49px, rgba(99, 102, 241, 0.05) 50px);
+  background-size: 50px 50px;
+  /* Animation removed - static grid is less distracting */
+}
+
+/* Removed distracting scroll animation */
+
+.bg-code-rain {
+  background: linear-gradient(0deg, rgba(0,0,0,0.8) 0%, transparent 100%);
+}
+
+.bg-code-rain::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Ctext x='20' y='20' font-family='monospace' font-size='10' fill='%2310b981' opacity='0.3' text-anchor='middle'%3E01%3C/text%3E%3C/svg%3E");
+  animation: codeRain 10s linear infinite;
+}
+
+@keyframes codeRain {
+  from { transform: translateY(-100%); }
+  to { transform: translateY(100%); }
+}
+
+/* ========================================
+   4. TECHNICAL CONTENT COMPONENTS
+   ======================================== */
+
+/* Code Block Styling */
+.code-block {
+  position: relative;
+  background: rgba(15, 23, 42, 0.9);
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  font-family: 'Fira Code', monospace;
+  overflow: hidden;
+}
+
+.code-block::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--gradient-tech);
+  animation: scanline 2s ease-in-out infinite;
+}
+
+@keyframes scanline {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* Architecture Diagram Components */
+.architecture-node {
+  position: relative;
+  background: rgba(30, 41, 59, 0.8);
+  border: 2px solid currentColor;
+  border-radius: 0.5rem;
+  padding: 1rem 2rem;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s var(--ease-out-expo);
+}
+
+.architecture-node:hover {
+  transform: translateY(-5px) scale(1.05);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+.data-flow-line {
+  stroke: var(--color-info);
+  stroke-width: 2;
+  fill: none;
+  stroke-dasharray: 5, 5;
+  animation: flowPath 1s linear infinite;
+}
+
+@keyframes flowPath {
+  from { stroke-dashoffset: 10; }
+  to { stroke-dashoffset: 0; }
+}
+
+/* Metric Cards */
+.metric-card {
+  position: relative;
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 1rem;
+  padding: 2rem;
+  overflow: hidden;
+}
+
+.metric-value {
+  font-size: var(--text-hero);
+  font-weight: 900;
+  background: var(--gradient-tech);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: countUp 2s var(--ease-out-expo) forwards;
+}
+
+@keyframes countUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* ========================================
+   5. INTERACTIVE ELEMENTS
+   ======================================== */
+
+/* Interactive Buttons */
+.btn-interactive {
+  position: relative;
+  background: var(--gradient-tech);
+  color: white;
+  padding: 1rem 2rem;
+  border: none;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  overflow: hidden;
+  transition: all 0.3s var(--ease-out-expo);
+}
+
+.btn-interactive::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.btn-interactive:hover::before {
+  width: 300px;
+  height: 300px;
+}
+
+/* Terminal Interface */
+.terminal {
+  background: #0a0a0a;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  font-family: 'Fira Code', monospace;
+  position: relative;
+  overflow: hidden;
+}
+
+.terminal::before {
+  content: '● ● ●';
+  position: absolute;
+  top: 0.5rem;
+  left: 1rem;
+  color: #ef4444;
+  font-size: 0.75rem;
+  letter-spacing: 0.5rem;
+}
+
+.terminal-line {
+  margin-top: 2rem;
+  animation: terminalType 0.1s steps(1) forwards;
+  animation-delay: calc(var(--index) * 0.1s);
+  opacity: 0;
+}
+
+@keyframes terminalType {
+  to { opacity: 1; }
+}
+
+/* ========================================
+   6. SCENE TRANSITIONS
+   ======================================== */
+
+/* Fade Transitions */
+.fade-in {
+  animation: fadeIn var(--scene-fade) var(--ease-out-expo) forwards;
+}
+
+.fade-out {
+  animation: fadeOut var(--scene-fade) var(--ease-out-expo) forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+/* Slide Transitions */
+.slide-up {
+  animation: slideUp var(--element-appear) var(--ease-out-expo) forwards;
+}
+
+.slide-down {
+  animation: slideDown var(--element-appear) var(--ease-out-expo) forwards;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes slideDown {
+  from { transform: translateY(-100px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* Scale Transitions */
+.scale-in {
+  animation: scaleIn var(--element-appear) var(--ease-spring) forwards;
+}
+
+@keyframes scaleIn {
+  from { transform: scale(0); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+/* ========================================
+   7. STORYTELLING UTILITIES
+   ======================================== */
+
+/* Chapter Markers */
+.chapter-marker {
+  position: relative;
+  padding-left: 3rem;
+}
+
+.chapter-marker::before {
+  content: attr(data-chapter);
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 2rem;
+  height: 2rem;
+  background: var(--gradient-tech);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: white;
+}
+
+/* Progress Indicators */
+.progress-story {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.progress-story-fill {
+  height: 100%;
+  background: var(--gradient-tech);
+  transition: width 0.3s var(--ease-out-expo);
+}
+
+/* Narrative Text */
+.narrative-text {
+  font-size: var(--text-subtitle);
+  line-height: 1.6;
+  max-width: 800px;
+  margin: 0 auto;
+  animation: textReveal var(--text-reveal) var(--ease-out-expo) forwards;
+}
+
+/* ========================================
+   8. RESPONSIVE ADAPTATIONS
+   ======================================== */
+
+@media (max-width: 768px) {
+  :root {
+    --space-lg: 2rem;
+    --space-xl: 4rem;
+  }
+  
+  .architecture-node {
+    padding: 0.75rem 1.5rem;
+  }
+  
+  .metric-card {
+    padding: 1.5rem;
+  }
+}
+
+/* ========================================
+   9. ACCESSIBILITY ENHANCEMENTS
+   ======================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Focus Styles */
+*:focus-visible {
+  outline: 2px solid var(--color-info);
+  outline-offset: 2px;
+}
+
+/* ========================================
+   10. SPECIAL EFFECTS
+   ======================================== */
+
+/* Holographic Effect */
+.holographic {
+  background: linear-gradient(45deg, #ff006e, #8338ec, #3a86ff);
+  background-size: 200% 200%;
+  animation: holographicShift 3s ease-in-out infinite;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+@keyframes holographicShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Matrix Effect */
+.matrix-text {
+  font-family: 'Courier New', monospace;
+  color: #10b981;
+  text-shadow: 0 0 10px #10b981;
+  animation: matrixFlicker 0.1s infinite alternate;
+}
+
+@keyframes matrixFlicker {
+  from { opacity: 0.8; }
+  to { opacity: 1; }
+}

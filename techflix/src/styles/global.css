@@ -1,3 +1,8 @@
+/* Import design systems */
+@import './techflix-design-system.css';
+@import './techflix-cinematic-v2.css';
+@import './soundControl.css';
+
 /* Global Styles */
 * {
   margin: 0;
@@ -7,8 +12,8 @@
 
 body {
   font-family: 'Helvetica Neue', Arial, sans-serif;
-  background-color: #141414;
-  color: white;
+  background-color: var(--techflix-black);
+  color: var(--techflix-white);
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -37,7 +42,7 @@ body {
 .netflix-loader {
   width: 60px;
   height: 60px;
-  border: 3px solid #E50914;
+  border: 3px solid var(--techflix-red);
   border-radius: 50%;
   display: inline-block;
   position: relative;
@@ -53,7 +58,7 @@ body {
   height: 40px;
   border-radius: 50%;
   border: 3px solid transparent;
-  border-bottom-color: #E50914;
+  border-bottom-color: var(--techflix-red);
 }
 @keyframes rotation {
   0% { transform: rotate(0deg); }
@@ -86,7 +91,7 @@ body {
 .logo {
   font-size: 30px;
   font-weight: bold;
-  color: #e50914;
+  color: var(--techflix-red);
   text-decoration: none;
   cursor: pointer;
   transition: color 0.2s;
@@ -225,11 +230,12 @@ body {
 }
 
 .hero-title {
-  font-size: 56px;
+  font-size: var(--text-hero);
   font-weight: 800;
   margin-bottom: 20px;
   line-height: 1.1;
   text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+  animation: textReveal 1s var(--ease-out-expo) forwards;
 }
 
 .hero-meta {
@@ -241,16 +247,18 @@ body {
 }
 
 .hero-rating {
-  color: #46d369;
+  color: var(--color-solution);
   font-weight: bold;
 }
 
 .hero-description {
-  font-size: 20px;
+  font-size: var(--text-body);
   line-height: 1.6;
   margin-bottom: 30px;
   color: #e5e5e5;
   text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
+  animation: textReveal 1.2s var(--ease-out-expo) 0.2s forwards;
+  opacity: 0;
 }
 
 .hero-buttons {
@@ -355,9 +363,10 @@ body {
 }
 
 .episode-card:hover {
-  transform: translateY(-5px);
+  transform: translateY(-5px) scale(1.02);
   box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-  border-color: #e50914;
+  border-color: var(--techflix-red);
+  transition: all 0.3s var(--ease-out-expo);
 }
 
 .episode-thumbnail {
@@ -449,7 +458,7 @@ body {
 
 .episode-tag {
   background: rgba(229, 9, 20, 0.2);
-  color: #e50914;
+  color: var(--techflix-red);
   padding: 4px 10px;
   border-radius: 4px;
   font-size: 12px;
@@ -552,7 +561,7 @@ body {
 
 /* High-quality gradients */
 .gradient-text {
-  background: linear-gradient(135deg, #E50914 0%, #FF6B6B 50%, #FFA500 100%);
+  background: var(--gradient-danger);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -566,12 +575,12 @@ body {
 
 /* Premium button styles */
 .netflix-button {
-  background: #E50914;
-  color: white;
+  background: var(--techflix-red);
+  color: var(--techflix-white);
   padding: 12px 24px;
   border-radius: 4px;
   font-weight: 600;
-  transition: all 0.2s ease;
+  transition: all 0.2s var(--ease-out-expo);
   box-shadow: 0 2px 8px rgba(229, 9, 20, 0.3);
   border: none;
   cursor: pointer;
