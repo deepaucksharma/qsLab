@@ -25,13 +25,13 @@
 
 ## 🟡 Medium Priority Bugs (8) - Open
 
-### BUG-003: Text Contrast Below WCAG AA
+### BUG-003: Low Text Contrast
 - **Severity**: Medium
 - **Component**: Global styles
-- **Issue**: Muted text (#737373) has 4.2:1 contrast ratio
-- **Required**: 4.5:1 for WCAG AA compliance
+- **Issue**: Muted text (#737373) has low contrast ratio
+- **Required**: Better readability needed
 - **Fix**: Change to #999999
-- **Impact**: Accessibility compliance
+- **Impact**: Text readability
 ```css
 /* Current */
 --color-text-muted: #737373; /* 4.2:1 */
@@ -40,11 +40,11 @@
 --color-text-muted: #999999; /* 5.9:1 ✅ */
 ```
 
-### BUG-004: Touch Targets Below 44px Minimum
+### BUG-004: Small Touch Targets
 - **Severity**: Medium
 - **Component**: Player controls, buttons
 - **Issue**: Buttons use p-2 (8px) = 32-36px total
-- **Required**: 44px minimum for WCAG 2.5.5
+- **Required**: 44px minimum for better mobile UX
 - **Fix**: Increase to p-3 (12px)
 - **Impact**: Mobile usability
 ```jsx
@@ -55,15 +55,15 @@
 <button className="p-3"> /* 44-48px ✅ */
 ```
 
-### BUG-005: Missing ARIA Live Regions
+### BUG-005: Dynamic Content Updates Not Announced
 - **Severity**: Medium
 - **Component**: Dynamic content areas
-- **Issue**: Screen readers miss updates
-- **Fix**: Add aria-live="polite" to dynamic regions
-- **Impact**: Screen reader users
+- **Issue**: Content updates not clearly indicated
+- **Fix**: Add visual indicators for updates
+- **Impact**: User awareness of changes
 ```jsx
-/* Add to dynamic content */
-<div aria-live="polite" aria-atomic="true">
+/* Add visual indicator */
+<div className="update-indicator">
   {dynamicContent}
 </div>
 ```
@@ -88,14 +88,14 @@
 - **Component**: Interactive elements
 - **Issue**: Some elements missing focus indicators
 - **Fix**: Apply consistent focus-visible styles
-- **Impact**: Keyboard navigation
+- **Impact**: User interaction clarity
 
 ### BUG-008: High Contrast Mode Not Supported
 - **Severity**: Medium
 - **Component**: Global styles
 - **Issue**: No specific high contrast styles
 - **Fix**: Add @media (prefers-contrast: high)
-- **Impact**: Accessibility users
+- **Impact**: Visual clarity
 
 ### BUG-009: Limited Offline Functionality
 - **Severity**: Medium

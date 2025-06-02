@@ -4,9 +4,10 @@
 **Status:** ✅ PRODUCTION READY
 
 ## Quick Links
-- [Current Test Status](./CURRENT_TEST_STATUS_2025-01-06.md) - Latest test results and metrics
-- [Bug Status Report](./BUG_STATUS_CONSOLIDATED_2025-01-06.md) - All bugs and their current status
-- [Testing Strategy](./TESTING_STRATEGY.md) - Overall testing approach and methodology
+- [Testing Guide](./TESTING_GUIDE.md) - Complete testing reference (Quick Start + Reference)
+- [Test Results](./CONSOLIDATED_TEST_RESULTS.md) - All test results and metrics
+- [Bug Tracking](./CONSOLIDATED_BUG_TRACKING.md) - All bugs and their status
+- [Testing Strategy](./TESTING_STRATEGY.md) - Overall testing approach
 
 ## 🎯 Project Test Status Overview
 
@@ -28,9 +29,10 @@
 ```
 testing/
 ├── README.md                           # This file - main testing hub
-├── CURRENT_TEST_STATUS_2025-01-06.md  # ⭐ Latest test results & metrics
-├── BUG_STATUS_CONSOLIDATED_2025-01-06.md # ⭐ Current bug tracking
-├── TESTING_STRATEGY.md                 # Overall testing approach
+├── TESTING_GUIDE.md                   # ⭐ Complete testing reference
+├── CONSOLIDATED_TEST_RESULTS.md       # ⭐ All test results & metrics
+├── CONSOLIDATED_BUG_TRACKING.md       # ⭐ All bug tracking
+├── TESTING_STRATEGY.md                # Overall testing approach
 │
 ├── docs/                              # Testing documentation
 │   ├── USER_JOURNEYS.md              # User personas & test scenarios
@@ -94,9 +96,9 @@ testing/
 ## 🚀 Quick Start
 
 ### View Current Status
-1. **Test Results:** [CURRENT_TEST_STATUS_2025-01-06.md](./CURRENT_TEST_STATUS_2025-01-06.md)
-2. **Bug Status:** [BUG_STATUS_CONSOLIDATED_2025-01-06.md](./BUG_STATUS_CONSOLIDATED_2025-01-06.md)
-3. **Latest Reports:** Check `manual-testing/regression-exploratory/`
+1. **Testing Guide:** [TESTING_GUIDE.md](./TESTING_GUIDE.md)
+2. **Test Results:** [CONSOLIDATED_TEST_RESULTS.md](./CONSOLIDATED_TEST_RESULTS.md)
+3. **Bug Status:** [CONSOLIDATED_BUG_TRACKING.md](./CONSOLIDATED_BUG_TRACKING.md)
 
 ### Run Tests
 ```bash

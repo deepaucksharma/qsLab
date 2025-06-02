@@ -8,6 +8,7 @@
 manual-testing/
 ├── README.md                    # This file
 ├── MANUAL_TESTING_PLAN.md      # Comprehensive test planning
+├── CONSOLIDATED_TEST_EXECUTION.md  # All test execution results
 ├── functional/                  # Functional test cases
 │   ├── TC001-TC003_*.md       # Core functionality tests
 │   ├── TC004-TC006_*.md       # Advanced feature tests

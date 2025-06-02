@@ -56,7 +56,7 @@ Open Bugs:           5 (all P3)
 ## ✅ Recent Fixes (2025-01-06)
 
 - Mobile navigation (hamburger menu)
-- Accessibility (WCAG 2.1 AA compliance)
+- User interface improvements
 - Audio system performance
 - Search functionality
 - Responsive text overflow
@@ -157,7 +157,7 @@ localStorage.setItem('debug', 'true')
 
 ### External Tools
 - [Chrome DevTools](https://developer.chrome.com/docs/devtools/)
-- [axe DevTools](https://www.deque.com/axe/devtools/)
+- [React DevTools](https://react.dev/learn/react-developer-tools)
 - [Lighthouse](https://developers.google.com/web/tools/lighthouse)
 
 ---

@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechFlix Audio/Animation Timing Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #111;
+            color: #fff;
+        }
+        .controls {
+            position: sticky;
+            top: 0;
+            background: #222;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            z-index: 100;
+        }
+        button {
+            background: #e50914;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background: #f40612;
+        }
+        .status {
+            background: #333;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+            font-family: monospace;
+        }
+        .timeline {
+            background: #222;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .event {
+            padding: 10px;
+            margin: 5px 0;
+            background: #333;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .event.audio { border-left: 4px solid #4CAF50; }
+        .event.animation { border-left: 4px solid #2196F3; }
+        .event.error { border-left: 4px solid #f44336; }
+        .event.warning { border-left: 4px solid #ff9800; }
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .metric {
+            background: #333;
+            padding: 15px;
+            border-radius: 4px;
+            text-align: center;
+        }
+        .metric h3 {
+            margin: 0 0 10px 0;
+            color: #e50914;
+        }
+        .metric .value {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        iframe {
+            width: 100%;
+            height: 600px;
+            border: 2px solid #333;
+            border-radius: 8px;
+        }
+        .log {
+            max-height: 300px;
+            overflow-y: auto;
+            background: #1a1a1a;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        .phase-indicator {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin: 0 5px;
+        }
+        .phase-active { background: #4CAF50; }
+        .phase-inactive { background: #666; }
+    </style>
+</head>
+<body>
+    <h1>🎬 TechFlix Audio/Animation Timing Test</h1>
+    
+    <div class="controls">
+        <button onclick="startTest()">Start Test</button>
+        <button onclick="stopTest()">Stop Test</button>
+        <button onclick="clearLog()">Clear Log</button>
+        <button onclick="exportResults()">Export Results</button>
+        
+        <div class="status" id="status">
+            Status: Ready to test
+        </div>
+    </div>
+
+    <div class="metrics">
+        <div class="metric">
+            <h3>Audio Events</h3>
+            <div class="value" id="audioCount">0</div>
+        </div>
+        <div class="metric">
+            <h3>Animation Events</h3>
+            <div class="value" id="animationCount">0</div>
+        </div>
+        <div class="metric">
+            <h3>Sync Errors</h3>
+            <div class="value" id="errorCount">0</div>
+        </div>
+        <div class="metric">
+            <h3>Avg Latency</h3>
+            <div class="value" id="avgLatency">0ms</div>
+        </div>
+    </div>
+
+    <div class="timeline">
+        <h2>Timeline Phases</h2>
+        <div id="phases">
+            <span class="phase-indicator phase-inactive" data-phase="0"></span> The Crisis
+            <span class="phase-indicator phase-inactive" data-phase="1"></span> Kafka Born
+            <span class="phase-indicator phase-inactive" data-phase="2"></span> Early Growth
+            <span class="phase-indicator phase-inactive" data-phase="3"></span> Scale Challenges
+            <span class="phase-indicator phase-inactive" data-phase="4"></span> Global System
+        </div>
+    </div>
+
+    <h2>Test Frame</h2>
+    <iframe id="testFrame" src="http://localhost:3002"></iframe>
+
+    <h2>Event Log</h2>
+    <div class="log" id="eventLog"></div>
+
+    <script>
+        let testRunning = false;
+        let startTime = 0;
+        let events = [];
+        let metrics = {
+            audioCount: 0,
+            animationCount: 0,
+            errorCount: 0,
+            latencies: []
+        };
+
+        function log(message, type = 'info') {
+            const timestamp = Date.now() - startTime;
+            const event = {
+                timestamp,
+                message,
+                type,
+                time: new Date().toISOString()
+            };
+            events.push(event);
+            
+            const logEl = document.getElementById('eventLog');
+            const eventEl = document.createElement('div');
+            eventEl.className = `event ${type}`;
+            eventEl.innerHTML = `
+                <span>${timestamp.toFixed(0)}ms</span>
+                <span>${message}</span>
+            `;
+            logEl.insertBefore(eventEl, logEl.firstChild);
+            
+            // Update metrics
+            if (type === 'audio') metrics.audioCount++;
+            if (type === 'animation') metrics.animationCount++;
+            if (type === 'error') metrics.errorCount++;
+            
+            updateMetrics();
+        }
+
+        function updateMetrics() {
+            document.getElementById('audioCount').textContent = metrics.audioCount;
+            document.getElementById('animationCount').textContent = metrics.animationCount;
+            document.getElementById('errorCount').textContent = metrics.errorCount;
+            
+            if (metrics.latencies.length > 0) {
+                const avg = metrics.latencies.reduce((a, b) => a + b, 0) / metrics.latencies.length;
+                document.getElementById('avgLatency').textContent = avg.toFixed(0) + 'ms';
+            }
+        }
+
+        function updateStatus(message) {
+            document.getElementById('status').textContent = `Status: ${message}`;
+        }
+
+        async function startTest() {
+            if (testRunning) return;
+            
+            testRunning = true;
+            startTime = Date.now();
+            events = [];
+            metrics = { audioCount: 0, animationCount: 0, errorCount: 0, latencies: [] };
+            
+            updateStatus('Test running - Navigating to episode...');
+            log('Test started', 'info');
+            
+            const iframe = document.getElementById('testFrame');
+            
+            // Set up message listener for cross-frame communication
+            window.addEventListener('message', handleFrameMessage);
+            
+            // Navigate to episode
+            setTimeout(() => {
+                iframe.src = 'http://localhost:3002/browse';
+                log('Navigated to browse page', 'info');
+                
+                // Inject monitoring script
+                setTimeout(() => {
+                    injectMonitoring();
+                }, 3000);
+            }, 1000);
+        }
+
+        function handleFrameMessage(event) {
+            if (event.origin !== 'http://localhost:3002') return;
+            
+            const { type, data } = event.data;
+            
+            switch (type) {
+                case 'audio-start':
+                    log(`Audio started: ${data.file}`, 'audio');
+                    break;
+                case 'animation-start':
+                    log(`Animation: ${data.element}`, 'animation');
+                    break;
+                case 'phase-change':
+                    log(`Phase ${data.phase}: ${data.title}`, 'info');
+                    updatePhaseIndicator(data.phase);
+                    break;
+                case 'error':
+                    log(`Error: ${data.message}`, 'error');
+                    break;
+            }
+        }
+
+        function updatePhaseIndicator(phase) {
+            document.querySelectorAll('.phase-indicator').forEach(el => {
+                el.classList.remove('phase-active');
+                el.classList.add('phase-inactive');
+            });
+            const activePhase = document.querySelector(`[data-phase="${phase}"]`);
+            if (activePhase) {
+                activePhase.classList.remove('phase-inactive');
+                activePhase.classList.add('phase-active');
+            }
+        }
+
+        function injectMonitoring() {
+            const iframe = document.getElementById('testFrame');
+            
+            try {
+                // This would need proper cross-origin setup in production
+                const script = `
+                    console.log('Monitoring injected');
+                    
+                    // Monitor audio events
+                    const originalPlay = HTMLAudioElement.prototype.play;
+                    HTMLAudioElement.prototype.play = function() {
+                        window.parent.postMessage({
+                            type: 'audio-start',
+                            data: { file: this.src.split('/').pop() }
+                        }, '*');
+                        return originalPlay.apply(this, arguments);
+                    };
+                    
+                    // Monitor console logs for phase changes
+                    const originalLog = console.log;
+                    console.log = function(...args) {
+                        const message = args.join(' ');
+                        if (message.includes('Timeline phase changed')) {
+                            window.parent.postMessage({
+                                type: 'phase-change',
+                                data: { phase: args[1]?.phase || 0 }
+                            }, '*');
+                        }
+                        originalLog.apply(console, args);
+                    };
+                `;
+                
+                // Note: This won't work with cross-origin restrictions
+                // In real testing, you'd need to modify the app to post messages
+                log('Monitoring script prepared (cross-origin restrictions may apply)', 'warning');
+                
+            } catch (error) {
+                log(`Cannot inject monitoring: ${error.message}`, 'error');
+            }
+        }
+
+        function stopTest() {
+            testRunning = false;
+            updateStatus('Test stopped');
+            log('Test stopped', 'info');
+            window.removeEventListener('message', handleFrameMessage);
+        }
+
+        function clearLog() {
+            document.getElementById('eventLog').innerHTML = '';
+            events = [];
+            metrics = { audioCount: 0, animationCount: 0, errorCount: 0, latencies: [] };
+            updateMetrics();
+        }
+
+        function exportResults() {
+            const results = {
+                testDate: new Date().toISOString(),
+                duration: Date.now() - startTime,
+                metrics,
+                events
+            };
+            
+            const blob = new Blob([JSON.stringify(results, null, 2)], 
+                { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `timing-test-${Date.now()}.json`;
+            a.click();
+            
+            log('Results exported', 'info');
+        }
+
+        // Manual phase tracking
+        let currentPhase = -1;
+        setInterval(() => {
+            if (!testRunning) return;
+            
+            // Simulate phase progression for demo
+            const elapsed = (Date.now() - startTime) / 1000;
+            const newPhase = Math.floor(elapsed / 10); // 10s per phase for demo
+            
+            if (newPhase !== currentPhase && newPhase < 5) {
+                currentPhase = newPhase;
+                const phases = ['The Crisis', 'Kafka Born', 'Early Growth', 'Scale Challenges', 'Global System'];
+                log(`Entering phase: ${phases[newPhase]}`, 'info');
+                updatePhaseIndicator(newPhase);
+            }
+        }, 1000);
+    </script>
+</body>
+</html>
