@@ -1,6 +1,7 @@
 import { Volume2, VolumeX, Mic, MicOff, SkipBack, Pause, Play } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState } from 'react';
+import audioManager from '@utils/audioManager';
 
 const VoiceOverControls = ({ 
   voiceOver,
@@ -8,7 +9,7 @@ const VoiceOverControls = ({
   minimal = false
 }) => {
   const [showVolumeSlider, setShowVolumeSlider] = useState(false);
-  const [volume, setVolume] = useState(0.8);
+  const [volume, setVolume] = useState(() => audioManager.voiceOverVolume);
   
   const {
     isPlaying,
@@ -115,9 +116,7 @@ const VoiceOverControls = ({
                   onChange={(e) => {
                     const newVolume = parseFloat(e.target.value);
                     setVolume(newVolume);
-                    if (voiceOver?.audioElement) {
-                      voiceOver.audioElement.volume = newVolume;
-                    }
+                    audioManager.setVoiceOverVolume(newVolume);
                   }}
                 />
               </motion.div>

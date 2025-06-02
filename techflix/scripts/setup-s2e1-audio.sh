@@ -16,8 +16,8 @@ fi
 
 # Create directories
 echo "📁 Creating directory structure..."
-mkdir -p public/sounds/voiceovers/s2e1
-mkdir -p public/sounds/effects/s2e1
+mkdir -p public/audio/voiceovers/s2e1
+mkdir -p public/audio/effects/s2e1
 
 # Generate voice-overs
 echo "🎙️ Generating voice-overs..."
@@ -26,9 +26,9 @@ python3 generate-voiceovers-s2e1.py
 cd ..
 
 # Check if voice-overs were generated
-if [ -f "public/sounds/voiceovers/s2e1/metadata.json" ]; then
+if [ -f "public/audio/voiceovers/s2e1/metadata.json" ]; then
     echo "✅ Voice-overs generated successfully"
-    VOCOUNT=$(ls -1 public/sounds/voiceovers/s2e1/*.mp3 2>/dev/null | wc -l)
+    VOCOUNT=$(ls -1 public/audio/voiceovers/s2e1/*.mp3 2>/dev/null | wc -l)
     echo "   Generated $VOCOUNT voice-over files"
 else
     echo "❌ Voice-over generation failed"
@@ -37,9 +37,9 @@ fi
 
 # Create placeholder sound effects (if they don't exist)
 echo "🔊 Setting up sound effects..."
-if [ ! -f "public/sounds/effects/s2e1/sound-library.json" ]; then
+if [ ! -f "public/audio/effects/s2e1/sound-library.json" ]; then
     # Copy the sound library manifest
-    cat > public/sounds/effects/s2e1/sound-library.json << 'EOF'
+    cat > public/audio/effects/s2e1/sound-library.json << 'EOF'
 {
   "episode": "s2e1",
   "title": "Kafka Share Groups Sound Effects Library",
@@ -117,7 +117,7 @@ const sounds = [
   { name: 'impact-boom', frequency: 80, duration: 0.5 }
 ];
 
-const outputDir = path.join(__dirname, '../public/sounds/effects/s2e1');
+const outputDir = path.join(__dirname, '../public/audio/effects/s2e1');
 
 sounds.forEach(sound => {
   const outputPath = path.join(outputDir, `${sound.name}.wav`);
@@ -143,8 +143,8 @@ echo ""
 echo "🎉 S2E1 Audio Setup Complete!"
 echo "============================="
 echo ""
-echo "✅ Voice-overs: $(ls -1 public/sounds/voiceovers/s2e1/*.mp3 2>/dev/null | wc -l) files"
-echo "✅ Sound effects: $(ls -1 public/sounds/effects/s2e1/*.wav 2>/dev/null | wc -l) placeholder files"
+echo "✅ Voice-overs: $(ls -1 public/audio/voiceovers/s2e1/*.mp3 2>/dev/null | wc -l) files"
+echo "✅ Sound effects: $(ls -1 public/audio/effects/s2e1/*.wav 2>/dev/null | wc -l) placeholder files"
 echo ""
 echo "📝 Next steps:"
 echo "1. Open scripts/generate-sound-effects.html in a browser for better sounds"

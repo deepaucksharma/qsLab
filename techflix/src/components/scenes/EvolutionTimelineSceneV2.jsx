@@ -6,7 +6,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Calendar, Users, MessageSquare, TrendingUp, Zap } from 'lucide-react'
-import episodeAudioManager from '@utils/episodeAudioManager'
+import audioManager from '@utils/audioManager' // Updated import
 import logger from '@utils/logger'
 
 const EvolutionTimelineSceneV2 = ({ time = 0, duration = 480 }) => {
@@ -72,18 +72,25 @@ const EvolutionTimelineSceneV2 = ({ time = 0, duration = 480 }) => {
       audioInitialized.current = true
       
       // Load episode audio
-      episodeAudioManager.loadEpisode('s2e1').then(() => {
-        // Set subtitle callback
-        episodeAudioManager.setSubtitleCallback(setCurrentSubtitle)
-        
-        // Start ambient sound
-        episodeAudioManager.playAmbient('tech-atmosphere')
+      audioManager.loadEpisodeAudio('s2e1').then((success) => {
+        if (success) {
+          // Set subtitle callback
+          audioManager.setEpisodeSubtitleCallback(setCurrentSubtitle)
+          // Start ambient sound
+          audioManager.playEpisodeAmbient('tech-atmosphere')
+          logger.debug('EvolutionTimelineSceneV2: Episode audio loaded and ambient sound started.')
+        } else {
+          logger.error('EvolutionTimelineSceneV2: Failed to load episode audio.')
+        }
       })
     }
     
     return () => {
-      if (audioInitialized.current) {
-        episodeAudioManager.stopAllEffects()
+      // Cleanup audio when component unmounts.
+      // Using cleanupEpisodeAudio for a more thorough cleanup.
+      if (audioInitialized.current) { // Check if it was initialized to prevent cleanup if load failed early
+        logger.debug('EvolutionTimelineSceneV2: Unmounting, cleaning up episode audio.')
+        audioManager.cleanupEpisodeAudio()
         audioInitialized.current = false
       }
     }
@@ -101,13 +108,13 @@ const EvolutionTimelineSceneV2 = ({ time = 0, duration = 480 }) => {
       
       // Play voiceover
       if (event.voiceover) {
-        episodeAudioManager.playVoiceover(event.voiceover)
+        audioManager.playEpisodeVoiceoverSegment(event.voiceover)
       }
       
       // Play effects
       if (event.effects) {
         event.effects.forEach(effect => {
-          episodeAudioManager.playEffect(effect)
+          audioManager.playEpisodeEffect(effect)
         })
       }
       
