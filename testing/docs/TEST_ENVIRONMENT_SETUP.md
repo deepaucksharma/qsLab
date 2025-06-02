@@ -1,11 +1,18 @@
 # TechFlix Test Environment Setup Guide
 
-**Version:** 1.0  
-**Last Updated:** 2025-01-06
+**Version:** 2.0  
+**Last Updated:** 2025-02-06
 
 ## Overview
 
 This guide provides comprehensive instructions for setting up testing environments for TechFlix, including single and parallel instance configurations, required tools, and troubleshooting steps.
+
+**Note:** TechFlix has undergone a major project reorganization:
+- Configuration files moved to `config/` directory
+- Scripts moved to `scripts/` directory
+- Server files moved to `server/` directory
+- Documentation reorganized into hierarchical `docs/` structure
+- All npm scripts updated to use `--config` flags
 
 ## Prerequisites
 
@@ -58,19 +65,22 @@ npm install -g http-server
 
 ### 3. Environment Configuration
 ```bash
-# Create environment file
-cp .env.example .env
+# Create environment file (if it exists)
+cp .env.example .env 2>/dev/null || echo "No .env.example found, skipping..."
 
-# Edit .env file with your settings
+# Edit .env file with your settings (if needed)
 # For testing, typically:
 NODE_ENV=test
 DEBUG=true
 LOG_LEVEL=debug
+
+# Note: TechFlix uses Vite's environment variable system
+# Create .env.test for test-specific settings
 ```
 
 ### 4. Verify Basic Setup
 ```bash
-# Run development server
+# Run development server (uses config/vite.config.js)
 npm run dev
 
 # Should output:
@@ -78,23 +88,30 @@ npm run dev
 # ➜ Local: http://localhost:3000/
 
 # Open browser and verify app loads
+
+# Alternative: Run production build and preview
+npm run build
+npm run preview
 ```
 
 ## Single Instance Testing Setup
 
 ### Standard Development Environment
 ```bash
-# Terminal 1: Start the application
+# Terminal 1: Start the application (uses config/vite.config.js)
 npm run dev
 
 # The app will be available at:
 # http://localhost:3000
 
-# Terminal 2: Run automated tests (if any)
+# Terminal 2: Run automated tests (uses config/vitest.config.js)
 npm test
 
-# Terminal 3: Monitor logs
-tail -f logs/app.log
+# Terminal 3: Run test UI for interactive testing
+npm run test:ui
+
+# Terminal 4: Run server (if using server-side features)
+npm run serve
 ```
 
 ### Debug Mode Setup
@@ -132,8 +149,11 @@ PORT=3004 npm run dev
 # Install PM2 globally
 npm install -g pm2
 
+# Create ecosystem config in config directory
+# See config/ecosystem.config.js below
+
 # Start all test instances
-pm2 start ecosystem.config.js
+pm2 start config/ecosystem.config.js
 
 # Monitor all instances
 pm2 monit
@@ -162,26 +182,36 @@ docker-compose -f docker-compose.testing.yml down
 
 ### Method 4: Shell Script
 ```bash
+# Scripts are now in the techflix/scripts directory
 # Make script executable
-chmod +x testing/scripts/parallel-instances.sh
+chmod +x scripts/parallel-instances.sh
 
-# Run all instances
-./testing/scripts/parallel-instances.sh
+# Run all instances from techflix directory
+./scripts/parallel-instances.sh
 
 # Stop all (Ctrl+C or kill the script process)
+
+# Other useful scripts:
+./scripts/start-server.sh    # Start production server
+./scripts/quick-verify.sh    # Quick verification
+./scripts/test-app.js       # Test application
 ```
 
 ## Browser Configuration
 
 ### Chrome Profile Setup for Testing
 ```bash
-# Create test profiles
-mkdir -p testing/chrome-profiles/test-user-1
-mkdir -p testing/chrome-profiles/test-user-2
+# Create test profiles in testing directory
+mkdir -p ../testing/chrome-profiles/test-user-1
+mkdir -p ../testing/chrome-profiles/test-user-2
+
+# Or create within techflix directory
+mkdir -p test-profiles/test-user-1
+mkdir -p test-profiles/test-user-2
 
 # Launch with specific profile
 google-chrome \
-  --user-data-dir=./testing/chrome-profiles/test-user-1 \
+  --user-data-dir=./test-profiles/test-user-1 \
   --no-first-run \
   --no-default-browser-check \
   http://localhost:3001
@@ -419,21 +449,30 @@ sudo npm install -g npm@latest
 ## Quick Reference Commands
 
 ```bash
-# Start single instance
+# Start single instance (from techflix directory)
 npm run dev
 
 # Start on specific port
 PORT=3001 npm run dev
 
 # Start all test instances (PM2)
-pm2 start ecosystem.config.js
+pm2 start config/ecosystem.config.js
 
 # Start with debug
 DEBUG=true npm run dev
 
 # Build for production testing
-npm run build
-npm run preview
+npm run build      # Uses config/vite.config.js
+npm run preview    # Preview production build
+
+# Run tests
+npm test           # Uses config/vitest.config.js
+npm run test:ui    # Interactive test UI
+npm run test:coverage  # With coverage report
+
+# Start server
+npm run serve      # Uses server/server.js
+npm start          # Build and serve
 
 # Clean everything
 rm -rf node_modules dist .cache
@@ -481,6 +520,29 @@ When reporting setup issues, include:
 - Chrome version
 - Error messages
 - Steps to reproduce
+
+## Project Structure Reference
+
+```
+techflix/
+├── config/           # All configuration files
+│   ├── vite.config.js
+│   ├── vitest.config.js
+│   ├── tailwind.config.js
+│   └── postcss.config.js
+├── scripts/          # All utility scripts
+│   ├── parallel-instances.sh
+│   ├── start-server.sh
+│   └── generate-voiceovers.js
+├── server/           # Server files
+│   ├── server.js
+│   └── server-wsl.js
+├── docs/             # Reorganized documentation
+│   ├── architecture/
+│   ├── guides/
+│   └── reference/
+└── src/              # Source code (unchanged)
+```
 
 ## Notes
 _Space for environment-specific notes and team customizations_

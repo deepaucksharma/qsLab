@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>TechFlix Test Instance Monitor</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        h1 {
+            color: #333;
+        }
+        .instance { 
+            display: inline-block; 
+            margin: 10px; 
+            padding: 20px; 
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            min-width: 200px;
+            text-align: center;
+        }
+        .online { 
+            background: #d4edda; 
+            border-color: #c3e6cb;
+        }
+        .offline { 
+            background: #f8d7da;
+            border-color: #f5c6cb;
+        }
+        .checking {
+            background: #fff3cd;
+            border-color: #ffeeba;
+        }
+        .status {
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        .online .status { color: #155724; }
+        .offline .status { color: #721c24; }
+        .checking .status { color: #856404; }
+        a {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 5px 15px;
+            background: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 3px;
+        }
+        a:hover {
+            background: #0056b3;
+        }
+        .refresh-info {
+            margin-top: 20px;
+            color: #666;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <h1>TechFlix Test Instances Monitor</h1>
+    <div id="instances"></div>
+    <div class="refresh-info">
+        Auto-refreshing every 5 seconds. Last update: <span id="lastUpdate"></span>
+    </div>
+    
+    <script>
+        const instances = [
+            { port: 3001, name: 'Functional Testing' },
+            { port: 3002, name: 'Visual Testing' },
+            { port: 3003, name: 'Integration Testing' },
+            { port: 3004, name: 'Exploratory Testing' }
+        ];
+
+        async function checkInstance(port) {
+            try {
+                const response = await fetch(`http://localhost:${port}/`, { 
+                    mode: 'no-cors',
+                    cache: 'no-cache' 
+                });
+                return true;
+            } catch {
+                return false;
+            }
+        }
+
+        async function updateStatus() {
+            const container = document.getElementById('instances');
+            container.innerHTML = '';
+            
+            for (const instance of instances) {
+                const div = document.createElement('div');
+                div.className = 'instance checking';
+                div.innerHTML = `
+                    <h3>${instance.name}</h3>
+                    <p>Port: ${instance.port}</p>
+                    <p class="status">Checking...</p>
+                `;
+                container.appendChild(div);
+                
+                // Check status asynchronously
+                checkInstance(instance.port).then(isOnline => {
+                    div.className = `instance ${isOnline ? 'online' : 'offline'}`;
+                    div.innerHTML = `
+                        <h3>${instance.name}</h3>
+                        <p>Port: ${instance.port}</p>
+                        <p class="status">Status: ${isOnline ? 'Online' : 'Offline'}</p>
+                        ${isOnline ? `<a href="http://localhost:${instance.port}" target="_blank">Open</a>` : ''}
+                    `;
+                });
+            }
+            
+            // Update last refresh time
+            document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString();
+        }
+
+        updateStatus();
+        setInterval(updateStatus, 5000);
+    </script>
+</body>
+</html>
