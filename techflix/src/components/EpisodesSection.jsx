@@ -1,6 +1,7 @@
 import React, { useContext } from 'react'
 import { Play } from 'lucide-react'
 import { AppContext } from '../App'
+import logger from '../utils/logger'
 
 // Episode Card Component
 const EpisodeCard = ({ episode }) => {
@@ -8,9 +9,21 @@ const EpisodeCard = ({ episode }) => {
 
   const handlePlay = () => {
     if (episode.hasContent && episode.episodeData) {
+      logger.logEpisodeEvent('EPISODE_PLAY', {
+        episodeId: episode.episodeData?.metadata?.title || episode.title,
+        episodeNumber: episode.number,
+        season: episode.episodeData?.metadata?.seasonNumber,
+        duration: episode.duration,
+        level: episode.level
+      })
       // Use episodeData if available (from seriesData.js structure)
       setCurrentEpisode(episode.episodeData)
       setIsPlayerActive(true)
+    } else {
+      logger.info('Attempted to play unavailable episode', {
+        episodeTitle: episode.title,
+        hasContent: episode.hasContent
+      })
     }
   }
 

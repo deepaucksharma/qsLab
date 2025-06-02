@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 
+// Header Component
 const Header = () => {
   const [scrolled, setScrolled] = useState(false)
 

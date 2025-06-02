@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { Play, Pause, ChevronLeft, Maximize2, Volume2, Settings, 
          SkipForward, SkipBack, Info } from 'lucide-react'
+import logger from '../utils/logger'
+import { useEpisodeProgress } from '../hooks/useEpisodeProgress'
 
 // Import interactive components
 import InteractiveStateMachine from './interactive/InteractiveStateMachine'
@@ -9,10 +11,22 @@ const NetflixEpisodePlayer = ({ episodeData, onEpisodeEnd, onBack }) => {
   const [episode, setEpisode] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
   const [currentSceneIndex, setCurrentSceneIndex] = useState(0)
+  const { updateProgress: updateEpisodeProgress } = useEpisodeProgress()
   const [sceneTime, setSceneTime] = useState(0)
   const [isPlaying, setIsPlaying] = useState(false)
   const [showControls, setShowControls] = useState(true)
   const [interactiveMode, setInteractiveMode] = useState(null)
+  
+  // Wrapper to maintain compatibility with old updateProgress signature
+  const updateProgress = useCallback((seasonNumber, episodeNumber, timeWatched, duration) => {
+    const episodeId = `s${seasonNumber}e${episodeNumber}`;
+    updateEpisodeProgress(episodeId, {
+      watchedSeconds: timeWatched,
+      totalSeconds: duration,
+      percentage: (timeWatched / duration) * 100,
+      completed: timeWatched >= duration * 0.95
+    });
+  }, [updateEpisodeProgress]);
 
   const playerRef = useRef(null)
   const controlsTimeoutRef = useRef(null)
@@ -33,13 +47,50 @@ const NetflixEpisodePlayer = ({ episodeData, onEpisodeEnd, onBack }) => {
   // Load episode data
   useEffect(() => {
     if (episodeData) {
+      logger.logEpisodeEvent('EPISODE_LOAD_START', {
+        episodeId: episodeData.metadata?.title,
+        sceneCount: episodeData.scenes?.length
+      })
+      logger.startTimer('episodePlayerLoad')
+      
       setEpisode(episodeData)
       setTimeout(() => {
         setIsLoading(false)
         setIsPlaying(true)
+        const loadTime = logger.endTimer('episodePlayerLoad')
+        logger.logEpisodeEvent('EPISODE_LOAD_COMPLETE', {
+          episodeId: episodeData.metadata?.title,
+          loadTime
+        })
       }, 1200)
     }
   }, [episodeData])
+
+  // Track progress periodically
+  useEffect(() => {
+    if (!episode || isLoading) return;
+    
+    const progressInterval = setInterval(() => {
+      if (isPlaying && !interactiveMode) {
+        // Calculate total time watched across all scenes
+        let totalTime = 0;
+        for (let i = 0; i < currentSceneIndex; i++) {
+          totalTime += episode.scenes[i].duration;
+        }
+        totalTime += sceneTime;
+        
+        // Calculate total episode duration
+        const totalDuration = episode.scenes.reduce((sum, scene) => sum + scene.duration, 0);
+        
+        // Update progress
+        const seasonNumber = episode.metadata?.seasonNumber || 1;
+        const episodeNumber = episode.metadata?.episodeNumber || 1;
+        updateProgress(seasonNumber, episodeNumber, totalTime, totalDuration);
+      }
+    }, 5000); // Update every 5 seconds
+    
+    return () => clearInterval(progressInterval);
+  }, [episode, isPlaying, isLoading, interactiveMode, currentSceneIndex, sceneTime, updateProgress]);
 
   // Playback engine
   useEffect(() => {
@@ -58,6 +109,12 @@ const NetflixEpisodePlayer = ({ episodeData, onEpisodeEnd, onBack }) => {
         )
         
         if (interactiveMoment && !interactiveMode) {
+          logger.logEpisodeEvent('INTERACTIVE_START', {
+            episodeId: episode.metadata?.title,
+            interactiveId: interactiveMoment.id,
+            sceneId: currentScene.id,
+            timestamp: interactiveMoment.timestamp
+          })
           setInteractiveMode({ 
             component: interactiveMoment.component,
             props: interactiveMoment.props || {},
@@ -69,10 +126,21 @@ const NetflixEpisodePlayer = ({ episodeData, onEpisodeEnd, onBack }) => {
         
         if (newTime >= currentScene.duration) {
           if (currentSceneIndex < episode.scenes.length - 1) {
+            const nextSceneIndex = currentSceneIndex + 1
+            logger.logSceneTransition(
+              currentScene,
+              episode.scenes[nextSceneIndex],
+              episode.metadata?.title
+            )
             setCurrentSceneIndex(prev => prev + 1)
             return 0
           } else {
             setIsPlaying(false)
+            // Mark episode as completed
+            const seasonNumber = episode.metadata?.seasonNumber || 1;
+            const episodeNumber = episode.metadata?.episodeNumber || 1;
+            const totalDuration = episode.scenes.reduce((sum, scene) => sum + scene.duration, 0);
+            updateProgress(seasonNumber, episodeNumber, totalDuration, totalDuration);
             onEpisodeEnd?.({ completed: true })
             return currentScene.duration
           }
@@ -109,8 +177,15 @@ const NetflixEpisodePlayer = ({ episodeData, onEpisodeEnd, onBack }) => {
 
   const handlePlayPause = () => {
     if (interactiveMode) return
-    setIsPlaying(!isPlaying)
+    const newPlayState = !isPlaying
+    setIsPlaying(newPlayState)
     setShowControls(true)
+    
+    logger.info(`Playback ${newPlayState ? 'resumed' : 'paused'}`, {
+      episodeId: episode?.metadata?.title,
+      sceneId: episode?.scenes[currentSceneIndex]?.id,
+      timestamp: sceneTime
+    })
   }
 
   const handleSeek = (e) => {
@@ -137,7 +212,7 @@ const NetflixEpisodePlayer = ({ episodeData, onEpisodeEnd, onBack }) => {
       <div className="fixed inset-0 bg-black flex flex-col items-center justify-center text-red-500 p-8 z-50">
         <Info className="w-12 h-12 mb-4" />
         <h2 className="text-2xl font-semibold mb-2">Episode Unavailable</h2>
-        <p className="text-center">We're sorry, but this episode could not be loaded.</p>
+        <p className="text-center">We&apos;re sorry, but this episode could not be loaded.</p>
         {onBack && <button onClick={onBack} className="mt-6 netflix-button">Go Back</button>}
       </div>
     )
@@ -156,7 +231,11 @@ const NetflixEpisodePlayer = ({ episodeData, onEpisodeEnd, onBack }) => {
             <InteractiveComponent
               {...(interactiveMode.props || {})}
               onComplete={(result) => {
-                console.log(`Interactive moment completed:`, result)
+                logger.logEpisodeEvent('INTERACTIVE_COMPLETE', {
+                  episodeId: episode?.metadata?.title,
+                  interactiveId: interactiveMode.id,
+                  result
+                })
                 setInteractiveMode(null)
                 setIsPlaying(true)
               }}
