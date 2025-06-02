@@ -6,6 +6,7 @@ import audioManager from '../utils/audioManager'
 import { useEpisodeProgress } from '../hooks/useEpisodeProgress'
 import { useVoiceOver } from '../hooks/useVoiceOver'
 import VoiceOverControls from './VoiceOverControls'
+import ErrorBoundary from './ErrorBoundary'
 
 // Import interactive components
 import InteractiveStateMachine from './interactive/InteractiveStateMachine'
@@ -279,14 +280,41 @@ const NetflixEpisodePlayer = ({ episodeData, onEpisodeEnd, onBack }) => {
             />
           </div>
         ) : (
-          SceneComponent && (
-            <div className="absolute inset-0">
-              <SceneComponent
-                time={sceneTime}
-                duration={currentSceneData?.duration}
-              />
-            </div>
-          )
+          <div className="absolute inset-0">
+            {SceneComponent ? (
+              <ErrorBoundary
+                fallback={
+                  <div className="flex items-center justify-center h-full">
+                    <div className="text-center">
+                      <Info className="w-12 h-12 mb-4 mx-auto text-red-500" />
+                      <p className="text-xl text-red-500">Scene unavailable</p>
+                      <p className="text-gray-400 mt-2">Error loading scene: {currentSceneData?.id}</p>
+                    </div>
+                  </div>
+                }
+                onError={(error) => {
+                  logger.error('Scene component error', { 
+                    error: error.message, 
+                    sceneId: currentSceneData?.id,
+                    episodeId: episode?.metadata?.title 
+                  });
+                }}
+              >
+                <SceneComponent
+                  time={sceneTime}
+                  duration={currentSceneData?.duration}
+                />
+              </ErrorBoundary>
+            ) : (
+              <div className="flex items-center justify-center h-full">
+                <div className="text-center">
+                  <Info className="w-12 h-12 mb-4 mx-auto text-yellow-500" />
+                  <p className="text-xl text-yellow-500">Scene not found</p>
+                  <p className="text-gray-400 mt-2">Scene ID: {currentSceneData?.id}</p>
+                </div>
+              </div>
+            )}
+          </div>
         )}
       </div>
 

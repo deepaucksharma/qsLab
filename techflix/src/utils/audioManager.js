@@ -66,11 +66,33 @@ class AudioManager {
     try {
       const audio = new Audio(path)
       audio.volume = this.volume
+      
+      // Create event handlers with proper cleanup
+      let cleanupDone = false
+      const cleanup = () => {
+        if (!cleanupDone) {
+          cleanupDone = true
+          audio.removeEventListener('canplaythrough', onLoad)
+          audio.removeEventListener('error', onError)
+        }
+      }
+      
+      const onLoad = () => {
+        cleanup()
+        resolve()
+      }
+      
+      const onError = (err) => {
+        cleanup()
+        reject(err)
+      }
+      
       await new Promise((resolve, reject) => {
-        audio.addEventListener('canplaythrough', resolve, { once: true })
-        audio.addEventListener('error', reject, { once: true })
+        audio.addEventListener('canplaythrough', onLoad)
+        audio.addEventListener('error', onError)
         audio.load()
       })
+      
       this.sounds[name] = audio
       logger.debug('Sound loaded', { name, path })
     } catch (error) {

@@ -249,49 +249,24 @@ class TTSConfigManager {
       // Check provider availability
       switch (voiceConfig.provider) {
         case 'edge-tts':
-          try {
-            // Check if edge-tts is installed
-            const { exec } = require('child_process');
-            await new Promise((resolve, reject) => {
-              exec('edge-tts --help', (error) => {
-                if (error) reject(error);
-                else resolve();
-              });
-            });
-            result.available = true;
-          } catch {
-            result.error = 'edge-tts not installed';
-          }
+          // Frontend code should not execute shell commands
+          // This should be handled by a backend API with proper validation
+          result.error = 'TTS testing requires backend API';
+          result.available = false;
           break;
 
         case 'gtts':
-          try {
-            const { exec } = require('child_process');
-            await new Promise((resolve, reject) => {
-              exec('python3 -c "import gtts"', (error) => {
-                if (error) reject(error);
-                else resolve();
-              });
-            });
-            result.available = true;
-          } catch {
-            result.error = 'gtts not installed';
-          }
+          // Frontend code should not execute shell commands
+          // This should be handled by a backend API with proper validation
+          result.error = 'TTS testing requires backend API';
+          result.available = false;
           break;
 
         case 'pyttsx3':
-          try {
-            const { exec } = require('child_process');
-            await new Promise((resolve, reject) => {
-              exec('python3 -c "import pyttsx3"', (error) => {
-                if (error) reject(error);
-                else resolve();
-              });
-            });
-            result.available = true;
-          } catch {
-            result.error = 'pyttsx3 not installed';
-          }
+          // Frontend code should not execute shell commands
+          // This should be handled by a backend API with proper validation
+          result.error = 'TTS testing requires backend API';
+          result.available = false;
           break;
 
         case 'amazon-polly':
