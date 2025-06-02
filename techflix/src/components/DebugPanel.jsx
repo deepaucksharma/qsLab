@@ -87,7 +87,7 @@ const DebugPanel = () => {
   }
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-black/95 backdrop-blur-sm border-t border-gray-800 text-white z-50 transition-all duration-300">
+    <div className="fixed bottom-0 left-0 right-0 bg-black/95 backdrop-blur-sm border-t border-gray-800 text-white z-[9999] transition-all duration-300">
       {/* Header */}
       <div className="flex items-center justify-between p-3 border-b border-gray-800">
         <div className="flex items-center gap-4">

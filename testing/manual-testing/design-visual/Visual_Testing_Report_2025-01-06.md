@@ -83,7 +83,7 @@ Visual testing of TechFlix reveals a sophisticated Netflix-inspired design syste
 **Status:** ❌ INCONSISTENT
 - InteractiveStateMachine has unique styling
 - No consistent interaction patterns
-- Missing hover/focus states
+- Missing hover states
 - Needs design system integration
 
 ## Responsive Design Testing
@@ -134,11 +134,11 @@ Visual testing of TechFlix reveals a sophisticated Netflix-inspired design syste
 **Location:** Header component on mobile
 **Impact:** Content obscured, poor UX
 
-### VIS-BUG004: Inconsistent Focus States
-**Severity:** High (P1) - Accessibility
-**Description:** Some interactive elements lack visible focus indicators
+### VIS-BUG004: Inconsistent Visual States
+**Severity:** High (P1)
+**Description:** Some interactive elements lack visible hover indicators
 **Location:** Episode cards, custom buttons
-**Impact:** Keyboard navigation difficult
+**Impact:** User interaction feedback unclear
 
 ### VIS-BUG005: Animation Performance on Low-End Devices
 **Severity:** Medium (P2)
@@ -146,17 +146,17 @@ Visual testing of TechFlix reveals a sophisticated Netflix-inspired design syste
 **Location:** Various scene components
 **Impact:** Degraded experience on older devices
 
-## Accessibility Visual Testing
+## Visual Design Testing
 
 ### Color Contrast
-- ✅ Main text passes WCAG AA (21:1 ratio)
+- ✅ Main text has high contrast (21:1 ratio)
 - ⚠️ Some gray text on dark backgrounds borderline (4.2:1)
 - ❌ Error states need higher contrast
 
-### Focus Indicators
-- ✅ Native elements have focus rings
-- ❌ Custom components missing indicators
-- ⚠️ Focus color sometimes blends with background
+### Visual States
+- ✅ Native elements have hover effects
+- ❌ Custom components missing hover indicators
+- ⚠️ Active states sometimes unclear
 
 ### Motion Settings
 - ✅ Reduced motion CSS works
@@ -176,10 +176,10 @@ Visual testing of TechFlix reveals a sophisticated Netflix-inspired design syste
    - Simplify scene layouts for mobile
    - Test on real devices
 
-3. **Add Focus States**
-   - Implement consistent focus-visible styles
+3. **Add Visual States**
+   - Implement consistent hover styles
    - Use high contrast colors
-   - Test with keyboard only
+   - Test interaction feedback
 
 ### Future Improvements
 1. **Create Component Library**

@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechFlix Visual Testing</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #141414;
+            color: #fff;
+            padding: 20px;
+        }
+        .test-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .test-section {
+            background: #1f1f1f;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        .status { font-weight: bold; }
+        .pass { color: #46d369; }
+        .fail { color: #e50914; }
+        .warning { color: #ffa500; }
+        iframe {
+            width: 100%;
+            border: 2px solid #333;
+            margin: 10px 0;
+            background: #000;
+        }
+        .viewport-test {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        pre {
+            background: #000;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🎬 TechFlix Visual Testing Dashboard</h1>
+        
+        <div class="test-section">
+            <h2>Live Preview Tests</h2>
+            <div class="viewport-test">
+                <div>
+                    <h3>Mobile (375px)</h3>
+                    <iframe src="http://localhost:3000" width="375" height="667"></iframe>
+                </div>
+                <div>
+                    <h3>Tablet (768px)</h3>
+                    <iframe src="http://localhost:3000" width="768" height="600"></iframe>
+                </div>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>Visual Test Results</h2>
+            <div id="test-results"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>Console Output</h2>
+            <pre id="console-output"></pre>
+        </div>
+    </div>
+
+    <script>
+        const testResults = document.getElementById('test-results');
+        const consoleOutput = document.getElementById('console-output');
+        
+        // Visual tests to perform
+        async function runVisualTests() {
+            const tests = [
+                {
+                    name: 'CSS Loading',
+                    test: async () => {
+                        const response = await fetch('/src/index.css');
+                        const text = await response.text();
+                        return {
+                            passed: response.ok && text.includes('techflix'),
+                            details: `CSS file size: ${text.length} bytes`
+                        };
+                    }
+                },
+                {
+                    name: 'React App Mounting',
+                    test: async () => {
+                        // Check if React is loaded
+                        const response = await fetch('/src/main.jsx');
+                        const text = await response.text();
+                        return {
+                            passed: text.includes('createRoot') && text.includes('React'),
+                            details: 'React app configuration detected'
+                        };
+                    }
+                },
+                {
+                    name: 'Asset Loading',
+                    test: async () => {
+                        const assets = [
+                            '/src/index.css',
+                            '/src/main.jsx',
+                            '/'
+                        ];
+                        const results = await Promise.all(
+                            assets.map(async (asset) => {
+                                const response = await fetch(asset);
+                                return { asset, ok: response.ok, status: response.status };
+                            })
+                        );
+                        const allOk = results.every(r => r.ok);
+                        return {
+                            passed: allOk,
+                            details: results.map(r => `${r.asset}: ${r.status}`).join('\n')
+                        };
+                    }
+                }
+            ];
+
+            for (const test of tests) {
+                try {
+                    const result = await test.test();
+                    const statusClass = result.passed ? 'pass' : 'fail';
+                    const statusText = result.passed ? '✅ PASS' : '❌ FAIL';
+                    
+                    testResults.innerHTML += `
+                        <div>
+                            <h3>${test.name} <span class="status ${statusClass}">${statusText}</span></h3>
+                            <p>${result.details}</p>
+                        </div>
+                    `;
+                } catch (error) {
+                    testResults.innerHTML += `
+                        <div>
+                            <h3>${test.name} <span class="status fail">❌ ERROR</span></h3>
+                            <p>${error.message}</p>
+                        </div>
+                    `;
+                }
+            }
+
+            // Additional iframe testing
+            const iframes = document.querySelectorAll('iframe');
+            iframes.forEach((iframe, index) => {
+                iframe.onload = () => {
+                    try {
+                        const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                        const rootElement = iframeDoc.getElementById('root');
+                        const hasContent = rootElement && rootElement.children.length > 0;
+                        
+                        consoleOutput.innerHTML += `Iframe ${index + 1}: ${hasContent ? 'Content loaded' : 'No content'}\n`;
+                    } catch (e) {
+                        consoleOutput.innerHTML += `Iframe ${index + 1}: Cross-origin access blocked\n`;
+                    }
+                };
+            });
+        }
+
+        // Run tests on load
+        runVisualTests();
+
+        // Monitor console
+        const originalLog = console.log;
+        const originalError = console.error;
+        const originalWarn = console.warn;
+
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            consoleOutput.innerHTML += `[LOG] ${args.join(' ')}\n`;
+        };
+
+        console.error = function(...args) {
+            originalError.apply(console, args);
+            consoleOutput.innerHTML += `[ERROR] ${args.join(' ')}\n`;
+        };
+
+        console.warn = function(...args) {
+            originalWarn.apply(console, args);
+            consoleOutput.innerHTML += `[WARN] ${args.join(' ')}\n`;
+        };
+    </script>
+</body>
+</html>

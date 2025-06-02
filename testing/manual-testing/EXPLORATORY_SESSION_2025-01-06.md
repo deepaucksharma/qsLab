@@ -147,11 +147,11 @@
 - Quiz validation works well - prevents empty submissions
 - Clear visual feedback for interactive vs non-interactive
 - Good error messages for invalid inputs
-- Keyboard navigation mostly works (Tab key)
+- Navigation through UI mostly works well
 
-**Accessibility Issue:**
-- Some interactive buttons lack focus indicators
-- Skip navigation not available
+**Visual Issue:**
+- Some interactive buttons lack hover states
+- Navigation breadcrumbs not available
 
 ### 7. Performance Monitoring (19:15)
 
@@ -258,10 +258,10 @@
 - **Steps:** Open debug panel while player controls visible
 - **Impact:** Minor UI overlap
 
-### BUG-007: Focus Indicators Missing
+### BUG-007: Hover States Missing
 - **Severity:** Medium  
-- **Description:** Some interactive elements lack keyboard focus indicators
-- **Impact:** Accessibility concern for keyboard users
+- **Description:** Some interactive elements lack hover state indicators
+- **Impact:** User feedback unclear for interactive elements
 
 ### BUG-008: Performance Degradation with Multiple Tabs
 - **Severity:** Medium

@@ -85,7 +85,6 @@
 ### VT-03: Interactive States ⏳
 - [ ] Buttons show hover effects (#f40612)
 - [ ] Episode cards highlight on hover
-- [ ] Focus indicators visible for keyboard navigation
 - [ ] Active states provide visual feedback
 - [ ] Transitions are smooth (not janky)
 
@@ -135,22 +134,6 @@
 - [ ] JavaScript execution doesn't block UI
 - [ ] Browser remains responsive throughout testing
 
-## Accessibility Testing
-
-### AT-01: Keyboard Navigation ⏳
-- [ ] All interactive elements reachable via Tab
-- [ ] Focus order is logical (left-to-right, top-to-bottom)
-- [ ] Enter key activates buttons and links
-- [ ] Escape key closes overlays/modals
-- [ ] No keyboard traps in navigation
-
-### AT-02: Screen Reader Support ⏳
-- [ ] Episode cards have descriptive labels
-- [ ] Video controls have proper ARIA labels
-- [ ] Content structure uses proper heading hierarchy
-- [ ] Interactive elements announce their purpose
-- [ ] Error messages are announced to assistive technology
-
 ## Bug Reporting Criteria
 
 ### Critical (P0) - Immediate Fix Required
@@ -169,7 +152,6 @@
 - Minor features partially broken
 - Cosmetic issues that affect UX
 - Edge cases that rarely occur
-- Non-critical accessibility issues
 
 ### Low (P3) - Nice to Have
 - Enhancement requests

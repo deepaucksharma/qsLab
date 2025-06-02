@@ -182,17 +182,17 @@ Verify the episode player interface design, control styling, overlay behavior, a
   - Content scales appropriately
   - No cut-off elements
 
-### Focus Management
-- [ ] **Keyboard Navigation**
-  - Tab order logical
-  - Focus indicators visible
-  - Skip links if needed
-  - Escape key handling
+### UI State Management
+- [ ] **Visual States**
+  - Hover effects visible
+  - Active states clear
+  - Loading states shown
+  - Error states handled
 
-- [ ] **Screen Reader**
-  - Controls labeled
-  - States announced
-  - Progress updates
+- [ ] **Control Labels**
+  - Controls clearly labeled
+  - States visually indicated
+  - Progress visible
   - Interactive prompts clear
 
 ### Loading States

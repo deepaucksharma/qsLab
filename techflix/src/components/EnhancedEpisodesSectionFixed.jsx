@@ -1,85 +1,77 @@
-import React, { useState, useContext, useEffect, useCallback, useMemo } from 'react';
-import { AppContext } from '../App';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import SeasonTabs from './SeasonTabs';
 import NetflixEpisodeCard from './NetflixEpisodeCard';
 import { Grid3x3, List, Clock } from 'lucide-react';
-// import { SERIES_DATA } from '../data/seriesData'; // Not needed - using from context
+import { useEpisodeStore } from '../store/episodeStore';
 import logger from '../utils/logger';
 
-// Progress tracking utilities
-const getProgress = (seasonNumber, episodeNumber) => {
-  const key = `progress_s${seasonNumber}e${episodeNumber}`;
-  const stored = localStorage.getItem(key);
-  return stored ? JSON.parse(stored) : {
-    watched: false,
-    watchedDate: null,
-    timeWatched: 0,
-    percentComplete: 0,
-    lastWatchedPosition: 0
-  };
-};
-
-const saveProgress = (seasonNumber, episodeNumber, progress) => {
-  const key = `progress_s${seasonNumber}e${episodeNumber}`;
-  localStorage.setItem(key, JSON.stringify(progress));
-};
-
-// Transform existing episode data to enhanced format
-const transformEpisodeData = (episode, seasonNumber) => {
-  const progress = getProgress(seasonNumber, episode.number);
-  
-  // Parse duration to seconds
-  const durationMatch = episode.duration?.match(/(\d+)m/);
-  const durationInSeconds = durationMatch ? parseInt(durationMatch[1]) * 60 : 2700;
-  
-  return {
-    id: `s${seasonNumber}e${episode.number}`,
-    seasonNumber,
-    episodeNumber: episode.number,
-    overallNumber: episode.number + (seasonNumber - 1) * 4, // Assuming 4 episodes per season
-    title: episode.title,
-    description: episode.description,
-    synopsis: episode.description, // Using description as synopsis
-    duration: durationInSeconds,
-    durationDisplay: episode.duration,
-    level: episode.level,
-    tags: episode.tags || [],
-    hasContent: episode.hasContent,
-    episodeData: episode.episodeData,
-    thumbnail: null, // Would need actual thumbnails
-    previewVideo: null, // Would need actual preview videos
-    progress,
-    ratings: {
-      userScore: 4.5 + Math.random() * 0.5, // Mock rating
-      viewCount: Math.floor(50000 + Math.random() * 100000)
-    },
-    downloadAvailable: episode.hasContent,
-    comingSoon: !episode.hasContent,
-    expectedReleaseDate: !episode.hasContent ? 
-      new Date(Date.now() + (7 + episode.number * 7) * 24 * 60 * 60 * 1000).toISOString() : null,
-    metadata: {
-      director: "Tech Studios",
-      writers: ["TechFlix Team"],
-      producers: ["TechFlix Productions"]
-    }
-  };
-};
-
 const EnhancedEpisodesSectionFixed = () => {
+  // Get everything from Zustand store
   const { 
+    seasons,
     currentSeason, 
-    setCurrentSeason, 
-    setIsPlayerActive, 
-    setCurrentEpisode,
+    currentEpisode,
     isPlayerActive,
-    currentEpisode: currentlyPlayingEpisode,
-    seasons 
-  } = useContext(AppContext);
+    setCurrentSeason, 
+    setCurrentEpisode,
+    setIsPlayerActive,
+    getEpisodeProgress, 
+    updateProgress,
+    getContinueWatching 
+  } = useEpisodeStore();
   
-  const [selectedSeason, setSelectedSeason] = useState(currentSeason || 1);
+  const [selectedSeason, setSelectedSeason] = useState(1);
   const [viewMode, setViewMode] = useState('grid');
   const [showContinueWatching, setShowContinueWatching] = useState(true);
   const [transformedData, setTransformedData] = useState({});
+
+  // Initialize selected season from store
+  useEffect(() => {
+    if (currentSeason) {
+      setSelectedSeason(currentSeason);
+    }
+  }, [currentSeason]);
+  
+  // Transform existing episode data to enhanced format
+  const transformEpisodeData = useCallback((episode, seasonNumber) => {
+    const progress = getEpisodeProgress(seasonNumber, episode.number);
+    
+    // Parse duration to seconds
+    const durationMatch = episode.duration?.match(/(\d+)m/);
+    const durationInSeconds = durationMatch ? parseInt(durationMatch[1]) * 60 : 2700;
+    
+    return {
+      id: `s${seasonNumber}e${episode.number}`,
+      seasonNumber,
+      episodeNumber: episode.number,
+      overallNumber: episode.number + (seasonNumber - 1) * 4, // Assuming 4 episodes per season
+      title: episode.title,
+      description: episode.description,
+      synopsis: episode.description, // Using description as synopsis
+      duration: durationInSeconds,
+      durationDisplay: episode.duration,
+      level: episode.level,
+      tags: episode.tags || [],
+      hasContent: episode.hasContent,
+      episodeData: episode.episodeData,
+      thumbnail: null, // Would need actual thumbnails
+      previewVideo: null, // Would need actual preview videos
+      progress,
+      ratings: {
+        userScore: 4.5 + Math.random() * 0.5, // Mock rating
+        viewCount: Math.floor(50000 + Math.random() * 100000)
+      },
+      downloadAvailable: episode.hasContent,
+      comingSoon: !episode.hasContent,
+      expectedReleaseDate: !episode.hasContent ? 
+        new Date(Date.now() + (7 + episode.number * 7) * 24 * 60 * 60 * 1000).toISOString() : null,
+      metadata: {
+        director: "Tech Studios",
+        writers: ["TechFlix Team"],
+        producers: ["TechFlix Productions"]
+      }
+    };
+  }, [getEpisodeProgress]);
   
   // Transform all episode data and load progress
   useEffect(() => {
@@ -96,7 +88,7 @@ const EnhancedEpisodesSectionFixed = () => {
       }
     });
     setTransformedData(transformed);
-  }, [seasons]);
+  }, [seasons, transformEpisodeData]);
   
   // Get continue watching episodes (memoized for performance)
   const continueWatchingEpisodes = useMemo(() => {
@@ -109,8 +101,8 @@ const EnhancedEpisodesSectionFixed = () => {
       });
     });
     return continueWatching.sort((a, b) => {
-      const dateA = new Date(a.progress.watchedDate || 0);
-      const dateB = new Date(b.progress.watchedDate || 0);
+      const dateA = new Date(a.progress.lastWatchedDate || 0);
+      const dateB = new Date(b.progress.lastWatchedDate || 0);
       return dateB - dateA;
     });
   }, [transformedData]);
@@ -128,7 +120,7 @@ const EnhancedEpisodesSectionFixed = () => {
     })
   }));
 
-  const handlePlayEpisode = (episode) => {
+  const handlePlayEpisode = useCallback((episode) => {
     if (!episode.hasContent || !episode.episodeData) return;
     
     // Update context with the original episode data format
@@ -136,25 +128,22 @@ const EnhancedEpisodesSectionFixed = () => {
     setCurrentSeason(episode.seasonNumber);
     setIsPlayerActive(true);
     
-    // Update progress to mark as started
-    const newProgress = {
-      ...episode.progress,
-      lastWatchedDate: new Date().toISOString()
-    };
-    saveProgress(episode.seasonNumber, episode.episodeNumber, newProgress);
+    // Update progress to mark as started (only update lastWatchedDate)
+    // The actual progress tracking happens in the player component
+    updateProgress(episode.seasonNumber, episode.episodeNumber, 0, episode.duration);
     
     // Scroll to player
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
+  }, [setCurrentEpisode, setCurrentSeason, setIsPlayerActive, updateProgress]);
 
-  const handleSeasonChange = (seasonNumber) => {
+  const handleSeasonChange = useCallback((seasonNumber) => {
     setSelectedSeason(seasonNumber);
     setCurrentSeason(seasonNumber);
-  };
+  }, [setCurrentSeason]);
 
   // Determine currently playing episode
-  const currentlyPlayingEpisodeId = isPlayerActive && currentlyPlayingEpisode ? 
-    `s${currentSeason}e${currentlyPlayingEpisode.metadata?.episodeNumber || 1}` : null;
+  const currentlyPlayingEpisodeId = isPlayerActive && currentEpisode ? 
+    `s${currentSeason}e${currentEpisode.metadata?.episodeNumber || 1}` : null;
 
   return (
     <section className="w-full bg-black py-8">

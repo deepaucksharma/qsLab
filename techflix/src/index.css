@@ -1,5 +1,6 @@
+@import './styles/techflix-unified.css';
 @import './styles/global.css';
-@import './styles/techflix-design-system.css';
+@import './styles/accessibility.css';
 
 @tailwind base;
 @tailwind components;

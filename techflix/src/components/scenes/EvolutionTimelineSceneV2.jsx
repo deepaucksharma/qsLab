@@ -3,13 +3,13 @@
  * Shows the history of Apache Kafka from 2011 to present
  */
 
-import { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Calendar, Users, MessageSquare, TrendingUp, Zap } from 'lucide-react'
 import audioManager from '@utils/audioManager' // Updated import
 import logger from '@utils/logger'
 
-const EvolutionTimelineSceneV2 = ({ time = 0, duration = 480 }) => {
+const EvolutionTimelineSceneV2 = React.memo(({ time = 0, duration = 480 }) => {
   const [currentPhase, setCurrentPhase] = useState(0)
   const [showSubtitles, setShowSubtitles] = useState(true)
   const [currentSubtitle, setCurrentSubtitle] = useState('')
@@ -86,14 +86,11 @@ const EvolutionTimelineSceneV2 = ({ time = 0, duration = 480 }) => {
     }
     
     return () => {
-      // Cleanup audio when component unmounts.
-      // TEMPORARILY DISABLED: Prevents audio from cutting out during scene transitions
-      // This was cleaning up ALL episode audio, not just scene-specific audio
-      // if (audioInitialized.current) { // Check if it was initialized to prevent cleanup if load failed early
-      //   logger.debug('EvolutionTimelineSceneV2: Unmounting, cleaning up episode audio.')
-      //   audioManager.cleanupEpisodeAudio()
-      //   audioInitialized.current = false
-      // }
+      // Cleanup scene-specific audio when component unmounts
+      if (audioInitialized.current) {
+        logger.debug('EvolutionTimelineSceneV2: Unmounting, cleaning up scene audio.')
+        audioManager.cleanupSceneAudio()
+      }
     }
   }, [])
   
@@ -144,7 +141,7 @@ const EvolutionTimelineSceneV2 = ({ time = 0, duration = 480 }) => {
       {/* Content */}
       <div className="relative z-10 flex-1 flex flex-col justify-center items-center p-8">
         <motion.h1
-          className="text-6xl font-bold text-white mb-16 text-center"
+          className="text-responsive-hero font-bold text-white mb-16 text-center"
           initial={{ opacity: 0, y: -50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1 }}
@@ -222,13 +219,13 @@ const EvolutionTimelineSceneV2 = ({ time = 0, duration = 480 }) => {
                       opacity: isCurrent ? 1 : 0.6
                     }}
                   >
-                    <div className="text-2xl font-bold text-white mb-1">
+                    <div className="scene-text-secondary font-bold text-white mb-1">
                       {event.year}
                     </div>
-                    <div className="text-lg font-semibold text-blue-400 mb-1">
+                    <div className="scene-text-caption font-semibold text-blue-400 mb-1">
                       {event.title}
                     </div>
-                    <div className="text-sm text-gray-400 max-w-[150px]">
+                    <div className="scene-text-caption text-gray-400 max-w-[150px] timeline-event-text">
                       {event.description}
                     </div>
                   </motion.div>
@@ -258,7 +255,7 @@ const EvolutionTimelineSceneV2 = ({ time = 0, duration = 480 }) => {
               transition={{ duration: 0.5 }}
             >
               <motion.div
-                className="text-3xl font-bold text-white mb-4"
+                className="text-responsive-title font-bold text-white mb-4"
                 animate={{
                   textShadow: [
                     "0 0 20px rgba(255, 255, 255, 0.5)",
@@ -310,6 +307,14 @@ const EvolutionTimelineSceneV2 = ({ time = 0, duration = 480 }) => {
       </button>
     </div>
   )
-}
+}, (prevProps, nextProps) => {
+  // Custom comparison for React.memo
+  // Only re-render if time changed significantly
+  const TIME_THRESHOLD = 0.5; // 500ms threshold
+  const timeDiff = Math.abs(prevProps.time - nextProps.time);
+  return timeDiff < TIME_THRESHOLD && prevProps.duration === nextProps.duration;
+});
 
-export default EvolutionTimelineSceneV2
+EvolutionTimelineSceneV2.displayName = 'EvolutionTimelineSceneV2';
+
+export default EvolutionTimelineSceneV2;

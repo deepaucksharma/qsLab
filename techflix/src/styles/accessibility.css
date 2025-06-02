@@ -1,0 +1,175 @@
+/* Accessibility Styles - Focus Indicators */
+
+/* Global focus-visible styles for keyboard navigation */
+*:focus-visible {
+  outline: 2px solid var(--color-info, #3B82F6) !important;
+  outline-offset: 2px !important;
+  transition: outline-offset 0.1s ease-out;
+  z-index: 9999;
+}
+
+/* Remove default outline for mouse users */
+*:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Fix for elements that were missing focus states */
+.netflix-button:focus-visible {
+  outline: 2px solid currentColor !important;
+  outline-offset: 2px !important;
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.2);
+}
+
+/* Episode Cards */
+.episode-card:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(229, 9, 20, 0.5);
+  transform: scale(1.02);
+}
+
+/* Player Controls */
+.player-button:focus-visible,
+.player-control:focus-visible {
+  outline: 2px solid #FFFFFF;
+  outline-offset: 2px;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Volume Slider */
+.volume-slider:focus-visible {
+  outline: 2px solid #FFFFFF;
+  outline-offset: 4px;
+}
+
+/* Progress Bar */
+.progress-bar:focus-visible {
+  outline: 2px solid #E50914;
+  outline-offset: 4px;
+  height: 8px; /* Expand on focus */
+}
+
+/* Quiz Options */
+.quiz-option:focus-visible {
+  outline: none;
+  border: 2px solid #E50914;
+  box-shadow: 0 0 0 2px rgba(229, 9, 20, 0.3);
+  transform: translateY(-2px);
+}
+
+/* Modal Elements */
+.modal-close:focus-visible,
+.modal-button:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+/* Navigation Links */
+nav a:focus-visible,
+.nav-link:focus-visible {
+  outline: 2px solid #E50914;
+  outline-offset: 4px;
+  text-decoration: underline;
+}
+
+/* Form Inputs */
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid #E50914;
+  outline-offset: 0;
+  border-color: #E50914;
+}
+
+/* Buttons */
+button:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+.btn-primary:focus-visible {
+  outline-color: #FFFFFF;
+  box-shadow: 0 0 0 3px rgba(229, 9, 20, 0.5);
+}
+
+.btn-secondary:focus-visible {
+  outline-color: #E50914;
+}
+
+/* Skip Links for Accessibility */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: #E50914;
+  color: white;
+  padding: 8px 16px;
+  text-decoration: none;
+  border-radius: 0 0 4px 0;
+  z-index: 10000;
+}
+
+.skip-link:focus {
+  top: 0;
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+  *:focus-visible {
+    outline-width: 3px;
+    outline-style: solid;
+  }
+  
+  .episode-card:focus-visible {
+    outline: 3px solid;
+    box-shadow: none;
+  }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  
+  .episode-card:focus-visible {
+    transform: none;
+  }
+  
+  .quiz-option:focus-visible {
+    transform: none;
+  }
+}
+
+/* Windows High Contrast Mode */
+@media (-ms-high-contrast: active), (prefers-contrast: high) {
+  *:focus-visible {
+    outline: 3px solid currentColor !important;
+    outline-offset: 2px !important;
+  }
+}
+
+/* Ensure interactive elements are keyboard accessible */
+.episode-card,
+.interactive-element {
+  cursor: pointer;
+}
+
+.episode-card:not([tabindex]) {
+  tabindex: 0;
+}
+
+/* Focus trap for modals */
+.modal-content:focus {
+  outline: none;
+}
+
+/* Visible focus for custom checkbox/radio */
+.custom-checkbox:focus-visible + label::before,
+.custom-radio:focus-visible + label::before {
+  outline: 2px solid #E50914;
+  outline-offset: 2px;
+}

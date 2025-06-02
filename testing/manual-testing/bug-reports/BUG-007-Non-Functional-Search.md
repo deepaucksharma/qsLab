@@ -32,7 +32,7 @@ The search input in the Header component is purely decorative and non-functional
 ## Impact
 - **User Experience**: Confusing non-functional UI element
 - **Search Functionality**: Users cannot search for content
-- **Accessibility**: Misleading for screen readers and keyboard users
+- **Usability**: Misleading for users navigating with keyboard
 - **Trust**: Users may think the app is broken
 
 ## Expected Behavior
@@ -40,7 +40,7 @@ Search input should:
 1. Accept user input
 2. Navigate to `/search?q={query}` on Enter or submit
 3. Show search results on SearchPage
-4. Have proper accessibility attributes
+4. Have proper usability attributes
 
 ## Fix Applied
 **Date**: June 2, 2025  
@@ -52,7 +52,7 @@ Search input should:
 3. **Added event handlers**: Added `handleSearchSubmit` and `handleSearchChange`
 4. **Wrapped input in form**: Proper form submission for Enter key support
 5. **Added search button**: Visual search button with icon
-6. **Added accessibility**: Proper aria-labels for screen readers
+6. **Added labels**: Proper labels for user navigation
 
 ### Fixed Implementation:
 ```javascript
@@ -67,9 +67,9 @@ Search input should:
     placeholder="Search titles..." 
     value={searchQuery}
     onChange={handleSearchChange}
-    aria-label="Search episodes and series"
+    title="Search episodes and series"
   />
-  <button type="submit" className="..." aria-label="Submit search">
+  <button type="submit" className="..." title="Submit search">
     <Search size={18} />
   </button>
 </form>
@@ -81,9 +81,9 @@ Search input should:
 - ✅ Proper URL encoding for search queries
 - ✅ Clears input after search
 - ✅ Sound effects on search submission
-- ✅ Accessibility attributes for screen readers
+- ✅ Clear labels for user navigation
 - ✅ Visual search button with hover effects
 
 ---
 
-**Resolution**: Search functionality is now fully functional and accessible.
+**Resolution**: Search functionality is now fully functional and user-friendly.

@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { Home, Search, ArrowLeft } from 'lucide-react';
 import { useEffect } from 'react';
 import { ROUTES } from '../router';
+import TechFlixButton from '@components/TechFlixButton';
 
 const NotFoundPage = () => {
   const navigate = useNavigate();
@@ -42,39 +43,38 @@ const NotFoundPage = () => {
           Lost in the Stream
         </h2>
         <p className="text-xl text-gray-400 mb-8 max-w-md mx-auto">
-          The content you're looking for seems to have wandered off. 
-          Let's get you back on track.
+          The content you&apos;re looking for seems to have wandered off. 
+          Let&apos;s get you back on track.
         </p>
 
         {/* Action Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-          <button
+          <TechFlixButton
+            variant="primary"
+            size="lg"
+            leftIcon={<Home className="w-5 h-5" />}
             onClick={() => navigate(ROUTES.BROWSE)}
-            className="px-6 py-3 bg-netflix-red text-white rounded-lg hover:bg-red-700 
-                     transition duration-200 flex items-center justify-center gap-2 font-medium"
           >
-            <Home className="w-5 h-5" />
             Back to Browse
-          </button>
+          </TechFlixButton>
           
-          <button
+          <TechFlixButton
+            variant="secondary"
+            size="lg"
+            leftIcon={<Search className="w-5 h-5" />}
             onClick={() => navigate(ROUTES.SEARCH)}
-            className="px-6 py-3 bg-zinc-800 text-white rounded-lg hover:bg-zinc-700 
-                     transition duration-200 flex items-center justify-center gap-2 font-medium"
           >
-            <Search className="w-5 h-5" />
             Search Content
-          </button>
+          </TechFlixButton>
           
-          <button
+          <TechFlixButton
+            variant="ghost"
+            size="lg"
+            leftIcon={<ArrowLeft className="w-5 h-5" />}
             onClick={() => window.history.back()}
-            className="px-6 py-3 bg-transparent text-white border border-zinc-700 
-                     rounded-lg hover:bg-zinc-900 transition duration-200 
-                     flex items-center justify-center gap-2 font-medium"
           >
-            <ArrowLeft className="w-5 h-5" />
             Go Back
-          </button>
+          </TechFlixButton>
         </div>
 
         {/* Suggestions */}
@@ -82,7 +82,7 @@ const NotFoundPage = () => {
           <p className="text-gray-500 mb-4">Popular destinations:</p>
           <div className="flex gap-4 justify-center flex-wrap">
             <button
-              onClick={() => navigate(`${ROUTES.SERIES}/techflix`)}
+              onClick={() => navigate(ROUTES.SERIES('tech-insights'))}
               className="text-netflix-red hover:underline"
             >
               Tech Insights Series

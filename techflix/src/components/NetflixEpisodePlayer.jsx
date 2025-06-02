@@ -3,10 +3,12 @@ import { Play, Pause, ChevronLeft, Maximize2, Volume2, Settings,
          SkipForward, SkipBack, Info } from 'lucide-react'
 import logger from '../utils/logger'
 import audioManager from '../utils/audioManager'
-import { useEpisodeProgress } from '../hooks/useEpisodeProgress'
+import { useEpisodeStore } from '../store/episodeStore'
 import { useVoiceOver } from '../hooks/useVoiceOver'
+import { usePageVisibility } from '../hooks/usePageVisibility'
 import VoiceOverControls from './VoiceOverControls'
 import ErrorBoundary from './ErrorBoundary'
+import SceneWrapper from './SceneWrapper'
 
 // Import interactive components
 import InteractiveStateMachine from './interactive/InteractiveStateMachine'
@@ -15,12 +17,14 @@ const NetflixEpisodePlayer = ({ episodeData, onEpisodeEnd, onBack }) => {
   const [episode, setEpisode] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
   const [currentSceneIndex, setCurrentSceneIndex] = useState(0)
-  const { updateProgress: updateEpisodeProgress } = useEpisodeProgress()
   const [sceneTime, setSceneTime] = useState(0)
   const [isPlaying, setIsPlaying] = useState(false)
   const [showControls, setShowControls] = useState(true)
   const [interactiveMode, setInteractiveMode] = useState(null)
   const [voiceOverEnabled, setVoiceOverEnabled] = useState(() => audioManager.voiceOverEnabled)
+  
+  // Use Zustand store for progress tracking
+  const { updateProgress: updateZustandProgress } = useEpisodeStore()
   
   // Get episode and scene IDs for voice-over
   const episodeId = episode ? `s${episode.metadata?.seasonNumber || 1}e${episode.metadata?.episodeNumber || 1}` : null
@@ -40,19 +44,45 @@ const NetflixEpisodePlayer = ({ episodeData, onEpisodeEnd, onBack }) => {
     }
   })
   
-  // Wrapper to maintain compatibility with old updateProgress signature
+  // Update progress using Zustand store
   const updateProgress = useCallback((seasonNumber, episodeNumber, timeWatched, duration) => {
-    const episodeId = `s${seasonNumber}e${episodeNumber}`;
-    updateEpisodeProgress(episodeId, {
-      watchedSeconds: timeWatched,
-      totalSeconds: duration,
-      percentage: (timeWatched / duration) * 100,
-      completed: timeWatched >= duration * 0.95
-    });
-  }, [updateEpisodeProgress]);
+    updateZustandProgress(seasonNumber, episodeNumber, timeWatched, duration);
+  }, [updateZustandProgress]);
 
   const playerRef = useRef(null)
   const controlsTimeoutRef = useRef(null)
+  const wasPlayingBeforeHidden = useRef(false)
+
+  // Use page visibility hook to optimize performance
+  usePageVisibility({
+    onHidden: () => {
+      // Store current playing state and pause
+      if (isPlaying) {
+        wasPlayingBeforeHidden.current = true;
+        setIsPlaying(false);
+        logger.info('Pausing playback - tab hidden');
+      }
+      // Pause voice-over
+      if (voiceOver && voiceOver.pause) {
+        voiceOver.pause();
+      }
+    },
+    onVisible: () => {
+      // Resume if was playing before
+      if (wasPlayingBeforeHidden.current && !interactiveMode) {
+        setIsPlaying(true);
+        wasPlayingBeforeHidden.current = false;
+        logger.info('Resuming playback - tab visible');
+        // Resume voice-over
+        if (voiceOver && voiceOver.play && voiceOverEnabled) {
+          voiceOver.play();
+        }
+      }
+    },
+    pauseAnimations: true,
+    suspendAudio: true,
+    throttleTimers: true
+  });
 
   // Interactive component mapping for string references
   const interactiveComponents = {
@@ -122,16 +152,22 @@ const NetflixEpisodePlayer = ({ episodeData, onEpisodeEnd, onBack }) => {
     return () => clearInterval(progressInterval);
   }, [episode, isPlaying, isLoading, interactiveMode, currentSceneIndex, sceneTime, updateProgress]);
 
-  // Playback engine
+  // Playback engine - Using requestAnimationFrame for better performance
   useEffect(() => {
     if (!episode || !isPlaying || isLoading || interactiveMode) return
 
     const currentScene = episode.scenes[currentSceneIndex]
     if (!currentScene) return
     
-    const intervalId = setInterval(() => {
+    let frameId;
+    let lastTime = performance.now();
+    
+    const updateTime = (currentTime) => {
+      const deltaTime = (currentTime - lastTime) / 1000; // Convert to seconds
+      lastTime = currentTime;
+      
       setSceneTime(prevTime => {
-        const newTime = prevTime + 0.1
+        const newTime = prevTime + deltaTime;
 
         // Check for interactive moments
         const interactiveMoment = currentScene.interactiveMoments?.find(
@@ -177,9 +213,17 @@ const NetflixEpisodePlayer = ({ episodeData, onEpisodeEnd, onBack }) => {
         }
         return newTime
       })
-    }, 100)
+      
+      frameId = requestAnimationFrame(updateTime);
+    }
+    
+    frameId = requestAnimationFrame(updateTime);
 
-    return () => clearInterval(intervalId)
+    return () => {
+      if (frameId) {
+        cancelAnimationFrame(frameId);
+      }
+    }
   }, [episode, isPlaying, isLoading, currentSceneIndex, interactiveMode, onEpisodeEnd])
 
   // Controls visibility
@@ -201,6 +245,10 @@ const NetflixEpisodePlayer = ({ episodeData, onEpisodeEnd, onBack }) => {
     return () => {
       if (playerElement) {
         playerElement.removeEventListener('mousemove', handleMouseMove)
+      }
+      // Clear controls timeout on unmount
+      if (controlsTimeoutRef.current) {
+        clearTimeout(controlsTimeoutRef.current)
       }
     }
   }, [handleMouseMove])
@@ -232,9 +280,49 @@ const NetflixEpisodePlayer = ({ episodeData, onEpisodeEnd, onBack }) => {
     const progressBar = e.currentTarget
     const clickPosition = e.nativeEvent.offsetX
     const barWidth = progressBar.clientWidth
-    const seekRatio = clickPosition / barWidth
+    const seekRatio = Math.max(0, Math.min(1, clickPosition / barWidth)) // Clamp between 0 and 1
     const currentSceneDuration = episode?.scenes[currentSceneIndex]?.duration || 1
-    setSceneTime(seekRatio * currentSceneDuration)
+    const newTime = Math.max(0, Math.min(currentSceneDuration, seekRatio * currentSceneDuration))
+    setSceneTime(newTime)
+  }
+
+  // Control handlers for player buttons
+  const handleSkipBack = () => {
+    // Skip back 10 seconds or to beginning of scene
+    const newTime = Math.max(0, sceneTime - 10)
+    setSceneTime(newTime)
+    const currentSceneData = episode?.scenes[currentSceneIndex]
+    logger.info('Skip back', { episodeId: episode?.metadata?.title, sceneId: currentSceneData?.id, newTime })
+  }
+
+  const handleSkipForward = () => {
+    // Skip forward 10 seconds or to end of scene
+    const currentSceneData = episode?.scenes[currentSceneIndex]
+    const currentSceneDuration = currentSceneData?.duration || 0
+    const newTime = Math.min(currentSceneDuration, sceneTime + 10)
+    setSceneTime(newTime)
+    logger.info('Skip forward', { episodeId: episode?.metadata?.title, sceneId: currentSceneData?.id, newTime })
+  }
+
+  const handleVolumeToggle = () => {
+    // Placeholder for volume control
+    logger.info('Volume control clicked - functionality pending implementation')
+  }
+
+  const handleSettings = () => {
+    // Placeholder for settings
+    logger.info('Settings control clicked - functionality pending implementation')
+  }
+
+  const handleFullscreen = () => {
+    // Toggle fullscreen
+    if (!document.fullscreenElement) {
+      playerRef.current?.requestFullscreen()
+      logger.info('Entered fullscreen mode')
+    } else {
+      document.exitFullscreen()
+      logger.info('Exited fullscreen mode')
+    }
   }
 
   if (isLoading) {
@@ -301,9 +389,11 @@ const NetflixEpisodePlayer = ({ episodeData, onEpisodeEnd, onBack }) => {
                   });
                 }}
               >
-                <SceneComponent
+                <SceneWrapper
+                  component={SceneComponent}
                   time={sceneTime}
                   duration={currentSceneData?.duration}
+                  sceneId={currentSceneData?.id}
                 />
               </ErrorBoundary>
             ) : (
@@ -344,14 +434,14 @@ const NetflixEpisodePlayer = ({ episodeData, onEpisodeEnd, onBack }) => {
             >
               <div 
                 className="h-full bg-red-600 rounded-full"
-                style={{ width: `${(sceneTime / (currentSceneData?.duration || 1)) * 100}%` }}
+                style={{ width: `${(currentSceneData?.duration && currentSceneData.duration > 0) ? (sceneTime / currentSceneData.duration) * 100 : 0}%` }}
               />
               {/* Interactive markers */}
               {currentSceneData?.interactiveMoments?.map((moment, idx) => (
                 <div
                   key={idx}
                   className="absolute top-1/2 -translate-y-1/2 w-2 h-2 bg-yellow-500 rounded-full"
-                  style={{ left: `${(moment.timestamp / currentSceneData.duration) * 100}%` }}
+                  style={{ left: `${(currentSceneData.duration && currentSceneData.duration > 0) ? (moment.timestamp / currentSceneData.duration) * 100 : 0}%` }}
                   title="Interactive moment"
                 />
               ))}
@@ -369,14 +459,14 @@ const NetflixEpisodePlayer = ({ episodeData, onEpisodeEnd, onBack }) => {
               <button onClick={handlePlayPause} className="text-white p-2 rounded-full hover:bg-white/10 transition-colors">
                 {isPlaying ? <Pause className="w-7 h-7" /> : <Play className="w-7 h-7" />}
               </button>
-              <button className="text-white p-2 rounded-full hover:bg-white/10 transition-colors">
+              <button onClick={handleSkipBack} className="text-white p-2 rounded-full hover:bg-white/10 transition-colors">
                 <SkipBack className="w-6 h-6" />
               </button>
-              <button className="text-white p-2 rounded-full hover:bg-white/10 transition-colors">
+              <button onClick={handleSkipForward} className="text-white p-2 rounded-full hover:bg-white/10 transition-colors">
                 <SkipForward className="w-6 h-6" />
               </button>
               <div className="relative group">
-                <button className="text-white p-2 rounded-full hover:bg-white/10 transition-colors">
+                <button onClick={handleVolumeToggle} className="text-white p-2 rounded-full hover:bg-white/10 transition-colors">
                   <Volume2 className="w-6 h-6" />
                 </button>
               </div>
@@ -396,11 +486,11 @@ const NetflixEpisodePlayer = ({ episodeData, onEpisodeEnd, onBack }) => {
 
             <div className="flex items-center gap-4">
               <div className="relative group">
-                <button className="text-white p-2 rounded-full hover:bg-white/10 transition-colors">
+                <button onClick={handleSettings} className="text-white p-2 rounded-full hover:bg-white/10 transition-colors">
                   <Settings className="w-5 h-5" />
                 </button>
               </div>
-              <button className="text-white p-2 rounded-full hover:bg-white/10 transition-colors">
+              <button onClick={handleFullscreen} className="text-white p-2 rounded-full hover:bg-white/10 transition-colors">
                 <Maximize2 className="w-5 h-5" />
               </button>
             </div>

@@ -174,7 +174,7 @@ async function generateAllVoiceOvers() {
   await fs.writeFile(indexPath, JSON.stringify({
     episodes: Object.keys(VOICEOVER_SCRIPTS),
     totalScenes: totalGenerated,
-    totalDuration: totalDuration,
+    totalDuration,
     generated: new Date().toISOString(),
     voices: VOICES
   }, null, 2));

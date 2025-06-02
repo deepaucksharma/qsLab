@@ -140,7 +140,7 @@ java -javaagent:./jmx_prometheus_javaagent-0.19.0.jar=9404:jmx_exporter.yml \
           transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
         >
           {Array(100).fill(null).map((_, i) => (
-            <div key={i}>{'kafka.server<type=sharegroup,group=sg-' + i + '><>RecordsUnacked: ' + Math.floor(Math.random() * 1000)}</div>
+            <div key={i}>{`kafka.server<type=sharegroup,group=sg-${  i  }><>RecordsUnacked: ${  Math.floor(Math.random() * 1000)}`}</div>
           ))}
         </motion.div>
       </div>

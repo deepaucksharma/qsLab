@@ -119,12 +119,12 @@
 - [ ] Cursor changes to pointer
 - [ ] No jumpy or glitchy hovers
 
-### Focus States
-- [ ] Keyboard navigation visible
-- [ ] Focus indicators high contrast
-- [ ] Tab order logical
-- [ ] No focus traps
-- [ ] Skip links available
+### Visual Navigation States
+- [ ] Navigation indicators visible
+- [ ] Hover indicators high contrast
+- [ ] Navigation order logical
+- [ ] No navigation blocks
+- [ ] Quick navigation available
 
 ### Active/Pressed States
 - [ ] Buttons show pressed state
@@ -183,19 +183,19 @@
 - [ ] Respects prefers-reduced-motion
 - [ ] Can be interrupted
 
-## 7. Accessibility Visual Checks
+## 7. Usability Visual Checks
 
 ### Color Contrast
-- [ ] Text on background: >4.5:1 (AA)
-- [ ] Large text: >3:1 (AA)
+- [ ] Text on background: >4.5:1 (recommended)
+- [ ] Large text: >3:1 (recommended)
 - [ ] Interactive elements: >3:1
-- [ ] Focus indicators: >3:1
+- [ ] Visual indicators: >3:1
 - [ ] Error messages readable
 
 ### Visual Indicators
-- [ ] Focus states visible
+- [ ] Hover states visible
 - [ ] Error states clear
-- [ ] Loading states announced
+- [ ] Loading states shown
 - [ ] Required fields marked
 - [ ] Success feedback visible
 

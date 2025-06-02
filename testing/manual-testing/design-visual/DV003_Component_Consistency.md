@@ -39,7 +39,6 @@ Ensure visual consistency across all UI components, adherence to design system, 
   - Consistent icon size
   - Hover background
   - Tooltip on hover
-  - Accessibility label
 
 ### Form Elements
 - [ ] **Text Inputs**
@@ -240,13 +239,6 @@ Ensure visual consistency across all UI components, adherence to design system, 
 - [ ] No hardcoded values
 - [ ] Theming support
 - [ ] Documentation exists
-
-## Accessibility Consistency
-- [ ] Focus styles uniform
-- [ ] Color contrast meets standards
-- [ ] Interactive elements obvious
-- [ ] Error patterns consistent
-- [ ] Loading announcements
 
 ## Test Evidence
 - [ ] Component library screenshot

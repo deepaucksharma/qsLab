@@ -7,14 +7,14 @@
 Verify the Debug Panel functionality including activation, features, performance monitoring, log viewing, and state inspection capabilities.
 
 ## Prerequisites
-- Know keyboard shortcut: Ctrl+Shift+D
+- Know shortcut: Ctrl+Shift+D
 - Understand debug URL parameter: ?debug=true
 - Chrome DevTools available for comparison
 - Test in non-production environment
 
 ## Test Steps
 
-### Step 1: Keyboard Activation
+### Step 1: Shortcut Activation
 **Action:**
 1. Load any episode page
 2. Press Ctrl+Shift+D
@@ -187,7 +187,7 @@ Verify the Debug Panel functionality including activation, features, performance
 
 **Expected Result:**
 - Closes completely
-- Keyboard shortcut works again
+- Shortcut works again
 - Previous filters/settings saved
 - OR fresh state (by design)
 - No residual overlay

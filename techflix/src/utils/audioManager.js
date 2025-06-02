@@ -18,6 +18,7 @@ class AudioManager {
     this.voiceOverVolume = 0.8 // Used by new episode VO system as default, and by old system.
     this.initialized = false
     this.voiceOverListeners = new Set() // DEPRECATED: Part of the old voiceover system.
+    this.episodeStartTimeout = null // Store timeout reference to prevent stacking
 
     // Properties for Episode Audio Management
     this.episodeAudioData = {
@@ -69,25 +70,26 @@ class AudioManager {
       
       // Create event handlers with proper cleanup
       let cleanupDone = false
-      const cleanup = () => {
-        if (!cleanupDone) {
-          cleanupDone = true
-          audio.removeEventListener('canplaythrough', onLoad)
-          audio.removeEventListener('error', onError)
-        }
-      }
-      
-      const onLoad = () => {
-        cleanup()
-        resolve()
-      }
-      
-      const onError = (err) => {
-        cleanup()
-        reject(err)
-      }
       
       await new Promise((resolve, reject) => {
+        const cleanup = () => {
+          if (!cleanupDone) {
+            cleanupDone = true
+            audio.removeEventListener('canplaythrough', onLoad)
+            audio.removeEventListener('error', onError)
+          }
+        }
+        
+        const onLoad = () => {
+          cleanup()
+          resolve()
+        }
+        
+        const onError = (err) => {
+          cleanup()
+          reject(err)
+        }
+        
         audio.addEventListener('canplaythrough', onLoad)
         audio.addEventListener('error', onError)
         audio.load()
@@ -124,7 +126,17 @@ class AudioManager {
   }
 
   async playTaDum() { await this.play('ta-dum', { volume: 0.8 }) }
-  async playEpisodeStart() { await this.playTaDum(); setTimeout(() => { this.play('episode-start', { volume: 0.5 }) }, 2000); }
+  async playEpisodeStart() { 
+    await this.playTaDum()
+    // Clear any existing timeout to prevent stacking
+    if (this.episodeStartTimeout) {
+      clearTimeout(this.episodeStartTimeout)
+    }
+    this.episodeStartTimeout = setTimeout(() => { 
+      this.play('episode-start', { volume: 0.5 })
+      this.episodeStartTimeout = null
+    }, 2000)
+  }
   async playClick() { await this.play('click', { volume: 0.3 }) }
   async playHover() { await this.play('hover', { volume: 0.2 }) }
   async playTransition() { await this.play('transition', { volume: 0.4 }) }
@@ -347,6 +359,20 @@ class AudioManager {
     this.episodeAudioData.metadata = null;
     if (this.onEpisodeSubtitleUpdate) this.onEpisodeSubtitleUpdate('');
     logger.debug('Episode audio data cleaned up');
+  }
+
+  // Scene-specific cleanup that doesn't clear loaded audio data
+  cleanupSceneAudio() {
+    logger.info('Cleaning up scene-specific audio');
+    // Stop current voiceover without clearing loaded data
+    if (this.episodeAudioData.currentEpisodeVoiceover) {
+      this.stopEpisodeVoiceoverSegment();
+    }
+    // Stop all playing effects without clearing loaded data
+    this.stopAllEpisodeEffects();
+    // Clear subtitle
+    if (this.onEpisodeSubtitleUpdate) this.onEpisodeSubtitleUpdate('');
+    logger.debug('Scene audio cleaned up without clearing loaded data');
   }
 
   getEpisodeAudioState() {

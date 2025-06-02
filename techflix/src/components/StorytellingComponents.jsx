@@ -293,20 +293,29 @@ export const InteractiveQuiz = ({ question, options, correctAnswer, onComplete }
 };
 
 // Particle Background Component - For ambient visual effects
-export const ParticleBackground = ({ particleCount = 50, colors }) => {
-  const generateParticles = (count = 50, colors = ['#3b82f6', '#8b5cf6', '#10b981']) => {
+export const ParticleBackground = ({ 
+  count = 50, 
+  colors = ['#3b82f6', '#8b5cf6', '#10b981'],
+  size = 2,
+  speed = 0.5,
+  color = null
+}) => {
+  const generateParticles = () => {
+    // Use single color if provided, otherwise use colors array
+    const particleColors = color ? [color] : colors;
+    
     return Array.from({ length: count }, (_, i) => ({
       id: i,
       x: Math.random() * 100,
       y: Math.random() * 100,
-      size: Math.random() * 4 + 2,
-      color: colors[Math.floor(Math.random() * colors.length)],
-      duration: Math.random() * 10 + 10,
+      size: Math.random() * size + 1,
+      color: particleColors[Math.floor(Math.random() * particleColors.length)],
+      duration: Math.random() * (10 / speed) + (10 / speed),
       delay: Math.random() * 5
     }));
   };
   
-  const [particles] = useState(() => generateParticles(particleCount, colors));
+  const [particles] = useState(() => generateParticles());
   
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">

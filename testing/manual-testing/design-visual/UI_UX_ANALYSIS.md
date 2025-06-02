@@ -75,7 +75,6 @@ Based on data analysis:
 #### Expected Interactive States:
 - **Default**: Red background (#e50914)
 - **Hover**: Lighter red (#f40612)
-- **Focus**: Visible outline for accessibility
 - **Active**: Pressed state visual feedback
 
 ### Responsive Design Expectations
@@ -141,19 +140,6 @@ Based on NetflixEpisodePlayer component:
 - Scene jump controls
 - State inspection tools
 
-## Accessibility Considerations
-
-### Expected ARIA Implementation:
-- **Episode Cards**: `role="button"` with descriptive labels
-- **Video Controls**: Proper ARIA labels for screen readers
-- **Navigation**: Logical tab order and keyboard support
-- **Interactive Elements**: Focus indicators visible
-
-### Color Contrast Analysis:
-- **White on Dark**: Good contrast ratio (>7:1)
-- **Red on Dark**: Adequate contrast for accents
-- **Gray Text**: May need verification for WCAG compliance
-
 ## Predicted Issues & Test Areas
 
 ### Potential UI Issues to Test:
@@ -161,7 +147,6 @@ Based on NetflixEpisodePlayer component:
 2. **Grid Responsiveness**: Column collapse behavior
 3. **Image Loading**: Fallback states for missing thumbnails
 4. **Animation Performance**: Smooth transitions on slower devices
-5. **Focus Management**: Keyboard navigation flow
 
 ### Critical Visual Validation Points:
 1. **Netflix Brand Consistency**: Colors, typography, spacing

@@ -134,16 +134,16 @@ Verify the home page visual design, layout consistency, responsive behavior, and
   - Error states: Red shades
 
 - [ ] **Contrast Ratios**
-  - WCAG AA compliance (4.5:1)
+  - High contrast (4.5:1 recommended)
   - Tested with contrast checker
   - Readable for all users
 
 ### Interactive States
-- [ ] **Focus States**
-  - Visible outline on Tab navigation
+- [ ] **Hover States**
+  - Visible change on hover
   - Consistent color/style
   - Not just browser default
-  - Accessible indicators
+  - Clear visual indicators
 
 - [ ] **Active States**
   - Click feedback present

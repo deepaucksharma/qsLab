@@ -1,4 +1,4 @@
-import React, { useState, createContext, useEffect } from 'react'
+import React, { createContext, useEffect } from 'react'
 import Header from './components/Header'
 import HeroSection from './components/HeroSection'
 // import EpisodesSection from './components/EpisodesSection' // Replaced with Enhanced version
@@ -7,11 +7,11 @@ import SeriesDetails from './components/SeriesDetails'
 import NetflixEpisodePlayer from './components/NetflixEpisodePlayer'
 import EpisodeErrorBoundary from './components/EpisodeErrorBoundary'
 import DebugPanel from './components/DebugPanel'
-import { SERIES_DATA } from './data/seriesData'
+import { useEpisodeStore } from './store/episodeStore'
 import logger from './utils/logger'
 import './styles/global.css'
 
-// App Context for state management
+// App Context for backward compatibility
 export const AppContext = createContext({
   currentSeason: 1,
   setCurrentSeason: () => {},
@@ -26,48 +26,29 @@ export const AppContext = createContext({
 
 // Main App Component
 function App() {
-  const [currentSeason, setCurrentSeason] = useState(1)
-  const [isPlayerActive, setIsPlayerActive] = useState(false)
-  const [currentEpisode, setCurrentEpisode] = useState(null)
-  const [seasons, setSeasons] = useState([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState(null)
+  // Use Zustand store for all state
+  const {
+    seasons,
+    currentSeason,
+    currentEpisode,
+    isPlayerActive,
+    isLoading,
+    error,
+    setCurrentSeason,
+    setCurrentEpisode,
+    setIsPlayerActive,
+    initialize,
+    updateProgress
+  } = useEpisodeStore()
 
-  // Initialize seasons from static data
+  // Initialize store on mount
   useEffect(() => {
     logger.info('App initialized', {
-      totalSeasons: SERIES_DATA.seasons.length,
-      totalEpisodes: SERIES_DATA.seasons.reduce((acc, s) => acc + s.episodes.length, 0),
       environment: import.meta.env.MODE
     })
-
-    const initializeEpisodes = async () => {
-      try {
-        logger.info('Loading episodes...')
-        logger.startTimer('episodeLoad')
-        setIsLoading(true)
-        
-        // Use static SERIES_DATA
-        setSeasons(SERIES_DATA.seasons)
-        setError(null)
-        
-        const loadTime = logger.endTimer('episodeLoad')
-        logger.info('Episodes loaded successfully', {
-          seasonCount: SERIES_DATA.seasons.length,
-          loadTime
-        })
-      } catch (err) {
-        logger.error('Failed to initialize episodes', {
-          error: err.message,
-          stack: err.stack
-        })
-        setError('Failed to load episodes. Please refresh the page.')
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
-    initializeEpisodes()
+    
+    // Initialize the Zustand store
+    initialize()
   }, [])
 
   const contextValue = {

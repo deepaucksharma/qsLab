@@ -202,7 +202,7 @@ Test the integration between navigation components, React Router, browser histor
 - [ ] Query strings
 - [ ] Navigation state
 - [ ] Scroll position
-- [ ] Focus management
+- [ ] View state
 
 ## Performance During Navigation
 
@@ -220,21 +220,21 @@ Test the integration between navigation components, React Router, browser histor
 - [ ] Bundle sizes
 - [ ] Cache usage
 
-## Accessibility Navigation
+## Navigation Usability
 
-### Keyboard Navigation
-- [ ] Tab order logical
-- [ ] Focus management
-- [ ] Skip links work
-- [ ] Escape key handling
-- [ ] Arrow key support
+### User Experience
+- [ ] Navigation flow logical
+- [ ] View state clear
+- [ ] Links work properly
+- [ ] Back button handling
+- [ ] Error recovery smooth
 
-### Screen Reader
-- [ ] Route changes announced
+### Page Transitions
+- [ ] Route changes smooth
 - [ ] Page titles update
-- [ ] Landmarks present
-- [ ] Navigation cues
-- [ ] Error announcements
+- [ ] Content loads properly
+- [ ] Navigation feedback
+- [ ] Error messages clear
 
 ## Test Evidence
 - [ ] Navigation flow video
@@ -248,7 +248,7 @@ Test the integration between navigation components, React Router, browser histor
 - [ ] State not clearing
 - [ ] URL mismatch
 - [ ] History pollution
-- [ ] Focus not managed
+- [ ] View state not managed
 - [ ] Memory leaks
 
 ## Notes

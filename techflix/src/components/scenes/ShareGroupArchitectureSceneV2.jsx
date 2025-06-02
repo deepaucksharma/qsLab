@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import '../../styles/techflix-cinematic-v2.css';
 
-const ShareGroupArchitectureSceneV2 = ({ time, duration }) => {
+const ShareGroupArchitectureSceneV2 = React.memo(({ time, duration }) => {
   const [messageCount, setMessageCount] = useState(0);
   const [activeConsumers, setActiveConsumers] = useState(0);
   
@@ -17,13 +17,16 @@ const ShareGroupArchitectureSceneV2 = ({ time, duration }) => {
     }
   }, [time, phase]);
   
-  // Message counter
+  // Message counter - optimized with reduced update frequency
   useEffect(() => {
     if (phase === 'metrics') {
       const interval = setInterval(() => {
-        setMessageCount(prev => prev + Math.floor(Math.random() * 10) + 5);
-      }, 100);
+        setMessageCount(prev => prev + Math.floor(Math.random() * 100) + 50);
+      }, 500); // Reduced from 100ms to 500ms
       return () => clearInterval(interval);
+    } else {
+      // Reset message count when not in metrics phase
+      setMessageCount(0);
     }
   }, [phase]);
   
@@ -220,6 +223,14 @@ const ShareGroupArchitectureSceneV2 = ({ time, duration }) => {
       </div>
     </div>
   );
-};
+}, (prevProps, nextProps) => {
+  // Custom comparison for React.memo
+  // Only re-render if time changed significantly
+  const TIME_THRESHOLD = 0.5; // 500ms threshold
+  const timeDiff = Math.abs(prevProps.time - nextProps.time);
+  return timeDiff < TIME_THRESHOLD && prevProps.duration === nextProps.duration;
+});
+
+ShareGroupArchitectureSceneV2.displayName = 'ShareGroupArchitectureSceneV2';
 
 export default ShareGroupArchitectureSceneV2;

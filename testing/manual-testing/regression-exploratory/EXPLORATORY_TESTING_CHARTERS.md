@@ -268,32 +268,6 @@ _____________________________________
 **Session Notes:**
 _____________________________________
 
-## Accessibility Exploration
-
-### Charter: Keyboard-Only Journey
-**Mission:** Complete full user journey without mouse  
-**Duration:** 75 minutes  
-**Areas:** All interactive elements  
-
-**Test Ideas:**
-- [ ] Navigate entire app
-- [ ] Complete all interactions
-- [ ] Test custom shortcuts
-- [ ] Try screen reader
-- [ ] Test focus traps
-- [ ] Escape from modals
-- [ ] Navigate backwards
-- [ ] Test with high contrast
-
-**Risk Areas:**
-- Unreachable elements
-- Focus loss
-- Keyboard traps
-- Missing shortcuts
-
-**Session Notes:**
-_____________________________________
-
 ## Session Reporting Template
 
 ### Session Summary

@@ -1,0 +1,421 @@
+/* TechFlix Unified Design System - Performance Optimized */
+
+/* ===== CSS Custom Properties ===== */
+:root {
+  /* Z-Index Scale */
+  --z-base: 0;
+  --z-dropdown: 100;
+  --z-sticky: 200;
+  --z-modal-backdrop: 300;
+  --z-modal: 400;
+  --z-header: 500;
+  --z-player: 600;
+  --z-debug: 700;
+  --z-toast: 800;
+  --z-tooltip: 900;
+  --z-overlay: 1000;
+
+  /* Colors */
+  --color-primary: #e50914;
+  --color-secondary: #ffffff;
+  --color-bg-primary: #141414;
+  --color-bg-secondary: #000000;
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #b3b3b3;
+  --color-text-muted: #737373;
+  
+  /* Spacing */
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  --spacing-2xl: 3rem;
+  
+  /* Typography */
+  --font-primary: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'Courier New', monospace;
+  
+  /* Transitions */
+  --transition-fast: 150ms ease;
+  --transition-base: 250ms ease;
+  --transition-slow: 350ms ease;
+  
+  /* Shadows */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.5);
+}
+
+/* ===== Base Styles ===== */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  font-family: var(--font-primary);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* ===== Accessibility ===== */
+/* Focus styles for keyboard navigation */
+*:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Skip to content link */
+.skip-to-content {
+  position: absolute;
+  left: -9999px;
+  z-index: var(--z-tooltip);
+  padding: var(--spacing-md);
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  text-decoration: none;
+}
+
+.skip-to-content:focus {
+  left: 50%;
+  transform: translateX(-50%);
+  top: var(--spacing-md);
+}
+
+/* Reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ===== Component Z-Index ===== */
+.header {
+  z-index: var(--z-header);
+}
+
+.player-view {
+  z-index: var(--z-player);
+}
+
+.debug-panel {
+  z-index: var(--z-debug);
+}
+
+.modal-backdrop {
+  z-index: var(--z-modal-backdrop);
+}
+
+.modal {
+  z-index: var(--z-modal);
+}
+
+.dropdown {
+  z-index: var(--z-dropdown);
+}
+
+/* ===== Performance Optimizations ===== */
+/* GPU acceleration for frequently animated elements */
+.animated-element {
+  will-change: transform, opacity;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+/* Optimize animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideIn {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* Pause animations when not visible */
+.pause-animation-when-hidden:not(:hover):not(:focus) {
+  animation-play-state: paused;
+}
+
+/* ===== Responsive Breakpoints ===== */
+@media (max-width: 640px) {
+  /* Mobile */
+  :root {
+    --font-size-base: 14px;
+    --spacing-base: 0.75rem;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 1024px) {
+  /* Tablet */
+  :root {
+    --font-size-base: 15px;
+    --spacing-base: 1rem;
+  }
+}
+
+@media (min-width: 1025px) {
+  /* Desktop */
+  :root {
+    --font-size-base: 16px;
+    --spacing-base: 1rem;
+  }
+}
+
+/* ===== Loading States ===== */
+.skeleton {
+  animation: skeleton-loading 1s linear infinite alternate;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.05) 25%,
+    rgba(255, 255, 255, 0.1) 50%,
+    rgba(255, 255, 255, 0.05) 75%
+  );
+  background-size: 200% 100%;
+}
+
+@keyframes skeleton-loading {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ===== Scene Transitions ===== */
+.scene-transition {
+  transition: opacity var(--transition-slow);
+}
+
+.scene-enter {
+  opacity: 0;
+}
+
+.scene-enter-active {
+  opacity: 1;
+}
+
+.scene-exit {
+  opacity: 1;
+}
+
+.scene-exit-active {
+  opacity: 0;
+}
+
+/* ===== Button Styles ===== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-sm) var(--spacing-lg);
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: 4px;
+  transition: all var(--transition-fast);
+  cursor: pointer;
+  border: none;
+  font-size: inherit;
+  font-family: inherit;
+}
+
+.btn-primary {
+  background-color: var(--color-primary);
+  color: var(--color-secondary);
+}
+
+.btn-primary:hover:not(:disabled) {
+  background-color: #f40612;
+}
+
+.btn-secondary {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: var(--color-text-primary);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ===== Focus Trap for Modals ===== */
+.focus-trap {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.8);
+}
+
+/* ===== Utility Classes ===== */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Prevent layout shift */
+.aspect-video {
+  aspect-ratio: 16 / 9;
+}
+
+/* ===== Print Styles ===== */
+@media print {
+  body {
+    background: white;
+    color: black;
+  }
+  
+  .no-print {
+    display: none !important;
+  }
+}
+
+/* ===== Error States ===== */
+.error-boundary {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  padding: var(--spacing-2xl);
+  text-align: center;
+}
+
+.error-boundary h2 {
+  color: var(--color-primary);
+  margin-bottom: var(--spacing-md);
+}
+
+/* ===== Performance Monitor ===== */
+.performance-warning {
+  position: fixed;
+  bottom: var(--spacing-md);
+  right: var(--spacing-md);
+  background-color: rgba(229, 9, 20, 0.9);
+  color: white;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: 4px;
+  font-size: 0.875rem;
+  z-index: var(--z-toast);
+}
+
+/* ===== Responsive Text Utilities ===== */
+.text-responsive-hero {
+  font-size: clamp(2rem, 6vw, 4.5rem);
+  line-height: 1.1;
+}
+
+.text-responsive-title {
+  font-size: clamp(1.5rem, 4vw, 3rem);
+  line-height: 1.2;
+}
+
+.text-responsive-subtitle {
+  font-size: clamp(1.25rem, 3vw, 2rem);
+  line-height: 1.3;
+}
+
+.text-responsive-body {
+  font-size: clamp(1rem, 2vw, 1.25rem);
+  line-height: 1.5;
+}
+
+.text-responsive-small {
+  font-size: clamp(0.875rem, 1.5vw, 1rem);
+  line-height: 1.4;
+}
+
+/* Scene-specific responsive text */
+.scene-text-main {
+  font-size: clamp(1.5rem, 3vw, 2.5rem) !important;
+}
+
+.scene-text-secondary {
+  font-size: clamp(1rem, 2vw, 1.5rem) !important;
+}
+
+.scene-text-caption {
+  font-size: clamp(0.75rem, 1.5vw, 1rem) !important;
+}
+
+/* Fix text overflow in scenes */
+.evolution-text,
+.scene-heading,
+.metric-value,
+.timeline-event-text {
+  font-size: clamp(1rem, 3vw, 2rem) !important;
+  white-space: normal !important;
+  word-break: break-word !important;
+  overflow-wrap: break-word !important;
+}
+
+/* Responsive container for scenes */
+.scene-container {
+  padding: clamp(1rem, 3vw, 3rem);
+  overflow-x: hidden;
+}
+
+/* Mobile-specific scene fixes */
+@media (max-width: 768px) {
+  /* Prevent horizontal scroll */
+  .scene-content {
+    max-width: 100vw;
+    overflow-x: hidden;
+  }
+  
+  /* Timeline specific mobile fixes */
+  .timeline-container {
+    transform: scale(0.8);
+    transform-origin: center;
+  }
+  
+  /* Reduce all scene text on mobile */
+  .scene-container h1,
+  .scene-container h2,
+  .scene-container h3 {
+    font-size: clamp(1.25rem, 4vw, 2rem) !important;
+  }
+  
+  .scene-container p,
+  .scene-container span {
+    font-size: clamp(0.875rem, 2vw, 1rem) !important;
+  }
+  
+  /* Fix Evolution Timeline text */
+  .timeline-event-text {
+    max-width: 120px !important;
+  }
+}
+
+/* Tablet adjustments */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .timeline-container {
+    transform: scale(0.9);
+    transform-origin: center;
+  }
+}
+
+/* Ensure text wraps properly */
+.text-wrap-balance {
+  text-wrap: balance;
+  overflow-wrap: break-word;
+  hyphens: auto;
+}

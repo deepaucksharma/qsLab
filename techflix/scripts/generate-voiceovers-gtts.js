@@ -244,7 +244,7 @@ async function generateAllVoiceOvers() {
   const index = {
     episodes: Object.keys(SCRIPTS),
     totalScenes: totalGenerated,
-    totalDuration: totalDuration,
+    totalDuration,
     generated: new Date().toISOString(),
     generator: 'gTTS',
     voices: Object.keys(VOICES)
@@ -253,7 +253,7 @@ async function generateAllVoiceOvers() {
   await fs.writeFile(indexPath, JSON.stringify(index, null, 2));
   
   // Summary
-  console.log('\n' + '='.repeat(50));
+  console.log(`\n${  '='.repeat(50)}`);
   console.log('✅ Voice-Over Generation Complete!\n');
   console.log(`📊 Summary:`);
   console.log(`  • Episodes: ${Object.keys(SCRIPTS).length}`);

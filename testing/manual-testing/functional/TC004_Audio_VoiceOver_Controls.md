@@ -263,12 +263,6 @@ Test all audio-related functionality including voiceover toggling, volume contro
 - [ ] Console logs (audio errors)
 - [ ] Network tab (audio loading)
 
-## Accessibility
-- [ ] Keyboard control for volume
-- [ ] Screen reader announces states
-- [ ] Visual indicators for deaf users
-- [ ] Captions available (if applicable)
-
 ## Notes
 _Note any audio quality issues, browser-specific problems, or suggestions for improvement_
 

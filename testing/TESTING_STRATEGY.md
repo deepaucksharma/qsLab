@@ -21,7 +21,7 @@ This document consolidates all testing strategies for the TechFlix platform, com
 ### Core Principles
 1. **User-Centric Testing**: Every test reflects real user journeys
 2. **Visual Validation**: Screenshots and visual regression for media platform
-3. **Accessibility First**: Platform usable by everyone
+3. **Usability First**: Platform intuitive for everyone
 4. **Performance Aware**: Monitor and prevent performance regressions
 5. **Continuous Improvement**: Regular strategy updates based on findings
 
@@ -63,15 +63,15 @@ This document consolidates all testing strategies for the TechFlix platform, com
   - Performance on mobile networks
   - Offline functionality
 
-### 4. Elena - The Accessibility Advocate
-- **Profile**: Vision impaired, uses screen reader
-- **Goals**: Equal access to all content
-- **Behavior**: Keyboard navigation, screen reader usage
+### 4. Elena - The Content Explorer
+- **Profile**: Curious learner exploring all content
+- **Goals**: Discover and complete all episodes
+- **Behavior**: Thorough exploration of all features
 - **Focus Areas**:
-  - Screen reader compatibility
-  - Keyboard navigation
-  - ARIA label accuracy
-  - Color contrast compliance
+  - Content discovery
+  - Navigation clarity
+  - Visual feedback
+  - Error handling
 
 ## Testing Categories
 
@@ -115,15 +115,15 @@ This document consolidates all testing strategies for the TechFlix platform, com
 - Network efficiency
 - Bundle size optimization
 
-### 5. Accessibility Testing
-**Tools**: axe DevTools, NVDA/JAWS
+### 5. Usability Testing
+**Tools**: Browser DevTools, User Feedback
 
-- WCAG 2.1 AA compliance
-- Keyboard navigation
-- Screen reader support
-- Color contrast ratios
-- Focus management
-- Alternative text
+- Visual clarity
+- Navigation intuitiveness
+- Error message clarity
+- Visual design consistency
+- Interactive feedback
+- Content readability
 
 ## Test Environment Setup
 
@@ -153,7 +153,7 @@ Run multiple instances on different ports:
 - Port 3001: Fresh user testing
 - Port 3002: Existing user with progress
 - Port 3003: Mobile simulation
-- Port 3004: Accessibility testing
+- Port 3004: Usability testing
 
 ## Execution Strategy
 
@@ -190,7 +190,7 @@ Run multiple instances on different ports:
 - **Manual Testing**: Structured test cases and checklists
 - **Browser Testing**: Chrome, Firefox, Safari, Edge
 - **Mobile Testing**: Chrome DevTools device emulation
-- **Accessibility**: axe DevTools, WAVE
+- **Usability**: Browser DevTools
 - **Performance**: Lighthouse, Chrome DevTools
 
 ### Planned Additions
@@ -245,8 +245,8 @@ npm test
 # Build for production
 npm run build
 
-# Check accessibility
-npm run test:a11y
+# Check usability
+npm run test:usability
 
 # Performance audit
 npm run audit:performance

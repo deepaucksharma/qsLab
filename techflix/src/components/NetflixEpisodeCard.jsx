@@ -69,12 +69,30 @@ const NetflixEpisodeCard = ({
   if (layoutMode === 'grid') {
     return (
       <div
-        className="relative group cursor-pointer transform transition-all duration-300 hover:scale-105 hover:z-10"
+        className="episode-card relative group cursor-pointer transform transition-all duration-300 hover:scale-105 hover:z-10"
+        tabIndex={0}
+        role="button"
+        aria-label={`Play ${title}. ${hasContent ? `Season ${seasonNumber}, Episode ${episodeNumber}. Duration: ${durationDisplay}` : 'Coming soon'}`}
         onMouseEnter={() => {
           setIsHovered(true);
           playHover();
         }}
         onMouseLeave={() => setIsHovered(false)}
+        onClick={async () => {
+          if (hasContent) {
+            await playClick();
+            onPlay(episode);
+          }
+        }}
+        onKeyDown={async (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            if (hasContent) {
+              await playClick();
+              onPlay(episode);
+            }
+          }
+        }}
       >
         {/* Thumbnail Container */}
         <div className="relative aspect-[16/9] rounded overflow-hidden bg-gray-900">
@@ -135,7 +153,9 @@ const NetflixEpisodeCard = ({
             ) : (
               <div className="flex items-center justify-center h-full">
                 <span className="text-white text-sm font-medium px-3 py-1 bg-gray-800 rounded">
-                  {comingSoon ? `Coming ${new Date(expectedReleaseDate).toLocaleDateString()}` : 'Coming Soon'}
+                  {comingSoon ? 
+                    (expectedReleaseDate ? `Coming ${new Date(expectedReleaseDate).toLocaleDateString()}` : 'Coming Soon') 
+                    : 'Coming Soon'}
                 </span>
               </div>
             )}
@@ -161,7 +181,8 @@ const NetflixEpisodeCard = ({
                 await playClick();
                 setIsMuted(!isMuted);
               }}
-              className="absolute bottom-2 right-2 bg-black/60 text-white p-1.5 rounded-full hover:bg-black/80 transition-colors z-30"
+              className="absolute bottom-2 right-2 bg-black/60 text-white p-1.5 rounded-full hover:bg-black/80 transition-colors z-30 player-button"
+              aria-label={isMuted ? "Unmute preview" : "Mute preview"}
             >
               {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
             </button>
@@ -187,13 +208,25 @@ const NetflixEpisodeCard = ({
   // List layout card
   return (
     <div 
-      className={`flex gap-4 p-4 rounded-lg transition-colors duration-200 cursor-pointer ${
+      className={`episode-card flex gap-4 p-4 rounded-lg transition-colors duration-200 cursor-pointer ${
         isCurrentEpisode ? 'bg-gray-800' : 'hover:bg-gray-800/50'
       }`}
+      tabIndex={0}
+      role="button"
+      aria-label={`Play ${title}. ${hasContent ? `Season ${seasonNumber}, Episode ${episodeNumber}. Duration: ${durationDisplay}` : 'Coming soon'}`}
       onClick={async () => {
         if (hasContent) {
           await playClick();
           onPlay(episode);
+        }
+      }}
+      onKeyDown={async (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          if (hasContent) {
+            await playClick();
+            onPlay(episode);
+          }
         }
       }}
       onMouseEnter={() => playHover()}
@@ -289,7 +322,7 @@ const NetflixEpisodeCard = ({
             )}
             {!hasContent && comingSoon && (
               <span className="text-xs text-gray-500 whitespace-nowrap">
-                {new Date(expectedReleaseDate).toLocaleDateString()}
+                {expectedReleaseDate ? new Date(expectedReleaseDate).toLocaleDateString() : 'TBD'}
               </span>
             )}
           </div>

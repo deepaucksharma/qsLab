@@ -88,14 +88,11 @@ const EvolutionTimelineSceneV3 = ({ time = 0, duration = 480 }) => {
     }
     
     return () => {
-      // Cleanup when component unmounts
-      // TEMPORARILY DISABLED: Prevents audio from cutting out during scene transitions
-      // This was cleaning up ALL episode audio, not just scene-specific audio
-      // if (audioInitialized.current) {
-      //   logger.debug('EvolutionTimelineSceneV3: Cleaning up audio')
-      //   audioManager.cleanupEpisodeAudio()
-      //   audioInitialized.current = false
-      // }
+      // Cleanup scene-specific audio when component unmounts
+      if (audioInitialized.current) {
+        logger.debug('EvolutionTimelineSceneV3: Cleaning up scene audio')
+        audioManager.cleanupSceneAudio()
+      }
     }
   }, [])
   

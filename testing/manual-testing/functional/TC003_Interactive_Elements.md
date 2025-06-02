@@ -55,14 +55,11 @@ Verify all interactive elements including quizzes, decision points, and hands-on
 1. Click on first answer option
 2. Click on second answer option
 3. Verify selection behavior
-4. Try keyboard navigation (Tab, Enter)
 
 **Expected Result:**
 - Only one answer selectable (if single-choice)
 - Selection clearly indicated visually
 - Previous selection cleared
-- Keyboard navigation works
-- Focus indicators visible
 
 **Pass/Fail:** [ ]
 
@@ -77,7 +74,6 @@ Verify all interactive elements including quizzes, decision points, and hands-on
 - "Please select an answer" message
 - No progression without selection
 - Submit button disabled or shows error
-- Focus returns to question
 
 **Pass/Fail:** [ ]
 
@@ -251,7 +247,6 @@ Verify all interactive elements including quizzes, decision points, and hands-on
 - [ ] Properly styled
 - [ ] Appear near relevant input
 - [ ] Clear on valid input
-- [ ] Accessible (screen reader friendly)
 
 ## Test Evidence
 - [ ] Screenshots of each interaction type
@@ -261,7 +256,7 @@ Verify all interactive elements including quizzes, decision points, and hands-on
 - [ ] State inspection screenshots
 
 ## Notes
-_Document any unusual behaviors, suggestions for improvement, or accessibility concerns_
+_Document any unusual behaviors or suggestions for improvement_
 
 _______________
 

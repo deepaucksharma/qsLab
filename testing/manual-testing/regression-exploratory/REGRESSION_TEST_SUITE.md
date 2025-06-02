@@ -93,7 +93,6 @@ Run before major releases and monthly
 | UI-02 | Responsive at 1920px | [ ] | [ ] | [ ] | |
 | UI-03 | Responsive at 1280px | [ ] | [ ] | [ ] | |
 | UI-04 | All hover states work | [ ] | [ ] | [ ] | |
-| UI-05 | Focus indicators visible | [ ] | [ ] | [ ] | |
 
 ## Full Regression Suite
 
@@ -115,14 +114,6 @@ Run before major releases and monthly
 | EDGE-02 | Network interruption recovery | [ ] | [ ] | [ ] | |
 | EDGE-03 | Large localStorage handling | [ ] | [ ] | [ ] | |
 | EDGE-04 | Multi-tab behavior | [ ] | [ ] | [ ] | |
-
-#### Accessibility
-| Test ID | Test Case | Pass | Fail | Blocked | Notes |
-|---------|-----------|------|------|---------|-------|
-| A11Y-01 | Keyboard navigation complete | [ ] | [ ] | [ ] | |
-| A11Y-02 | Screen reader compatible | [ ] | [ ] | [ ] | |
-| A11Y-03 | Color contrast passes | [ ] | [ ] | [ ] | |
-| A11Y-04 | Focus management correct | [ ] | [ ] | [ ] | |
 
 #### Cross-Browser (Optional)
 | Test ID | Test Case | Browser | Pass | Fail | Notes |

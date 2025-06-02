@@ -131,42 +131,42 @@ Test Points:
   - Background playback
 ```
 
-## Persona 4: Elena - The Accessibility Advocate
+## Persona 4: Elena - The Content Explorer
 
-### Journey 4.1: Screen Reader Navigation
-**Scenario**: Elena navigates the platform using JAWS
+### Journey 4.1: Discovery Navigation
+**Scenario**: Elena explores all available content
 ```yaml
-Entry Point: Homepage with screen reader active
-Goal: Find and play specific episode
+Entry Point: Homepage
+Goal: Find and explore all episodes systematically
 Success Criteria:
-  - All elements properly announced
-  - Logical navigation order
-  - Skip links available
-  - Episode descriptions read clearly
+  - All content discoverable
+  - Clear navigation paths
+  - Visual browsing easy
+  - Episode information clear
 
 Test Points:
-  - ARIA label completeness
-  - Heading hierarchy
-  - Landmark navigation
-  - Focus management
+  - Content organization
+  - Navigation clarity
+  - Visual hierarchy
+  - Information completeness
 ```
 
-### Journey 4.2: Keyboard-Only Control
-**Scenario**: Elena controls video playback without mouse
+### Journey 4.2: Feature Exploration
+**Scenario**: Elena tries all interactive features
 ```yaml
-Entry Point: Episode player
-Goal: Full playback control via keyboard
+Entry Point: Episode with interactions
+Goal: Experience all interactive elements
 Success Criteria:
-  - All controls keyboard accessible
-  - Shortcuts documented and work
-  - Focus indicators visible
-  - No keyboard traps
+  - All features discoverable
+  - Clear instructions provided
+  - Visual feedback consistent
+  - No dead ends
 
 Test Points:
-  - Tab order logic
-  - Keyboard shortcut functionality
-  - Focus indicator visibility
-  - Escape sequences
+  - Feature discoverability
+  - Instruction clarity
+  - Feedback consistency
+  - Error recovery
 ```
 
 ## Persona 5: Team Lead Jordan
@@ -257,7 +257,7 @@ Test Focus:
 - Desktop: Chrome, Firefox, Safari, Edge
 - Mobile: iOS Safari, Chrome Android
 - Tablet: iPad, Android tablets
-- Accessibility tools: JAWS, NVDA, VoiceOver
+- Testing tools: Browser DevTools, Performance monitors
 
 ## Success Metrics
 
@@ -272,5 +272,5 @@ Test Focus:
 - User satisfaction score: >4.5/5
 - Task completion rate: >95%
 - Error encounter rate: <2%
-- Accessibility score: 100%
+- User experience score: >90%
 - Support ticket rate: <1%

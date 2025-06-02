@@ -83,7 +83,7 @@ return (
     <button 
       className="md:hidden p-2"
       onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-      aria-label="Toggle menu"
+      title="Toggle menu"
     >
       <Menu size={24} />
     </button>
@@ -124,7 +124,7 @@ If full mobile menu can't be implemented immediately:
 2. Test touch interactions
 3. Verify all navigation paths work
 4. Test landscape and portrait orientations
-5. Ensure menu is accessible (ARIA labels, focus management)
+5. Ensure menu is usable (clear labels, proper navigation)
 
 ## Prevention
 1. Mobile-first development approach

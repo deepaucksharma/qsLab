@@ -61,7 +61,8 @@ const SearchPage = () => {
   const handleEpisodeClick = (episode) => {
     setCurrentSeason(episode.seasonNumber);
     setCurrentEpisode(episode.id);
-    navigate(`${ROUTES.EPISODE}/techflix/${episode.seasonId}/${episode.id}`);
+    // Navigate to series page with episode info
+    navigate(ROUTES.SERIES('tech-insights'));
   };
 
   return (
@@ -112,7 +113,8 @@ const SearchPage = () => {
                 <NetflixEpisodeCard
                   episode={episode}
                   episodeNumber={episode.episodeNumber}
-                  onClick={() => handleEpisodeClick(episode)}
+                  seasonNumber={episode.seasonNumber}
+                  onPlay={() => handleEpisodeClick(episode)}
                 />
                 <p className="text-sm text-gray-400 mt-2">
                   Season {episode.seasonNumber}
@@ -146,7 +148,7 @@ const SearchPage = () => {
             </h2>
             <p className="text-gray-400 max-w-md mx-auto">
               Find episodes by title, description, or topics. Try searching for 
-              "Kafka", "metrics", or "observability".
+              &ldquo;Kafka&rdquo;, &ldquo;metrics&rdquo;, or &ldquo;observability&rdquo;.
             </p>
           </div>
         )}
