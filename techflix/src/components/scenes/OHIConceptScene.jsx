@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Wrench, BarChart3, Rocket, Zap, Target, TrendingUp, ArrowRight, Cpu, Cloud, Server } from 'lucide-react';
-import { ParticleBackground, SceneTransition, CinematicTitle } from '../StorytellingComponents';
+import '../../styles/techflix-cinematic-v2.css';
 
 const OHIConceptScene = ({ time, duration }) => {
   const progress = (time / duration) * 100;
@@ -15,24 +15,6 @@ const OHIConceptScene = ({ time, duration }) => {
     return 'conclusion';
   }, [time]);
 
-  // Camera movement based on phase
-  const getCameraTransform = () => {
-    switch (phase) {
-      case 'intro':
-        return 'scale(0.95) translateY(-20px)';
-      case 'phase2':
-        return 'scale(1) translateY(0)';
-      case 'phase3':
-        return 'scale(1.02) translateZ(50px)';
-      case 'phase4':
-        return 'scale(1) translateY(10px)';
-      case 'conclusion':
-        return 'scale(0.98) translateY(0)';
-      default:
-        return 'scale(1)';
-    }
-  };
-
   // Architecture components
   const architectureFlow = [
     { 
@@ -40,32 +22,28 @@ const OHIConceptScene = ({ time, duration }) => {
       icon: <Server className="w-8 h-8" />,
       title: 'Your App',
       subtitle: 'Kafka + JMX',
-      color: 'from-cyan-500 to-blue-500',
-      glow: 'rgba(6, 182, 212, 0.5)'
+      color: 'text-cyan-400'
     },
     { 
       id: 'ohi',
       icon: <Cpu className="w-8 h-8" />,
       title: 'Your OHI',
       subtitle: 'Go Binary',
-      color: 'from-teal-500 to-green-500',
-      glow: 'rgba(20, 184, 166, 0.5)'
+      color: 'text-teal-400'
     },
     { 
       id: 'agent',
       icon: <Server className="w-8 h-8" />,
       title: 'Infra Agent',
       subtitle: 'New Relic',
-      color: 'from-green-500 to-emerald-500',
-      glow: 'rgba(16, 185, 129, 0.5)'
+      color: 'text-green-400'
     },
     { 
       id: 'cloud',
       icon: <Cloud className="w-8 h-8" />,
       title: 'New Relic',
       subtitle: 'Platform',
-      color: 'from-purple-500 to-pink-500',
-      glow: 'rgba(168, 85, 247, 0.5)'
+      color: 'text-purple-400'
     }
   ];
 
@@ -75,363 +53,213 @@ const OHIConceptScene = ({ time, duration }) => {
       icon: <Zap className="w-8 h-8" />,
       title: 'Performance', 
       desc: 'Lightweight & efficient data collection',
-      color: 'from-yellow-500 to-orange-500',
-      gradient: 'from-yellow-600/20 to-orange-600/20'
+      color: 'text-yellow-400'
     },
     { 
       icon: <Target className="w-8 h-8" />,
       title: 'Customizable', 
       desc: 'Tailored to your specific metrics',
-      color: 'from-teal-500 to-cyan-500',
-      gradient: 'from-teal-600/20 to-cyan-600/20'
+      color: 'text-cyan-400'
     },
     { 
       icon: <TrendingUp className="w-8 h-8" />,
       title: 'Integrated', 
       desc: 'First-class New Relic UI support',
-      color: 'from-purple-500 to-pink-500',
-      gradient: 'from-purple-600/20 to-pink-600/20'
+      color: 'text-purple-400'
     }
   ];
 
+  const shouldShowArchitecture = (index) => {
+    if (phase !== 'phase3') return false;
+    const delay = (time - 4) - (index * 0.5);
+    return delay > 0;
+  };
+
   return (
-    <SceneTransition
-      className="w-full h-full"
-      effect="fade"
-      duration={0.8}
-    >
-      <div className="relative w-full h-full overflow-hidden">
-        {/* Dynamic gradient background */}
-        <motion.div 
-          className="absolute inset-0"
-          animate={{
-            background: phase === 'phase3' 
-              ? 'radial-gradient(ellipse at center, rgba(20, 184, 166, 0.15) 0%, rgba(0, 0, 0, 0.95) 100%)'
-              : 'radial-gradient(ellipse at center, rgba(6, 182, 212, 0.1) 0%, rgba(0, 0, 0, 0.98) 100%)'
-          }}
-          transition={{ duration: 2 }}
-        />
+    <div className="scene-container-v2">
+      <div className="scene-content">
+        <div className="flex flex-col items-center justify-center min-h-full py-12">
+          {/* Title */}
+          <AnimatePresence mode="wait">
+            {phase === 'intro' && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.8 }}
+                className="text-center mb-12"
+              >
+                <h1 className="scene-title">On Host Integration (OHI)</h1>
+                <p className="scene-subtitle">Custom Metrics Pipeline for New Relic</p>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
-        {/* Circuit Pattern Background with animation */}
-        <motion.div 
-          className="absolute inset-0 opacity-20"
-          animate={{
-            opacity: phase === 'phase3' ? 0.3 : 0.2
-          }}
-        >
-          <svg className="w-full h-full">
-            <defs>
-              <pattern id="tech-grid" x="0" y="0" width="60" height="60" patternUnits="userSpaceOnUse">
-                <rect x="0" y="0" width="60" height="60" fill="none" stroke="currentColor" strokeWidth="0.5"/>
-                <motion.circle 
-                  cx="0" cy="0" r="3" 
-                  fill="currentColor" 
-                  animate={{ opacity: [0.3, 0.7, 0.3] }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                />
-                <motion.circle 
-                  cx="60" cy="0" r="3" 
-                  fill="currentColor" 
-                  animate={{ opacity: [0.7, 0.3, 0.7] }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                />
-                <motion.circle 
-                  cx="0" cy="60" r="3" 
-                  fill="currentColor" 
-                  animate={{ opacity: [0.5, 0.8, 0.5] }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                />
-                <motion.circle 
-                  cx="60" cy="60" r="3" 
-                  fill="currentColor" 
-                  animate={{ opacity: [0.8, 0.5, 0.8] }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                />
-                <circle cx="30" cy="30" r="4" fill="currentColor"/>
-              </pattern>
-            </defs>
-            <rect width="100%" height="100%" fill="url(#tech-grid)" className="text-teal-500"/>
-          </svg>
-        </motion.div>
-
-        {/* Particle effects */}
-        <ParticleBackground
-          count={50}
-          size={1.5}
-          speed={0.2}
-          color="rgba(20, 184, 166, 0.4)"
-        />
-
-        {/* Camera container */}
-        <motion.div
-          className="relative w-full h-full flex items-center justify-center p-8"
-          animate={{
-            transform: getCameraTransform(),
-          }}
-          transition={{ duration: 1.5, ease: 'easeInOut' }}
-        >
-          <div className="relative z-10 max-w-6xl w-full">
-            {/* Title with cinematic animation */}
-            <AnimatePresence mode="wait">
-              {phase === 'intro' && (
-                <motion.div
-                  initial={{ opacity: 0, y: -50, scale: 0.9 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.95 }}
-                  transition={{ duration: 0.8 }}
-                  className="text-center mb-12"
-                >
-                  <CinematicTitle
-                    text="On-Host Integrations (OHI)"
-                    subtitle="Custom Metrics Collection for New Relic"
-                    gradient="from-teal-400 to-cyan-400"
-                  />
-                </motion.div>
-              )}
-            </AnimatePresence>
-
-            {/* Definition with glassmorphism */}
-            <AnimatePresence>
-              {phase === 'phase2' && (
-                <motion.div
-                  initial={{ opacity: 0, x: -100 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: 100 }}
-                  transition={{ duration: 0.8, type: "spring", stiffness: 100 }}
-                  className="mb-12"
-                >
-                  <div className="relative">
-                    {/* Glow effect */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-teal-500/20 to-cyan-500/20 blur-2xl rounded-2xl" />
-                    
-                    {/* Content */}
-                    <div className="relative bg-gray-900/30 backdrop-blur-xl rounded-2xl p-8 border border-teal-500/30">
-                      <h3 className="text-2xl font-bold text-teal-300 mb-4">What is an OHI?</h3>
-                      <p className="text-lg text-gray-300 leading-relaxed mb-6">
-                        An On-Host Integration is a lightweight program that runs alongside the New Relic 
-                        Infrastructure agent, collecting custom metrics from your applications and services, 
-                        then sending them to New Relic in a structured format.
-                      </p>
-                      
-                      <div className="grid grid-cols-3 gap-6">
-                        {[
-                          { icon: <Wrench className="w-6 h-6" />, label: 'Custom Built' },
-                          { icon: <BarChart3 className="w-6 h-6" />, label: 'Metrics Collector' },
-                          { icon: <Rocket className="w-6 h-6" />, label: 'Production Ready' }
-                        ].map((item, idx) => (
-                          <motion.div
-                            key={idx}
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.5 + idx * 0.2 }}
-                            whileHover={{ scale: 1.05 }}
-                            className="bg-gray-800/50 backdrop-blur-sm rounded-lg p-4 text-center border border-gray-700/30"
-                          >
-                            <div className="text-teal-400 mb-2 flex justify-center">{item.icon}</div>
-                            <span className="text-sm text-gray-300">{item.label}</span>
-                          </motion.div>
-                        ))}
-                      </div>
-                    </div>
+          {/* Definition Phase */}
+          <AnimatePresence>
+            {phase === 'phase2' && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                transition={{ duration: 0.8 }}
+                className="max-w-4xl mx-auto text-center"
+              >
+                <div className="metric-card-v2 p-8">
+                  <div className="flex items-center justify-center gap-3 mb-6">
+                    <Wrench className="w-10 h-10 text-blue-400" />
+                    <h2 className="text-3xl font-bold text-gray-200">What is OHI?</h2>
                   </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
+                  <p className="text-xl text-gray-300 leading-relaxed">
+                    On Host Integration (OHI) is New Relic's framework for creating custom 
+                    monitoring integrations that run alongside the Infrastructure agent, 
+                    collecting and reporting specialized metrics from any source.
+                  </p>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
-            {/* Architecture Flow with advanced animations */}
-            <AnimatePresence>
-              {phase === 'phase3' && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.8 }}
-                  className="mb-12"
-                >
-                  <motion.h3 
-                    initial={{ opacity: 0, y: -20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="text-2xl font-bold text-gray-300 mb-8 text-center"
-                  >
-                    OHI Architecture
-                  </motion.h3>
-                  
-                  <div className="flex items-center justify-between">
-                    {architectureFlow.map((component, idx) => (
-                      <React.Fragment key={component.id}>
+          {/* Architecture Flow */}
+          <AnimatePresence>
+            {phase === 'phase3' && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.8 }}
+                className="w-full max-w-6xl"
+              >
+                <h2 className="text-2xl font-bold text-center mb-12 text-gray-200">
+                  Data Flow Architecture
+                </h2>
+                
+                <div className="flex items-center justify-between gap-4 flex-wrap md:flex-nowrap">
+                  {architectureFlow.map((component, index) => (
+                    <React.Fragment key={component.id}>
+                      {shouldShowArchitecture(index) && (
                         <motion.div
-                          initial={{ opacity: 0, scale: 0.5, rotate: -180 }}
-                          animate={{ 
-                            opacity: 1, 
-                            scale: 1, 
-                            rotate: 0,
-                            y: phase === 'phase3' ? [0, -10, 0] : 0
-                          }}
-                          transition={{ 
-                            delay: idx * 0.3,
-                            duration: 0.8,
-                            y: { duration: 2, repeat: Infinity, delay: idx * 0.5 }
-                          }}
-                          whileHover={{ scale: 1.1 }}
-                          className="relative group"
+                          initial={{ opacity: 0, y: 30 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.6 }}
+                          className="flex flex-col items-center"
                         >
-                          {/* Glow effect */}
-                          <motion.div
-                            className="absolute inset-0 rounded-xl blur-xl"
-                            style={{ background: component.glow }}
-                            animate={{ opacity: [0.3, 0.6, 0.3] }}
-                            transition={{ duration: 2, repeat: Infinity }}
-                          />
-                          
-                          {/* Card */}
-                          <div className="relative bg-gray-900/60 backdrop-blur-lg rounded-xl p-6 border border-gray-700/30 group-hover:border-gray-600/50 transition-all duration-300">
-                            <div className={`mb-3 bg-gradient-to-r ${component.color} bg-clip-text text-transparent flex justify-center`}>
+                          <div className="metric-card-v2 p-6 mb-4">
+                            <div className={`${component.color} mb-4`}>
                               {component.icon}
                             </div>
-                            <h4 className="font-semibold text-gray-200">{component.title}</h4>
-                            <p className="text-xs text-gray-400 mt-1">{component.subtitle}</p>
+                            <h3 className="text-lg font-bold text-gray-200">
+                              {component.title}
+                            </h3>
+                            <p className="text-sm text-gray-400 mt-1">
+                              {component.subtitle}
+                            </p>
                           </div>
                         </motion.div>
-                        
-                        {/* Animated Arrow */}
-                        {idx < architectureFlow.length - 1 && (
-                          <motion.div
-                            initial={{ opacity: 0, scaleX: 0 }}
-                            animate={{ opacity: 1, scaleX: 1 }}
-                            transition={{ delay: idx * 0.3 + 0.5, duration: 0.5 }}
-                            className="flex items-center"
-                          >
-                            <div className="relative w-16">
-                              <motion.div
-                                className="absolute inset-0 flex items-center"
-                                animate={{ x: [-10, 10, -10] }}
-                                transition={{ duration: 2, repeat: Infinity }}
-                              >
-                                <ArrowRight className={`w-6 h-6 bg-gradient-to-r ${architectureFlow[idx].color} bg-clip-text text-transparent`} />
-                              </motion.div>
-                              <svg className="w-full h-2" viewBox="0 0 60 8">
-                                <motion.line 
-                                  x1="0" y1="4" x2="50" y2="4" 
-                                  stroke="url(#gradient)" 
-                                  strokeWidth="2"
-                                  initial={{ pathLength: 0 }}
-                                  animate={{ pathLength: 1 }}
-                                  transition={{ delay: idx * 0.3 + 0.5, duration: 0.5 }}
-                                />
-                                <defs>
-                                  <linearGradient id="gradient">
-                                    <stop offset="0%" stopColor="#14b8a6" />
-                                    <stop offset="100%" stopColor="#06b6d4" />
-                                  </linearGradient>
-                                </defs>
-                              </svg>
-                            </div>
-                          </motion.div>
-                        )}
-                      </React.Fragment>
-                    ))}
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-
-            {/* Benefits Grid with staggered animations */}
-            <AnimatePresence>
-              {(phase === 'phase4' || phase === 'conclusion') && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="grid grid-cols-3 gap-6"
-                >
-                  {benefits.map((benefit, idx) => (
-                    <motion.div
-                      key={idx}
-                      initial={{ opacity: 0, y: 50, rotateX: -90 }}
-                      animate={{ 
-                        opacity: 1, 
-                        y: 0, 
-                        rotateX: 0,
-                        scale: phase === 'conclusion' ? [1, 1.02, 1] : 1
-                      }}
-                      transition={{ 
-                        delay: idx * 0.2,
-                        duration: 0.8,
-                        scale: { duration: 2, repeat: Infinity }
-                      }}
-                      whileHover={{ scale: 1.05, rotateY: 5 }}
-                      className="relative group"
-                      style={{ perspective: '1000px' }}
-                    >
-                      {/* Glow effect */}
-                      <motion.div
-                        className={`absolute inset-0 bg-gradient-to-r ${benefit.gradient} blur-xl rounded-xl`}
-                        animate={{
-                          opacity: phase === 'conclusion' ? [0.3, 0.6, 0.3] : 0.3
-                        }}
-                        transition={{ duration: 2, repeat: Infinity }}
-                      />
+                      )}
                       
-                      {/* Card */}
-                      <div className="relative bg-gray-900/40 backdrop-blur-xl rounded-xl p-6 border border-gray-700/30 group-hover:border-gray-600/50 transition-all duration-300">
-                        <motion.div 
-                          className={`mb-4 bg-gradient-to-r ${benefit.color} bg-clip-text text-transparent flex justify-center`}
-                          animate={{ rotate: phase === 'conclusion' ? 360 : 0 }}
-                          transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                      {index < architectureFlow.length - 1 && shouldShowArchitecture(index) && (
+                        <motion.div
+                          initial={{ opacity: 0, scale: 0 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          transition={{ duration: 0.4, delay: 0.3 }}
                         >
-                          {benefit.icon}
+                          <ArrowRight className="w-8 h-8 text-gray-600" />
                         </motion.div>
-                        <h4 className={`text-lg font-semibold mb-2 bg-gradient-to-r ${benefit.color} bg-clip-text text-transparent`}>
-                          {benefit.title}
-                        </h4>
-                        <p className="text-sm text-gray-400">{benefit.desc}</p>
+                      )}
+                    </React.Fragment>
+                  ))}
+                </div>
+
+                {shouldShowArchitecture(3) && (
+                  <motion.p
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.5 }}
+                    className="text-center text-gray-400 mt-8"
+                  >
+                    Your OHI collects metrics → Infra agent forwards → New Relic processes → You visualize
+                  </motion.p>
+                )}
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Benefits Grid */}
+          <AnimatePresence>
+            {phase === 'phase4' && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.8 }}
+                className="w-full max-w-5xl"
+              >
+                <h2 className="text-2xl font-bold text-center mb-12 text-gray-200">
+                  Why Build an OHI?
+                </h2>
+                
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  {benefits.map((benefit, index) => (
+                    <motion.div
+                      key={index}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: index * 0.2 }}
+                      className="metric-card-v2 p-6 text-center"
+                    >
+                      <div className={`${benefit.color} mb-4 flex justify-center`}>
+                        {benefit.icon}
                       </div>
+                      <h3 className="text-xl font-bold mb-2 text-gray-200">
+                        {benefit.title}
+                      </h3>
+                      <p className="text-gray-400">
+                        {benefit.desc}
+                      </p>
                     </motion.div>
                   ))}
-                </motion.div>
-              )}
-            </AnimatePresence>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
-            {/* Conclusion CTA */}
-            <AnimatePresence>
-              {phase === 'conclusion' && (
+          {/* Conclusion */}
+          <AnimatePresence>
+            {phase === 'conclusion' && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.8 }}
+                className="text-center max-w-4xl mx-auto"
+              >
                 <motion.div
-                  initial={{ opacity: 0, y: 50 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.8, duration: 0.8 }}
-                  className="mt-12 text-center"
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ type: "spring", stiffness: 260, damping: 20 }}
+                  className="mb-8"
                 >
-                  <motion.div
-                    animate={{ y: [0, -5, 0] }}
-                    transition={{ duration: 2, repeat: Infinity }}
-                    className="inline-block"
-                  >
-                    <div className="bg-gradient-to-r from-teal-500/20 to-cyan-500/20 backdrop-blur-sm rounded-lg px-6 py-3 border border-teal-500/30">
-                      <span className="text-teal-300 font-semibold">Ready to build your custom metrics pipeline</span>
-                    </div>
-                  </motion.div>
+                  <Rocket className="w-20 h-20 text-green-400 mx-auto" />
                 </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-        </motion.div>
+                
+                <h2 className="text-3xl font-bold mb-4 text-gray-200">
+                  Ready to Build Your OHI
+                </h2>
+                
+                <p className="text-xl text-gray-300 mb-8">
+                  Transform your Kafka Share Groups metrics into actionable insights 
+                  with a custom New Relic integration that speaks your language.
+                </p>
 
-        {/* Progress Indicator */}
-        <motion.div 
-          className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.5 }}
-        >
-          <div className="w-96 h-1 bg-gray-800/50 rounded-full overflow-hidden backdrop-blur-sm">
-            <motion.div 
-              className="h-full bg-gradient-to-r from-teal-600 to-cyan-600 rounded-full"
-              initial={{ width: 0 }}
-              animate={{ width: `${progress}%` }}
-              transition={{ duration: 0.3 }}
-            />
-          </div>
-        </motion.div>
+                <div className="flex items-center justify-center gap-2 text-blue-400">
+                  <BarChart3 className="w-6 h-6" />
+                  <span className="text-lg">Let's dive into the implementation</span>
+                  <ArrowRight className="w-6 h-6" />
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       </div>
-    </SceneTransition>
+    </div>
   );
 };
 

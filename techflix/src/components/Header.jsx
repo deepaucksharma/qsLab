@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { Link } from 'react-router-dom'
 import SoundControl from './SoundControl'
 import { useClickSound, useHoverSound } from '@hooks/useAudio'
 
@@ -22,10 +23,11 @@ const Header = () => {
       <nav className="nav">
         <a href="#" className="logo" onClick={withClickSound(() => window.location.reload())} {...hoverProps}>TechFlix</a>
         <ul className="nav-links">
-          <li><a href="#" onClick={withClickSound()} {...hoverProps}>Home</a></li>
+          <li><Link to="/browse" onClick={withClickSound()} {...hoverProps}>Home</Link></li>
           <li><a href="#" onClick={withClickSound()} {...hoverProps}>Series</a></li>
           <li><a href="#" onClick={withClickSound()} {...hoverProps}>New & Popular</a></li>
           <li><a href="#" onClick={withClickSound()} {...hoverProps}>My List</a></li>
+          <li><Link to="/tts-test" onClick={withClickSound()} {...hoverProps} className="text-yellow-400">TTS Lab</Link></li>
         </ul>
         <div className="nav-right">
           <input type="text" className="search-box" placeholder="Search titles..." />

@@ -3,6 +3,7 @@ import MainLayout from '../layouts/MainLayout';
 import HomePage from '../pages/HomePage';
 import BrowsePage from '../pages/BrowsePage';
 import SeriesPage from '../pages/SeriesPage';
+import TTSTestPage from '../pages/TTSTestPage';
 
 export const router = createBrowserRouter([
   {
@@ -20,6 +21,10 @@ export const router = createBrowserRouter([
       {
         path: 'series/:seriesId',
         element: <SeriesPage />,
+      },
+      {
+        path: 'tts-test',
+        element: <TTSTestPage />,
       },
       {
         path: '*',
