@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CSS Check</title>
+</head>
+<body>
+    <script>
+        fetch('http://localhost:3000')
+            .then(res => res.text())
+            .then(html => {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                
+                // Check for CSS links
+                const cssLinks = doc.querySelectorAll('link[rel="stylesheet"]');
+                console.log('CSS Links found:', cssLinks.length);
+                cssLinks.forEach(link => {
+                    console.log('CSS:', link.href);
+                });
+                
+                // Check for inline styles
+                const styleElements = doc.querySelectorAll('style');
+                console.log('Inline styles found:', styleElements.length);
+                
+                // Check if Tailwind classes are present
+                const bodyClasses = doc.body.className;
+                console.log('Body classes:', bodyClasses);
+                
+                // Check for any elements with Tailwind classes
+                const elementsWithClasses = doc.querySelectorAll('[class*="bg-"], [class*="text-"], [class*="flex"]');
+                console.log('Elements with Tailwind classes:', elementsWithClasses.length);
+                
+                // Try to load CSS files
+                cssLinks.forEach(link => {
+                    fetch(link.href)
+                        .then(res => {
+                            console.log(`CSS ${link.href}: ${res.status} ${res.statusText}`);
+                            return res.text();
+                        })
+                        .then(css => {
+                            console.log(`CSS length: ${css.length} chars`);
+                            if (css.includes('tailwind') || css.includes('@apply')) {
+                                console.log('✓ Tailwind CSS detected');
+                            }
+                        })
+                        .catch(err => console.error('CSS load error:', err));
+                });
+            })
+            .catch(err => console.error('Error:', err));
+    </script>
+    <h1>Check browser console for results</h1>
+</body>
+</html>
