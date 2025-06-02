@@ -1,17 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Lock, Unlock, AlertCircle, Activity, TrendingDown, Zap } from 'lucide-react';
-import {
-  CinematicTitle,
-  SceneTransition,
-  ParticleBackground
-} from '../StorytellingComponents';
-import {
-  getTextRevealStyle,
-  getTimeBasedValue,
-  getCameraTransform
-} from '../../utils/animationHelpers';
-import { getStaggeredDelay } from '../../utils/storytellingHelpers';
+import '../../styles/techflix-cinematic-v2.css';
 
 const ProblemVisualizationScene = ({ time, duration }) => {
   // Scene phases
@@ -32,6 +22,11 @@ const ProblemVisualizationScene = ({ time, duration }) => {
   
   const progress = (time / duration) * 100;
   
+  // Determine current phase based on time
+  const currentPhase = Object.entries(phases).find(([_, phase]) => 
+    time >= phase.start && time < phase.start + phase.duration
+  )?.[0] || 'conclusion';
+  
   // Update active section based on time
   useEffect(() => {
     if (time >= phases.solution.start) setActiveSection('solution');
@@ -43,21 +38,24 @@ const ProblemVisualizationScene = ({ time, duration }) => {
   // Animate metric values
   useEffect(() => {
     if (time >= phases.scaling.start) {
+      const scalingProgress = Math.min(1, (time - phases.scaling.start) / 3);
       setAnimatedValues(prev => ({
         ...prev,
-        consumers: Math.min(10, Math.floor(getTimeBasedValue(time, phases.scaling.start, 3, 0, 10)))
+        consumers: Math.min(10, Math.floor(scalingProgress * 10))
       }));
     }
     if (time >= phases.blocking.start) {
+      const blockingProgress = Math.min(1, (time - phases.blocking.start) / 3);
       setAnimatedValues(prev => ({
         ...prev,
-        latency: Math.floor(getTimeBasedValue(time, phases.blocking.start, 3, 0, 850))
+        latency: Math.floor(blockingProgress * 850)
       }));
     }
     if (time >= phases.solution.start) {
+      const solutionProgress = Math.min(1, (time - phases.solution.start) / 2);
       setAnimatedValues(prev => ({
         ...prev,
-        efficiency: Math.floor(getTimeBasedValue(time, phases.solution.start, 2, 0, 95))
+        efficiency: Math.floor(solutionProgress * 95)
       }));
     }
   }, [time, phases]);
@@ -102,15 +100,6 @@ const ProblemVisualizationScene = ({ time, duration }) => {
     }
   ];
   
-  // Camera movements
-  const cameraMovements = [
-    { start: 0, end: 3, fromX: 0, toX: 0, fromY: -50, toY: 0, fromScale: 0.8, toScale: 1 },
-    { start: 3, end: 4, fromX: 0, toX: -200, fromY: 0, toY: 0, fromScale: 1, toScale: 1.2 },
-    { start: 8, end: 9, fromX: -200, toX: 200, fromY: 0, toY: 0, fromScale: 1.2, toScale: 1.2 },
-    { start: 13, end: 14, fromX: 200, toX: 0, fromY: 0, toY: 0, fromScale: 1.2, toScale: 1 }
-  ];
-  
-  const cameraTransform = getCameraTransform(time, cameraMovements);
   
   // Visual components
   const PartitionVisual = ({ isActive }) => (
@@ -130,7 +119,7 @@ const ProblemVisualizationScene = ({ time, duration }) => {
             borderColor: i >= animatedValues.consumers && isActive ? '#ef4444' : undefined
           }}
           transition={{ 
-            delay: getStaggeredDelay(i, 0.1),
+            delay: i * 0.1,
             type: "spring",
             damping: 10
           }}
@@ -169,7 +158,7 @@ const ProblemVisualizationScene = ({ time, duration }) => {
               opacity: isActive ? 1 : 0
             }}
             transition={{ 
-              delay: getStaggeredDelay(i, 0.2),
+              delay: i * 0.2,
               duration: 0.5
             }}
           >
@@ -203,7 +192,7 @@ const ProblemVisualizationScene = ({ time, duration }) => {
                 }}
                 transition={{ 
                   duration: msg === 'SLOW' ? 3 : 1,
-                  delay: getStaggeredDelay(i, 0.3)
+                  delay: i * 0.3
                 }}
               />
             </div>
@@ -262,7 +251,7 @@ const ProblemVisualizationScene = ({ time, duration }) => {
               opacity: 1
             }}
             transition={{ 
-              delay: getStaggeredDelay(i, 0.1),
+              delay: i * 0.1,
               type: "spring",
               damping: 10
             }}
@@ -301,56 +290,39 @@ const ProblemVisualizationScene = ({ time, duration }) => {
   );
   
   return (
-    <div className="scene-container">
-      {/* Dynamic Background */}
-      <motion.div 
-        className="absolute inset-0"
-        animate={{ 
-          background: activeSection === 'scaling' ? 'radial-gradient(circle at 30% 50%, rgba(239, 68, 68, 0.3) 0%, transparent 50%)' :
-                      activeSection === 'blocking' ? 'radial-gradient(circle at 50% 50%, rgba(249, 115, 22, 0.3) 0%, transparent 50%)' :
-                      activeSection === 'solution' ? 'radial-gradient(circle at 70% 50%, rgba(16, 185, 129, 0.3) 0%, transparent 50%)' :
-                      'radial-gradient(circle at 50% 50%, rgba(99, 102, 241, 0.3) 0%, transparent 50%)'
-        }}
-        transition={{ duration: 1 }}
-      />
-      
-      {/* Particle effects */}
-      <ParticleBackground 
-        particleCount={50} 
-        colors={
-          activeSection === 'scaling' ? ['#ef4444', '#dc2626', '#b91c1c'] :
-          activeSection === 'blocking' ? ['#f97316', '#ea580c', '#c2410c'] :
-          activeSection === 'solution' ? ['#10b981', '#059669', '#047857'] :
-          ['#4338ca', '#8b5cf6', '#3b82f6']
-        } 
-      />
-      
-      {/* Content with camera transform */}
-      <div 
-        className="relative z-10 h-full flex items-center justify-center p-8"
-        style={{ transform: cameraTransform }}
-      >
-        <div className="w-full max-w-7xl">
+    <div className="scene-container-v2">
+      <div className="scene-content">
+        <div className="flex flex-col items-center justify-center min-h-full py-12">
           
-          {/* Phase 1: Introduction */}
-          <SceneTransition isActive={time >= phases.intro.start && time < phases.scaling.start}>
-            <CinematicTitle
-              title="The Problems We Face"
-              subtitle="Why Kafka Needs Evolution"
-              time={time}
-              startTime={phases.intro.start}
-            />
-          </SceneTransition>
-          
-          {/* Phase 2-4: Problem Cards */}
-          <SceneTransition isActive={time >= phases.scaling.start && time <= phases.conclusion.start}>
-            <div className="space-y-8">
-              <motion.h2 
-                className="text-4xl font-bold text-center mb-12"
-                style={getTextRevealStyle(time, phases.scaling.start, 1)}
+          <AnimatePresence mode="wait">
+            {/* Phase 1: Introduction */}
+            {currentPhase === 'intro' && (
+              <motion.div
+                key="intro"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.5 }}
+                className="text-center space-y-4"
               >
-                Traditional Consumer Groups Hit Their Limits
-              </motion.h2>
+                <h1 className="scene-title">The Problems We Face</h1>
+                <p className="scene-subtitle">Why Kafka Needs Evolution</p>
+              </motion.div>
+            )}
+          
+            {/* Phase 2-4: Problem Cards */}
+            {(currentPhase === 'scaling' || currentPhase === 'blocking' || currentPhase === 'solution') && (
+              <motion.div
+                key="problems"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.5 }}
+                className="w-full max-w-7xl space-y-8"
+              >
+                <h2 className="text-4xl font-bold text-center mb-12">
+                  Traditional Consumer Groups Hit Their Limits
+                </h2>
               
               <div className="grid lg:grid-cols-3 gap-8">
                 {problems.map((problem, idx) => {
@@ -361,37 +333,15 @@ const ProblemVisualizationScene = ({ time, duration }) => {
                   return (
                     <motion.div
                       key={problem.id}
-                      className={`relative rounded-2xl p-6 border-2 transition-all duration-700 ${
-                        problem.color === 'red' ? 'bg-red-900/20 border-red-600/50' :
-                        problem.color === 'orange' ? 'bg-orange-900/20 border-orange-600/50' :
-                        'bg-green-900/20 border-green-600/50'
-                      }`}
-                      initial={{ scale: 0.9, opacity: 0 }}
+                      className="metric-card-v2"
+                      initial={{ opacity: 0, y: 20 }}
                       animate={{ 
-                        scale: isActive ? 1.05 : 0.95,
                         opacity: time >= phases[problem.id]?.start || 0 ? 1 : 0.3,
-                        y: isActive ? -10 : 0
+                        y: 0
                       }}
-                      transition={{ type: "spring", damping: 10 }}
+                      transition={{ delay: idx * 0.1, duration: 0.5 }}
                     >
-                      {/* Glow effect when active */}
-                      {isActive && (
-                        <motion.div
-                          className="absolute inset-0 rounded-2xl"
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          style={{
-                            background: `radial-gradient(circle at 50% 50%, ${
-                              problem.color === 'red' ? 'rgba(239, 68, 68, 0.3)' :
-                              problem.color === 'orange' ? 'rgba(249, 115, 22, 0.3)' :
-                              'rgba(16, 185, 129, 0.3)'
-                            } 0%, transparent 70%)`,
-                            filter: 'blur(20px)'
-                          }}
-                        />
-                      )}
-                      
-                      <div className="relative z-10">
+                      <div className="relative">
                         {/* Header */}
                         <div className="flex items-start justify-between mb-6">
                           <motion.div 
@@ -400,8 +350,6 @@ const ProblemVisualizationScene = ({ time, duration }) => {
                               problem.color === 'orange' ? 'bg-orange-600/20' :
                               'bg-green-600/20'
                             }`}
-                            whileHover={{ scale: 1.1, rotate: 360 }}
-                            transition={{ type: "spring", damping: 10 }}
                           >
                             <Icon size={32} className={
                               problem.color === 'red' ? 'text-red-500' :
@@ -444,7 +392,7 @@ const ProblemVisualizationScene = ({ time, duration }) => {
                               className="flex-1 text-center"
                               initial={{ opacity: 0, y: 10 }}
                               animate={{ opacity: isActive ? 1 : 0.5, y: 0 }}
-                              transition={{ delay: getStaggeredDelay(i, 0.2) }}
+                              transition={{ delay: i * 0.2 }}
                             >
                               <div className={`text-2xl font-bold ${
                                 problem.color === 'red' ? 'text-red-400' :
@@ -473,17 +421,19 @@ const ProblemVisualizationScene = ({ time, duration }) => {
                   );
                 })}
               </div>
-            </div>
-          </SceneTransition>
+              </motion.div>
+            )}
           
-          {/* Phase 5: Conclusion */}
-          <SceneTransition isActive={time >= phases.conclusion.start}>
-            <motion.div 
-              className="text-center space-y-6"
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ type: "spring", damping: 10 }}
-            >
+            {/* Phase 5: Conclusion */}
+            {currentPhase === 'conclusion' && (
+              <motion.div
+                key="conclusion"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                transition={{ duration: 0.5 }}
+                className="text-center space-y-6"
+              >
               <h2 className="text-5xl font-black bg-gradient-to-r from-red-400 via-orange-400 to-green-400 bg-clip-text text-transparent">
                 It&apos;s Time for a Revolution
               </h2>
@@ -507,17 +457,9 @@ const ProblemVisualizationScene = ({ time, duration }) => {
                 />
                 <Zap className="w-8 h-8 text-green-400" />
               </motion.div>
-            </motion.div>
-          </SceneTransition>
+            )}
+          </AnimatePresence>
         </div>
-      </div>
-      
-      {/* Progress Indicator */}
-      <div className="progress-story">
-        <motion.div 
-          className="progress-story-fill"
-          style={{ width: `${progress}%` }}
-        />
       </div>
     </div>
   );
